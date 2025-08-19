@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+import { Metadata } from 'next';
 
 // FIX: Renamed SiteMetadata to avoid confusion, it's just a shape for MetadataRecord now.
 export interface CustomSiteMetadataShape {
@@ -31,8 +31,8 @@ export class MetadataRecord implements CustomSiteMetadataShape {
   constructor(
     title: string,
     description: string,
-    icon: string = "/assets/favicon.ico",
-    image: string = "/assets/icon.svg",
+    icon: string = '/assets/favicon.ico',
+    image: string = '/assets/icon.svg'
   ) {
     this.title = title;
     this.description = description;
@@ -55,7 +55,7 @@ export class MetadataRecord implements CustomSiteMetadataShape {
         description: this.openGraph.description,
         images: this.openGraph.images,
         url: url, // Optional: pass a specific URL if known at metadata generation time
-        type: "website", // Default type, can be refined based on context
+        type: 'website', // Default type, can be refined based on context
       },
       // You can add other standard Next.js Metadata properties here if MetadataRecord grows
       // For example, if you add 'twitter' data to MetadataRecord:

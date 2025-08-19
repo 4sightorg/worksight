@@ -1,90 +1,77 @@
-"use client"
+'use client';
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { useRef, useState } from "react"
-import { providers } from "@/data/authProviders"
-import { signIn, signInWithOAuth } from "@/lib/auth"
-import { useAuth } from "@/store/auth-store"
-import { useRouter } from "next/navigation"
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useRef, useState } from 'react';
+import { providers } from '@/data/authProviders';
+import { signIn, signInWithOAuth } from '@/lib/auth';
+import { useAuth } from '@/store/auth-store';
+import { useRouter } from 'next/navigation';
 
-export function LoginForm({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
-  const emailRef = useRef<HTMLInputElement>(null)
-  const passwordRef = useRef<HTMLInputElement>(null)
-  const [errorMsg, setErrorMsg] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
-  
-  const { setUser, setAccessToken } = useAuth()
-  const router = useRouter()
+export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) {
+  const emailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const { setUser, setAccessToken } = useAuth();
+  const router = useRouter();
 
   // Handler for OAuth sign-in
-  const handleOAuthSignIn = async (
-    providerName: "google" | "github" | "discord" | "facebook"
-  ) => {
-    setErrorMsg(null)
-    setLoading(true)
+  const handleOAuthSignIn = async (providerName: 'google' | 'github' | 'discord' | 'facebook') => {
+    setErrorMsg(null);
+    setLoading(true);
     try {
-      const { error } = await signInWithOAuth(providerName)
+      const { error } = await signInWithOAuth(providerName);
       if (error) {
-        setErrorMsg(error.message || `Login with ${providerName} failed`)
+        setErrorMsg(error.message || `Login with ${providerName} failed`);
       }
       // On success, Supabase will redirect automatically
     } catch (err: any) {
-      setErrorMsg(err?.message || `Login with ${providerName} failed`)
+      setErrorMsg(err?.message || `Login with ${providerName} failed`);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setErrorMsg(null)
-    setLoading(true)
-    
-    const email = emailRef.current?.value || ""
-    const password = passwordRef.current?.value || ""
-    
+    e.preventDefault();
+    setErrorMsg(null);
+    setLoading(true);
+
+    const email = emailRef.current?.value || '';
+    const password = passwordRef.current?.value || '';
+
     try {
-      const { user, error, accessToken } = await signIn({ email, password })
-      
+      const { user, error, accessToken } = await signIn({ email, password });
+
       if (user && accessToken) {
         // Update auth state
-        setUser(user)
-        setAccessToken(accessToken)
-        
+        setUser(user);
+        setAccessToken(accessToken);
+
         // Redirect to dashboard
-        router.push("/dashboard")
-        setErrorMsg(null)
+        router.push('/dashboard');
+        setErrorMsg(null);
       } else if (error) {
-        setErrorMsg(error.message || "Login failed")
+        setErrorMsg(error.message || 'Login failed');
       }
     } catch (err: any) {
-      setErrorMsg(err?.message || "Login failed")
+      setErrorMsg(err?.message || 'Login failed');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn('flex flex-col gap-6', className)} {...props}>
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Welcome back</CardTitle>
-          <CardDescription>
-            Login with your Apple or Google account
-          </CardDescription>
+          <CardDescription>Login with your Apple or Google account</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin}>
@@ -100,7 +87,7 @@ export function LoginForm({
                       key={provider.name}
                       type="button"
                       aria-label={`Login with ${provider.displayName}`}
-                      className="w-full h-12 flex items-center justify-center"
+                      className="flex h-12 w-full items-center justify-center"
                       onClick={() => handleOAuthSignIn(provider.name)}
                       disabled={loading}
                     >
@@ -131,10 +118,7 @@ export function LoginForm({
                 <div className="grid gap-3">
                   <div className="flex items-center">
                     <Label htmlFor="password">Password</Label>
-                    <a
-                      href="#"
-                      className="ml-auto text-sm underline-offset-4 hover:underline"
-                    >
+                    <a href="#" className="ml-auto text-sm underline-offset-4 hover:underline">
                       Forgot your password?
                     </a>
                   </div>
@@ -148,14 +132,12 @@ export function LoginForm({
                   />
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? "Logging in..." : "Login"}
+                  {loading ? 'Logging in...' : 'Login'}
                 </Button>
-                {errorMsg && (
-                  <div className="text-destructive text-center text-sm">{errorMsg}</div>
-                )}
+                {errorMsg && <div className="text-destructive text-center text-sm">{errorMsg}</div>}
               </div>
               <div className="text-center text-sm">
-                Don&apos;t have an account?{" "}
+                Don&apos;t have an account?{' '}
                 <a href="#" className="underline underline-offset-4">
                   Sign up
                 </a>
@@ -169,16 +151,17 @@ export function LoginForm({
           <strong>Offline Mode:</strong> Use test@worksight.app / testuser
         </p>
         <p>
-          By clicking continue, you agree to our{" "}
-          <a href="#" className="underline underline-offset-4 hover:text-primary">
+          By clicking continue, you agree to our{' '}
+          <a href="#" className="hover:text-primary underline underline-offset-4">
             Terms of Service
-          </a>{" "}
-          and{" "}
-          <a href="#" className="underline underline-offset-4 hover:text-primary">
+          </a>{' '}
+          and{' '}
+          <a href="#" className="hover:text-primary underline underline-offset-4">
             Privacy Policy
-          </a>.
+          </a>
+          .
         </p>
       </div>
     </div>
-  )
+  );
 }

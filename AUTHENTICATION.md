@@ -2,19 +2,24 @@
 
 ## Overview
 
-A comprehensive authentication system with offline support, access token management, and state management has been implemented for the WorkSight application.
+A comprehensive authentication system with offline support, access token
+management, and state management has been implemented for the WorkSight
+application.
 
 ## Features Implemented
 
 ### 1. Authentication Library (`src/lib/auth.ts`)
 
-- **Offline Mode Detection**: Checks for `IS_OFFLINE` environment variable or network status
+- **Offline Mode Detection**: Checks for `IS_OFFLINE` environment variable or
+  network status
 - **Dual Authentication**: Supports both Supabase and offline authentication
 - **Offline Credentials**:
   - Primary: `test@worksight.app` / `testuser`
   - Legacy: `test` / `testuser` or `testuser` / `test`
-- **OAuth Support**: Google, GitHub, Discord, Facebook (disabled in offline mode)
-- **Token Management**: Generates mock tokens for offline mode, real tokens for Supabase
+- **OAuth Support**: Google, GitHub, Discord, Facebook (disabled in offline
+  mode)
+- **Token Management**: Generates mock tokens for offline mode, real tokens for
+  Supabase
 - **Session Management**: `getCurrentUser()`, `signOut()` functions
 
 ### 2. Authentication Context (`src/store/auth-store.tsx`)

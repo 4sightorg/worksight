@@ -1,6 +1,6 @@
-"use client"
+'use client';
 
-import { AppSidebar } from "@/components/app-sidebar"
+import { AppSidebar } from '@/components/app-sidebar';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -8,47 +8,35 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { Separator } from "@/components/ui/separator"
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ModeToggle } from "@/components/theme-toggle"
-import { ProtectedRoute } from "@/components/protected-route"
-import { useAuth } from "@/store/auth-store"
-import { sections } from "@/data/sections"
-import { LogOut, User, Clock, CheckSquare } from "lucide-react"
+} from '@/components/ui/breadcrumb';
+import { Separator } from '@/components/ui/separator';
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ModeToggle } from '@/components/theme-toggle';
+import { ProtectedRoute } from '@/components/protected-route';
+import { useAuth } from '@/store/auth-store';
+import { sections } from '@/data/sections';
+import { LogOut, User, Clock, CheckSquare } from 'lucide-react';
 
 function DashboardContent() {
-  const { user, logout } = useAuth()
+  const { user, logout } = useAuth();
 
   const handleLogout = async () => {
-    await logout()
-  }
+    await logout();
+  };
 
   return (
     <SidebarProvider>
-      <AppSidebar
-        sections={sections.sections}
-        defaultSection={sections.defaultSection}
-      />
+      <AppSidebar sections={sections.sections} defaultSection={sections.defaultSection} />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
           <SidebarTrigger className="-ml-1" />
-          <Separator
-            orientation="vertical"
-            className="mr-2 data-[orientation=vertical]:h-4"
-          />
+          <Separator orientation="vertical" className="mr-2 data-[orientation=vertical]:h-4" />
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="#">
-                  {sections.defaultPart}
-                </BreadcrumbLink>
+                <BreadcrumbLink href="#">{sections.defaultPart}</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
@@ -57,12 +45,10 @@ function DashboardContent() {
             </BreadcrumbList>
           </Breadcrumb>
           <div className="ml-auto flex items-center gap-2">
-            <span className="hidden md:inline text-sm text-muted-foreground">
-              {user?.email}
-            </span>
+            <span className="text-muted-foreground hidden text-sm md:inline">{user?.email}</span>
             <ModeToggle />
             <Button variant="outline" size="sm" onClick={handleLogout}>
-              <LogOut className="h-4 w-4 mr-2" />
+              <LogOut className="mr-2 h-4 w-4" />
               Logout
             </Button>
           </div>
@@ -81,37 +67,31 @@ function DashboardContent() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Active Tasks</CardTitle>
-                <CheckSquare className="h-4 w-4 text-muted-foreground" />
+                <CheckSquare className="text-muted-foreground h-4 w-4" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">12</div>
-                <p className="text-xs text-muted-foreground">
-                  +2 from yesterday
-                </p>
+                <p className="text-muted-foreground text-xs">+2 from yesterday</p>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Hours Worked</CardTitle>
-                <Clock className="h-4 w-4 text-muted-foreground" />
+                <Clock className="text-muted-foreground h-4 w-4" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">6.5</div>
-                <p className="text-xs text-muted-foreground">
-                  +0.5 from yesterday
-                </p>
+                <p className="text-muted-foreground text-xs">+0.5 from yesterday</p>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Burnout Level</CardTitle>
-                <User className="h-4 w-4 text-muted-foreground" />
+                <User className="text-muted-foreground h-4 w-4" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-green-600">Low</div>
-                <p className="text-xs text-muted-foreground">
-                  Good work-life balance
-                </p>
+                <p className="text-muted-foreground text-xs">Good work-life balance</p>
               </CardContent>
             </Card>
           </div>
@@ -120,31 +100,29 @@ function DashboardContent() {
           <Card className="flex-1">
             <CardHeader>
               <CardTitle>Recent Activity</CardTitle>
-              <CardDescription>
-                Your recent tasks and activities
-              </CardDescription>
+              <CardDescription>Your recent tasks and activities</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="flex items-center gap-4 p-4 border rounded-lg">
+                <div className="flex items-center gap-4 rounded-lg border p-4">
                   <CheckSquare className="h-5 w-5 text-green-600" />
                   <div className="flex-1">
                     <p className="font-medium">Completed project setup</p>
-                    <p className="text-sm text-muted-foreground">2 hours ago</p>
+                    <p className="text-muted-foreground text-sm">2 hours ago</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-4 p-4 border rounded-lg">
+                <div className="flex items-center gap-4 rounded-lg border p-4">
                   <Clock className="h-5 w-5 text-blue-600" />
                   <div className="flex-1">
                     <p className="font-medium">Started working on authentication</p>
-                    <p className="text-sm text-muted-foreground">4 hours ago</p>
+                    <p className="text-muted-foreground text-sm">4 hours ago</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-4 p-4 border rounded-lg">
+                <div className="flex items-center gap-4 rounded-lg border p-4">
                   <CheckSquare className="h-5 w-5 text-green-600" />
                   <div className="flex-1">
                     <p className="font-medium">Fixed login issues</p>
-                    <p className="text-sm text-muted-foreground">6 hours ago</p>
+                    <p className="text-muted-foreground text-sm">6 hours ago</p>
                   </div>
                 </div>
               </div>
@@ -153,7 +131,7 @@ function DashboardContent() {
         </div>
       </SidebarInset>
     </SidebarProvider>
-  )
+  );
 }
 
 export default function DashboardPage() {
@@ -161,5 +139,5 @@ export default function DashboardPage() {
     <ProtectedRoute>
       <DashboardContent />
     </ProtectedRoute>
-  )
+  );
 }

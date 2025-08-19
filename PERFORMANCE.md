@@ -2,14 +2,17 @@
 
 ## Overview
 
-This document outlines all performance optimizations implemented in the WorkSight platform to ensure optimal user experience and efficient resource utilization.
+This document outlines all performance optimizations implemented in the
+WorkSight platform to ensure optimal user experience and efficient resource
+utilization.
 
 ## ⚡ Performance Features Implemented
 
 ### 1. **Next.js Optimizations**
 
 - **Turbopack**: Enabled for development with `--turbopack` flag
-- **Package Import Optimization**: Optimized imports for `@radix-ui`, `lucide-react`, and `@dnd-kit`
+- **Package Import Optimization**: Optimized imports for `@radix-ui`,
+  `lucide-react`, and `@dnd-kit`
 - **Image Optimization**: Configured AVIF/WebP formats with 7-day cache TTL
 - **Compression**: Enabled gzip compression
 - **Bundle Splitting**: Intelligent code splitting for vendor packages
@@ -78,28 +81,26 @@ pnpm run format:check
 
 ```typescript
 // Memoized components
-const OptimizedComponent = React.memo(Component)
+const OptimizedComponent = React.memo(Component);
 
 // Callback optimization
 const handleUpdate = useCallback((id: string, data: any) => {
   // Update logic
-}, [])
+}, []);
 
 // Expensive computation memoization
-const filteredData = useMemo(() => 
-  data.filter(item => item.active), [data]
-)
+const filteredData = useMemo(() => data.filter((item) => item.active), [data]);
 ```
 
 ### 2. **Import Optimization**
 
 ```typescript
 // Tree-shaking friendly imports
-import { Button } from '@/components/ui/button'
-import { Calendar } from 'lucide-react'
+import { Button } from '@/components/ui/button';
+import { Calendar } from 'lucide-react';
 
 // Dynamic imports for code splitting
-const HeavyComponent = dynamic(() => import('./HeavyComponent'))
+const HeavyComponent = dynamic(() => import('./HeavyComponent'));
 ```
 
 ### 3. **Image Optimization**
@@ -194,14 +195,14 @@ const HeavyComponent = dynamic(() => import('./HeavyComponent'))
 ## 🎯 Performance Budget
 
 | Resource Type | Budget | Current | Status |
-|---------------|--------|---------|---------|
-| JavaScript | 200KB | ~150KB | ✅ |
-| CSS | 50KB | ~30KB | ✅ |
-| Images | 500KB | ~200KB | ✅ |
-| Fonts | 100KB | ~50KB | ✅ |
-| Total | 850KB | ~430KB | ✅ |
+| ------------- | ------ | ------- | ------ |
+| JavaScript    | 200KB  | ~150KB  | ✅     |
+| CSS           | 50KB   | ~30KB   | ✅     |
+| Images        | 500KB  | ~200KB  | ✅     |
+| Fonts         | 100KB  | ~50KB   | ✅     |
+| Total         | 850KB  | ~430KB  | ✅     |
 
 ---
 
-*Last Updated: August 20, 2025*
-*Performance optimization is an ongoing process. Regular monitoring and optimization are recommended.*
+_Last Updated: August 20, 2025_ _Performance optimization is an ongoing process.
+Regular monitoring and optimization are recommended._

@@ -1,7 +1,7 @@
 import '@/styles/globals.css';
-import { ThemeProvider } from "@/components/theme-provider"
-import { AuthProvider } from "@/store/auth-store"
-import { ReactNode } from "react";
+import { ThemeProvider } from '@/components/theme-provider';
+import { AuthProvider } from '@/store/auth-store';
+import { ReactNode } from 'react';
 import { MetadataRecord } from '@/types/metadata';
 
 type RootLayoutProps = {
@@ -9,8 +9,8 @@ type RootLayoutProps = {
 };
 
 export const metadata = new MetadataRecord(
-  "Worksight",
-  "A way to view work and burnout"
+  'Worksight',
+  'A way to view work and burnout'
 ).toNextMetadata(); // ✅ convert to plain object
 
 export default function RootLayout({ children }: RootLayoutProps) {
@@ -23,11 +23,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
           enableSystem
           disableTransitionOnChange
         >
-          <AuthProvider>
-            {children}
-          </AuthProvider>
+          <AuthProvider>{children}</AuthProvider>
         </ThemeProvider>
       </body>
     </html>
-  )
+  );
 }

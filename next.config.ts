@@ -1,8 +1,8 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
-})
+});
 
 const nextConfig: NextConfig = {
   // Performance optimizations
@@ -17,17 +17,17 @@ const nextConfig: NextConfig = {
       },
     },
   },
-  
+
   // Compression and optimization
   compress: true,
   poweredByHeader: false,
-  
+
   // Image optimization
   images: {
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 60 * 60 * 24 * 7, // 7 days
   },
-  
+
   // Bundle analyzer in development
   webpack: (config, { dev, isServer }) => {
     if (dev && !isServer) {
@@ -44,7 +44,7 @@ const nextConfig: NextConfig = {
     }
     return config;
   },
-  
+
   // Headers for security and performance
   async headers() {
     return [

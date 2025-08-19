@@ -1,34 +1,30 @@
-"use client"
+'use client';
 
-import * as React from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Button } from "./ui/button";
+import * as React from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { Button } from './ui/button';
 
-import { siteConfig } from "@/config/site"
-import { cn } from "@/lib/utils"
-import Image from "next/image"
+import { siteConfig } from '@/config/site';
+import { cn } from '@/lib/utils';
+import Image from 'next/image';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar"
-import { Check, ChevronsUpDown, GalleryVerticalEnd } from "lucide-react"
+} from '@/components/ui/dropdown-menu';
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
+import { Check, ChevronsUpDown, GalleryVerticalEnd } from 'lucide-react';
 
 export function MainNav() {
-  const sections = ["Employee", "Manager"];
+  const sections = ['Employee', 'Manager'];
   const defaultSection = sections[0];
-  const pathname = usePathname()
-  const [selectedSection, setSelectedSection] = React.useState(defaultSection)
+  const pathname = usePathname();
+  const [selectedSection, setSelectedSection] = React.useState(defaultSection);
 
   return (
-    <div className="ml-4 mr-4 hidden md:flex">
+    <div className="mr-4 ml-4 hidden md:flex">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <SidebarMenuButton
@@ -44,44 +40,33 @@ export function MainNav() {
             <ChevronsUpDown className="ml-auto" />
           </SidebarMenuButton>
         </DropdownMenuTrigger>
-        <DropdownMenuContent
-          className="w-(--radix-dropdown-menu-trigger-width)"
-          align="start"
-        >
+        <DropdownMenuContent className="w-(--radix-dropdown-menu-trigger-width)" align="start">
           {sections.map((version) => (
-            <DropdownMenuItem
-              key={version}
-              onSelect={() => setSelectedSection(version)}
-            >
-              {version}{" "}
-              {version === selectedSection && <Check className="ml-auto" />}
+            <DropdownMenuItem key={version} onSelect={() => setSelectedSection(version)}>
+              {version} {version === selectedSection && <Check className="ml-auto" />}
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
       <Link href="/" className="mr-4 flex items-center gap-2 lg:mr-6">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 px-0"
-        >
-        <Image src="/assets/icon.svg" className="h-6 w-6" width={24} height={24} alt="Site Icon"/>
-        <span className="sr-only hidden font-bold lg:inline-block">
-          {siteConfig.name}
-        </span>
+        <Button variant="ghost" size="icon" className="h-8 w-8 px-0">
+          <Image
+            src="/assets/icon.svg"
+            className="h-6 w-6"
+            width={24}
+            height={24}
+            alt="Site Icon"
+          />
+          <span className="sr-only hidden font-bold lg:inline-block">{siteConfig.name}</span>
         </Button>
       </Link>
       <nav className="flex items-center gap-4 text-sm xl:gap-6">
-        <Button
-          variant="ghost"
-        >
+        <Button variant="ghost">
           <Link
             href="/dashboard"
             className={cn(
-              "transition-colors hover:text-foreground/80",
-              pathname?.startsWith("/themes")
-                ? "text-foreground"
-                : "text-foreground/80"
+              'hover:text-foreground/80 transition-colors',
+              pathname?.startsWith('/themes') ? 'text-foreground' : 'text-foreground/80'
             )}
           >
             Dashboard
@@ -89,5 +74,5 @@ export function MainNav() {
         </Button>
       </nav>
     </div>
-  )
+  );
 }

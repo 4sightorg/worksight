@@ -1,8 +1,8 @@
-import { Skeleton } from "@/components/ui/skeleton"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Skeleton } from '@/components/ui/skeleton';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 
 interface LoadingStateProps {
-  variant?: 'tasks' | 'dashboard' | 'default'
+  variant?: 'tasks' | 'dashboard' | 'default';
 }
 
 export function LoadingState({ variant = 'default' }: LoadingStateProps) {
@@ -19,18 +19,18 @@ export function LoadingState({ variant = 'default' }: LoadingStateProps) {
               </div>
             </CardHeader>
             <CardContent>
-              <Skeleton className="h-4 w-full mb-2" />
+              <Skeleton className="mb-2 h-4 w-full" />
               <Skeleton className="h-4 w-[80%]" />
             </CardContent>
           </Card>
         ))}
       </div>
-    )
+    );
   }
 
   if (variant === 'dashboard') {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {Array.from({ length: 6 }).map((_, i) => (
           <Card key={i}>
             <CardHeader>
@@ -43,7 +43,7 @@ export function LoadingState({ variant = 'default' }: LoadingStateProps) {
           </Card>
         ))}
       </div>
-    )
+    );
   }
 
   return (
@@ -53,5 +53,5 @@ export function LoadingState({ variant = 'default' }: LoadingStateProps) {
       <Skeleton className="h-4 w-[80%]" />
       <Skeleton className="h-4 w-[60%]" />
     </div>
-  )
+  );
 }
