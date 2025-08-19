@@ -25,7 +25,7 @@ import { ProtectedRoute } from "@/components/protected-route"
 import { useAuth } from "@/store/auth-store"
 import { sections } from "@/data/sections"
 import { LogOut, Plus, Search, CheckSquare, Clock, AlertCircle, GripVertical } from "lucide-react"
-import { useState } from "react"
+import { useState, useCallback, useMemo } from "react"
 import {
   DndContext,
   closestCenter,
@@ -278,15 +278,15 @@ function TasksContent() {
     await logout()
   }
 
-  const handleTaskUpdate = (id: string, updates: Partial<Task>) => {
+  const handleTaskUpdate = useCallback((id: string, updates: Partial<Task>) => {
     setTasks(tasks => 
       tasks.map(task => 
         task.id === id ? { ...task, ...updates } : task
       )
     )
-  }
+  }, [])
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event
 
     if (active.id !== over?.id) {
@@ -299,18 +299,20 @@ function TasksContent() {
         return newTasks.map((task, index) => ({ ...task, order: index }))
       })
     }
-  }
+  }, [])
 
-  const filteredTasks = tasks.filter(task =>
-    task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    task.description.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredTasks = useMemo(() => 
+    tasks.filter(task =>
+      task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      task.description.toLowerCase().includes(searchTerm.toLowerCase())
+    ), [tasks, searchTerm]
   )
 
-  const tasksByStatus = {
+  const tasksByStatus = useMemo(() => ({
     todo: filteredTasks.filter(t => t.status === "todo"),
     "in-progress": filteredTasks.filter(t => t.status === "in-progress"),
     completed: filteredTasks.filter(t => t.status === "completed")
-  }
+  }), [filteredTasks])
 
   return (
     <SidebarProvider>

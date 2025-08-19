@@ -26,7 +26,7 @@ export function LoginForm({
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   
-  const { setUser, setAccessToken, refreshUser } = useAuth()
+  const { setUser, setAccessToken } = useAuth()
   const router = useRouter()
 
   // Handler for OAuth sign-in
@@ -63,9 +63,6 @@ export function LoginForm({
         // Update auth state
         setUser(user)
         setAccessToken(accessToken)
-        
-        // Refresh the user context
-        await refreshUser()
         
         // Redirect to dashboard
         router.push("/dashboard")

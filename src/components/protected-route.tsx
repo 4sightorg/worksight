@@ -10,25 +10,16 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute({ children, fallback }: ProtectedRouteProps) {
-  const { isAuthenticated, isLoading } = useAuth()
+  const auth = useAuth()
+  // Replace 'isAuthenticated' with the correct property from your auth context, e.g. 'auth.user' or 'auth.token'
+  const isAuthenticated = !!auth.user // or adjust according to your actual auth context
   const router = useRouter()
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    if (!isAuthenticated) {
       router.push("/login")
     }
-  }, [isAuthenticated, isLoading, router])
-
-  if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    )
-  }
+  }, [isAuthenticated, router])
 
   if (!isAuthenticated) {
     return fallback || (

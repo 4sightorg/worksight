@@ -1,104 +1,32 @@
+import { createContext, useContext, useState, ReactNode } from "react"
 
-"use client"
-
-import { createContext, useContext, useState, useEffect, ReactNode } from "react"
-
-interface User {
-  id: string
-  email: string
-  name: string
-  role: string
-  accessToken: string
-  lastLogin?: string
-}
-
+// Use .tsx extension for JSX
+// This file should be renamed to auth-store.tsx if not already
 interface AuthState {
-  user: User | null
+  user: any | null
   accessToken: string | null
-  isLoading: boolean
-  isAuthenticated: boolean
 }
 
 interface AuthContextType extends AuthState {
-  setUser: (user: User | null) => void
-  setAccessToken: (token: string | null) => void
-  logout: () => Promise<void>
-  refreshUser: () => Promise<void>
+  setUser: (user: any) => void
+  setAccessToken: (token: string) => void
+  logout: () => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
+  const [user, setUser] = useState<any | null>(null)
   const [accessToken, setAccessToken] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
 
-  const isAuthenticated = user !== null && accessToken !== null
-
-  const logout = async () => {
-    try {
-      // Dynamic import to avoid circular dependency
-      const { signOut: authSignOut } = await import("@/lib/auth")
-      await authSignOut()
-      setUser(null)
-      setAccessToken(null)
-    } catch (error) {
-      console.error("Logout error:", error)
-    }
+  const logout = () => {
+    setUser(null)
+    setAccessToken(null)
+    // Optionally clear localStorage or cookies
   }
-
-  const refreshUser = async () => {
-    setIsLoading(true)
-    try {
-      // Dynamic import to avoid circular dependency
-      const { getCurrentUser } = await import("@/lib/auth")
-      const currentUser = await getCurrentUser()
-      if (currentUser) {
-        setUser(currentUser)
-        setAccessToken(currentUser.accessToken)
-      } else {
-        setUser(null)
-        setAccessToken(null)
-      }
-    } catch (error) {
-      console.error("Error refreshing user:", error)
-      setUser(null)
-      setAccessToken(null)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  // Initialize auth state on mount
-  useEffect(() => {
-    refreshUser()
-  }, [])
-
-  // Set up auth state listeners for localStorage changes
-  useEffect(() => {
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === "user" || e.key === "accessToken") {
-        refreshUser()
-      }
-    }
-
-    window.addEventListener("storage", handleStorageChange)
-    return () => window.removeEventListener("storage", handleStorageChange)
-  }, [])
 
   return (
-    <AuthContext.Provider 
-      value={{ 
-        user, 
-        accessToken, 
-        isLoading, 
-        isAuthenticated,
-        setUser, 
-        setAccessToken, 
-        logout,
-        refreshUser
-      }}
-    >
+    <AuthContext.Provider value={{ user, accessToken, setUser, setAccessToken, logout }}>
       {children}
     </AuthContext.Provider>
   )
