@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WorkSight Logo - Data-Driven Platform Focus</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 40px;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .logo-variants {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 40px;
+            width: 100%;
+            max-width: 1400px;
+        }
+
+        .logo-variant {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            border: 1px solid rgba(0,0,0,0.04);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .logo-variant:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.12);
+        }
+
+        .logo-variant h3 {
+            margin: 0;
+            color: #1e293b;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .main-logo { width: 240px; height: 80px; }
+        .icon-only { width: 80px; height: 80px; }
+        .horizontal { width: 280px; height: 60px; }
+        .compact { width: 200px; height: 50px; }
+
+        .logo-svg {
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.08));
+            transition: filter 0.3s ease;
+        }
+
+        .logo-svg:hover {
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.12));
+        }
+
+        @keyframes dataFlow {
+            0% { transform: translateX(-10px); opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { transform: translateX(10px); opacity: 0.5; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        .data-flow { animation: dataFlow 3s infinite ease-in-out; }
+        .pulse-glow { animation: pulse 2s infinite ease-in-out; }
+
+        .description {
+            text-align: center;
+            max-width: 900px;
+            color: #475569;
+            font-size: 16px;
+            line-height: 1.7;
+            margin-bottom: 30px;
+        }
+
+        .feature-highlight {
+            background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-container">
+        <div class="description">
+            <h1 style="color: #1e293b; margin-bottom: 20px; font-weight: 700;">WorkSight Platform Logo</h1>
+            <p>Logo designs focused on the <strong>data-driven burnout management platform</strong> described in your document. Emphasizing analytics, employee well-being tracking, and proactive insights rather than literal interpretations.</p>
+            <div class="feature-highlight">
+                <strong>Key Platform Features Represented:</strong>
+                <br>• Employee Burnout Tracker with behavioral signals
+                <br>• Managerial Insights Panel for workload distribution
+                <br>• Smart Notifications & Data-Driven Design
+                <br>• Integration with HRIS and workplace systems
+            </div>
+        </div>
+        
+        <div class="logo-variants">
+            <!-- Primary Platform Logo -->
+            <div class="logo-variant">
+                <h3>Primary Platform Logo</h3>
+                <svg class="main-logo logo-svg" viewBox="0 0 240 80" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="platformGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#0ea5e9"/>
+                            <stop offset="50%" style="stop-color:#0284c7"/>
+                            <stop offset="100%" style="stop-color:#0369a1"/>
+                        </linearGradient>
+                        <linearGradient id="wellnessGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#10b981"/>
+                            <stop offset="100%" style="stop-color:#059669"/>
+                        </linearGradient>
+                    </defs>
+                    
+                    <!-- Dashboard/Analytics Symbol -->
+                    <rect x="15" y="20" width="35" height="25" rx="4" fill="url(#platformGradient)" opacity="0.1"/>
+                    <rect x="17" y="22" width="31" height="21" rx="2" fill="none" stroke="url(#platformGradient)" stroke-width="2"/>
+                    
+                    <!-- Data visualization bars -->
+                    <rect x="21" y="35" width="3" height="6" fill="url(#platformGradient)"/>
+                    <rect x="26" y="32" width="3" height="9" fill="url(#platformGradient)"/>
+                    <rect x="31" y="29" width="3" height="12" fill="url(#platformGradient)"/>
+                    <rect x="36" y="33" width="3" height="8" fill="url(#wellnessGradient)"/>
+                    <rect x="41" y="30" width="3" height="11" fill="url(#wellnessGradient)"/>
+                    
+                    <!-- Burnout indicator/alert -->
+                    <circle cx="45" cy="25" r="3" fill="#ef4444" opacity="0.8">
+                        <animate attributeName="opacity" values="0.4;1;0.4" dur="2s" repeatCount="indefinite"/>
+                    </circle>
+                    
+                    <!-- Connection lines (data flow) -->
+                    <path d="M35 50 Q40 55 45 50" fill="none" stroke="url(#wellnessGradient)" stroke-width="1.5" opacity="0.6"/>
+                    
+                    <!-- Company Name -->
+                    <text x="65" y="35" font-family="Segoe UI, sans-serif" font-size="22" font-weight="700" fill="#1e293b">Work</text>
+                    <text x="65" y="55" font-family="Segoe UI, sans-serif" font-size="22" font-weight="400" fill="#64748b">Sight</text>
+                    
+                    <!-- Subtle tagline -->
+                    <text x="165" y="50" font-family="Segoe UI, sans-serif" font-size="8" fill="#94a3b8">DATA-DRIVEN INSIGHTS</text>
+                </svg>
+            </div>
+
+            <!-- Icon/App Symbol -->
+            <div class="logo-variant">
+                <h3>App Icon</h3>
+                <svg class="icon-only logo-svg" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="appGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#0ea5e9"/>
+                            <stop offset="100%" style="stop-color:#0369a1"/>
+                        </linearGradient>
+                        <radialGradient id="bgGradient" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" style="stop-color:#f8fafc"/>
+                            <stop offset="100%" style="stop-color:#e2e8f0"/>
+                        </radialGradient>
+                    </defs>
+                    
+                    <!-- App background -->
+                    <rect x="8" y="8" width="64" height="64" rx="16" fill="url(#appGradient)"/>
+                    
+                    <!-- Dashboard grid -->
+                    <rect x="18" y="20" width="44" height="30" rx="4" fill="white" opacity="0.9"/>
+                    
+                    <!-- Analytics visualization -->
+                    <rect x="24" y="38" width="4" height="8" fill="url(#appGradient)"/>
+                    <rect x="30" y="35" width="4" height="11" fill="url(#appGradient)"/>
+                    <rect x="36" y="32" width="4" height="14" fill="#10b981"/>
+                    <rect x="42" y="36" width="4" height="10" fill="#10b981"/>
+                    <rect x="48" y="33" width="4" height="13" fill="#f59e0b"/>
+                    
+                    <!-- Well-being indicator -->
+                    <circle cx="55" cy="25" r="4" fill="white"/>
+                    <circle cx="55" cy="25" r="2" fill="#10b981" class="pulse-glow"/>
+                    
+                    <!-- Data points -->
+                    <circle cx="25" cy="58" r="1.5" fill="white" opacity="0.8"/>
+                    <circle cx="35" cy="58" r="1.5" fill="white" opacity="0.8"/>
+                    <circle cx="45" cy="58" r="1.5" fill="white" opacity="0.8"/>
+                </svg>
+            </div>
+
+            <!-- Horizontal Dashboard Layout -->
+            <div class="logo-variant">
+                <h3>Dashboard Header</h3>
+                <svg class="horizontal logo-svg" viewBox="0 0 280 60" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="headerGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#0ea5e9"/>
+                            <stop offset="100%" style="stop-color:#0369a1"/>
+                        </linearGradient>
+                    </defs>
+                    
+                    <!-- Analytics dashboard symbol -->
+                    <rect x="8" y="15" width="35" height="20" rx="3" fill="none" stroke="url(#headerGradient)" stroke-width="2"/>
+                    
+                    <!-- Mini chart -->
+                    <polyline points="12,28 16,25 20,22 24,26 28,20 32,23 36,19" 
+                              fill="none" stroke="#10b981" stroke-width="2" opacity="0.7"/>
+                    
+                    <!-- Burnout alert dot -->
+                    <circle cx="38" cy="18" r="2" fill="#ef4444">
+                        <animate attributeName="r" values="1.5;2.5;1.5" dur="2s" repeatCount="indefinite"/>
+                    </circle>
+                    
+                    <!-- Company name -->
+                    <text x="55" y="25" font-family="Segoe UI, sans-serif" font-size="16" font-weight="700" fill="#1e293b">WorkSight</text>
+                    <text x="55" y="40" font-family="Segoe UI, sans-serif" font-size="10" fill="#64748b">Employee Well-being Analytics</text>
+                    
+                    <!-- Status indicators -->
+                    <circle cx="200" cy="20" r="3" fill="#10b981"/>
+                    <text x="208" y="23" font-family="Segoe UI, sans-serif" font-size="8" fill="#059669">HEALTHY</text>
+                    
+                    <circle cx="200" cy="35" r="3" fill="#f59e0b"/>
+                    <text x="208" y="38" font-family="Segoe UI, sans-serif" font-size="8" fill="#d97706">AT RISK</text>
+                </svg>
+            </div>
+
+            <!-- Compact Version -->
+            <div class="logo-variant">
+                <h3>Compact/Business Card</h3>
+                <svg class="compact logo-svg" viewBox="0 0 200 50" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="compactGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#0ea5e9"/>
+                            <stop offset="100%" style="stop-color:#0369a1"/>
+                        </linearGradient>
+                    </defs>
+                    
+                    <!-- Simplified dashboard -->
+                    <rect x="8" y="12" width="25" height="16" rx="2" fill="none" stroke="url(#compactGradient)" stroke-width="1.5"/>
+                    
+                    <!-- Data bars -->
+                    <rect x="12" y="20" width="2" height="4" fill="url(#compactGradient)"/>
+                    <rect x="15" y="18" width="2" height="6" fill="url(#compactGradient)"/>
+                    <rect x="18" y="16" width="2" height="8" fill="#10b981"/>
+                    <rect x="21" y="19" width="2" height="5" fill="#f59e0b"/>
+                    
+                    <!-- Alert -->
+                    <circle cx="30" cy="15" r="1.5" fill="#ef4444" opacity="0.8"/>
+                    
+                    <!-- Text -->
+                    <text x="45" y="30" font-family="Segoe UI, sans-serif" font-size="18" font-weight="600" fill="#1e293b">WorkSight</text>
+                </svg>
+            </div>
+
+            <!-- Dark Theme Version -->
+            <div class="logo-variant" style="background: #1e293b;">
+                <h3 style="color: #f1f5f9;">Dark Theme</h3>
+                <svg class="main-logo logo-svg" viewBox="0 0 240 80" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="darkPlatformGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#38bdf8"/>
+                            <stop offset="50%" style="stop-color:#0ea5e9"/>
+                            <stop offset="100%" style="stop-color:#0284c7"/>
+                        </linearGradient>
+                        <linearGradient id="darkWellnessGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#34d399"/>
+                            <stop offset="100%" style="stop-color:#10b981"/>
+                        </linearGradient>
+                    </defs>
+                    
+                    <!-- Dashboard -->
+                    <rect x="15" y="20" width="35" height="25" rx="4" fill="url(#darkPlatformGradient)" opacity="0.15"/>
+                    <rect x="17" y="22" width="31" height="21" rx="2" fill="none" stroke="url(#darkPlatformGradient)" stroke-width="2"/>
+                    
+                    <!-- Data bars -->
+                    <rect x="21" y="35" width="3" height="6" fill="url(#darkPlatformGradient)"/>
+                    <rect x="26" y="32" width="3" height="9" fill="url(#darkPlatformGradient)"/>
+                    <rect x="31" y="29" width="3" height="12" fill="url(#darkPlatformGradient)"/>
+                    <rect x="36" y="33" width="3" height="8" fill="url(#darkWellnessGradient)"/>
+                    <rect x="41" y="30" width="3" height="11" fill="url(#darkWellnessGradient)"/>
+                    
+                    <!-- Alert -->
+                    <circle cx="45" cy="25" r="3" fill="#f87171">
+                        <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite"/>
+                    </circle>
+                    
+                    <!-- Company name -->
+                    <text x="65" y="35" font-family="Segoe UI, sans-serif" font-size="22" font-weight="700" fill="#f1f5f9">Work</text>
+                    <text x="65" y="55" font-family="Segoe UI, sans-serif" font-size="22" font-weight="400" fill="#cbd5e1">Sight</text>
+                    
+                    <text x="165" y="50" font-family="Segoe UI, sans-serif" font-size="8" fill="#64748b">DATA-DRIVEN INSIGHTS</text>
+                </svg>
+            </div>
+
+            <!-- Animated Dashboard Version -->
+            <div class="logo-variant">
+                <h3>Animated Platform Demo</h3>
+                <svg class="main-logo logo-svg" viewBox="0 0 240 80" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="animPlatformGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#0ea5e9"/>
+                            <stop offset="100%" style="stop-color:#0369a1"/>
+                        </linearGradient>
+                    </defs>
+                    
+                    <!-- Dashboard frame -->
+                    <rect x="15" y="20" width="35" height="25" rx="4" fill="url(#animPlatformGradient)" opacity="0.1"/>
+                    <rect x="17" y="22" width="31" height="21" rx="2" fill="none" stroke="url(#animPlatformGradient)" stroke-width="2"/>
+                    
+                    <!-- Animated data bars -->
+                    <rect x="21" y="35" width="3" height="6" fill="url(#animPlatformGradient)" class="pulse-glow" style="animation-delay: 0.1s"/>
+                    <rect x="26" y="32" width="3" height="9" fill="url(#animPlatformGradient)" class="pulse-glow" style="animation-delay: 0.3s"/>
+                    <rect x="31" y="29" width="3" height="12" fill="url(#animPlatformGradient)" class="pulse-glow" style="animation-delay: 0.5s"/>
+                    <rect x="36" y="33" width="3" height="8" fill="#10b981" class="pulse-glow" style="animation-delay: 0.7s"/>
+                    <rect x="41" y="30" width="3" height="11" fill="#10b981" class="pulse-glow" style="animation-delay: 0.9s"/>
+                    
+                    <!-- Pulsing alert -->
+                    <circle cx="45" cy="25" r="3" fill="#ef4444">
+                        <animate attributeName="r" values="2;4;2" dur="2s" repeatCount="indefinite"/>
+                        <animate attributeName="opacity" values="0.4;1;0.4" dur="2s" repeatCount="indefinite"/>
+                    </circle>
+                    
+                    <!-- Data flow line -->
+                    <path d="M35 50 Q40 55 45 50" fill="none" stroke="#10b981" stroke-width="1.5" class="data-flow"/>
+                    
+                    <!-- Company name -->
+                    <text x="65" y="35" font-family="Segoe UI, sans-serif" font-size="22" font-weight="700" fill="#1e293b">Work</text>
+                    <text x="65" y="55" font-family="Segoe UI, sans-serif" font-size="22" font-weight="400" fill="#64748b">Sight</text>
+                    
+                    <text x="165" y="50" font-family="Segoe UI, sans-serif" font-size="8" fill="#94a3b8">REAL-TIME ANALYTICS</text>
+                </svg>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 40px; color: #64748b; max-width: 800px;">
+            <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.06);">
+                <h3 style="color: #1e293b; margin-bottom: 20px;">Design Rationale</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; text-align: left;">
+                    <div>
+                        <strong>📊 Dashboard Focus</strong><br>
+                        Represents the core platform functionality from your document
+                    </div>
+                    <div>
+                        <strong>📈 Data Visualization</strong><br>
+                        Shows analytics bars indicating burnout risk tracking
+                    </div>
+                    <div>
+                        <strong>🚨 Alert System</strong><br>
+                        Red indicator for proactive burnout detection
+                    </div>
+                    <div>
+                        <strong>🎯 Professional Aesthetic</strong><br>
+                        Enterprise-ready design for banking/corporate environment
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
