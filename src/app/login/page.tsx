@@ -1,6 +1,9 @@
+import { LoginForm } from '@/components/login-form';
 import { GalleryVerticalEnd } from 'lucide-react';
 import Link from 'next/link';
-import { LoginForm } from '@/components/login-form';
+
+// Force dynamic rendering to avoid build-time Supabase client creation
+export const dynamic = 'force-dynamic';
 
 export default function LoginPage() {
   return (

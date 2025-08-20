@@ -174,18 +174,33 @@ Automatically provisioned by Vercel for all domains.
    pnpm run quality
    ```
 
-2. **Environment Variables**
+2. **Supabase Build Errors**
+   - If you see "supabaseUrl is required" during build:
+   - Create `.env.local` with placeholder values:
+
+     ```bash
+     NEXT_PUBLIC_SUPABASE_URL=https://placeholder.supabase.co
+     NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=placeholder-key
+     ```
+
+   - Or disable Supabase features during build by setting:
+
+     ```bash
+     NEXT_PUBLIC_IS_OFFLINE=true
+     ```
+
+3. **Environment Variables**
    - Ensure all required variables are set in Vercel
    - Check variable names match exactly
 
-3. **Performance Issues**
+4. **Performance Issues**
 
    ```bash
    # Analyze bundle size
    pnpm run analyze
    ```
 
-4. **CI/CD Pipeline Issues**
+5. **CI/CD Pipeline Issues**
    - GitHub Actions workflow uses `pnpm/action-setup@v4` for proper pnpm
      installation
    - Deployment jobs are commented out until Vercel secrets are configured
