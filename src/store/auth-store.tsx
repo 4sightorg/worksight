@@ -1,14 +1,23 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, ReactNode, useContext, useState } from 'react';
+
+// User interface for type safety
+interface User {
+  id: string;
+  email: string;
+  name?: string;
+  avatar_url?: string;
+  [key: string]: unknown;
+}
 
 // Use .tsx extension for JSX
 // This file should be renamed to auth-store.tsx if not already
 interface AuthState {
-  user: any | null;
+  user: User | null;
   accessToken: string | null;
 }
 
 interface AuthContextType extends AuthState {
-  setUser: (user: any) => void;
+  setUser: (user: User | null) => void;
   setAccessToken: (token: string) => void;
   logout: () => void;
 }
@@ -16,7 +25,7 @@ interface AuthContextType extends AuthState {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<any | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
 
   const logout = () => {

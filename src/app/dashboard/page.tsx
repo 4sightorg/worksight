@@ -58,7 +58,7 @@ function DashboardContent() {
           <div className="mb-6">
             <h1 className="text-3xl font-bold">Welcome back, {user?.name || user?.email}!</h1>
             <p className="text-muted-foreground mt-2">
-              Here's what's happening with your work today.
+              Here&apos;s what&apos;s happening with your work today.
             </p>
           </div>
 

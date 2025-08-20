@@ -1,5 +1,4 @@
 import { ModeToggle } from './theme-toggle';
-import { MainNav } from './main-nav';
 import { Button } from './ui/button';
 import Link from 'next/link';
 import { SiGithub } from 'react-icons/si';

@@ -95,7 +95,7 @@ export async function signIn({ email, password }: { email: string; password: str
       }
       return { user: null, error, accessToken: null };
     } catch (err) {
-      return { user: null, error: err as any, accessToken: null };
+      return { user: null, error: err, accessToken: null };
     }
   }
 

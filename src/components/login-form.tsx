@@ -1,15 +1,15 @@
 'use client';
 
-import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useRef, useState } from 'react';
 import { providers } from '@/data/authProviders';
 import { signIn, signInWithOAuth } from '@/lib/auth';
+import { cn } from '@/lib/utils';
 import { useAuth } from '@/store/auth-store';
 import { useRouter } from 'next/navigation';
+import { useRef, useState } from 'react';
 
 export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) {
   const emailRef = useRef<HTMLInputElement>(null);
@@ -30,8 +30,9 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
         setErrorMsg(error.message || `Login with ${providerName} failed`);
       }
       // On success, Supabase will redirect automatically
-    } catch (err: any) {
-      setErrorMsg(err?.message || `Login with ${providerName} failed`);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : `Login with ${providerName} failed`;
+      setErrorMsg(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -59,8 +60,9 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
       } else if (error) {
         setErrorMsg(error.message || 'Login failed');
       }
-    } catch (err: any) {
-      setErrorMsg(err?.message || 'Login failed');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Login failed';
+      setErrorMsg(errorMessage);
     } finally {
       setLoading(false);
     }

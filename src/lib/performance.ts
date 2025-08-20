@@ -13,15 +13,18 @@ export class PerformanceMonitor {
       this.metrics.set(label, duration);
 
       if (process.env.NODE_ENV === 'development') {
-        console.log(`⏱️ ${label}: ${duration.toFixed(2)}ms`);
+        console.warn(`⏱️ ${label}: ${duration.toFixed(2)}ms`);
       }
 
       return duration;
     };
   }
 
-  static measureComponent<T extends React.ComponentType<any>>(Component: T, name: string): T {
-    const MeasuredComponent = (props: any) => {
+  static measureComponent<P = Record<string, unknown>>(
+    Component: React.ComponentType<P>, 
+    name: string
+  ): React.ComponentType<P> {
+    const MeasuredComponent = (props: P) => {
       const endTimer = this.startTimer(`Component: ${name}`);
 
       React.useEffect(() => {
@@ -32,7 +35,7 @@ export class PerformanceMonitor {
     };
 
     MeasuredComponent.displayName = `Measured(${name})`;
-    return MeasuredComponent as T;
+    return MeasuredComponent;
   }
 
   static getMetrics(): Record<string, number> {
@@ -45,11 +48,14 @@ export class PerformanceMonitor {
 }
 
 // React hook for performance measurement
-export function usePerformanceMetric(name: string, dependencies: any[] = []) {
+export function usePerformanceMetric(name: string, dependencies: React.DependencyList = []) {
+  const dependenciesRef = React.useRef(dependencies);
+  dependenciesRef.current = dependencies;
+
   React.useEffect(() => {
     const endTimer = PerformanceMonitor.startTimer(name);
     return endTimer;
-  }, dependencies);
+  }, [name, dependenciesRef.current]); // eslint-disable-line react-hooks/exhaustive-deps
 }
 
 // Web Vitals measurement
@@ -57,15 +63,15 @@ export function measureWebVitals() {
   if (typeof window !== 'undefined') {
     import('web-vitals')
       .then(({ onCLS, onFCP, onINP, onLCP, onTTFB }) => {
-        onCLS(console.log);
-        onFCP(console.log);
-        onINP(console.log);
-        onLCP(console.log);
-        onTTFB(console.log);
+        onCLS(console.warn);
+        onFCP(console.warn);
+        onINP(console.warn);
+        onLCP(console.warn);
+        onTTFB(console.warn);
       })
       .catch(() => {
         // Gracefully handle if web-vitals fails to load
-        console.log('Web Vitals monitoring not available');
+        console.warn('Web Vitals monitoring not available');
       });
   }
 }
