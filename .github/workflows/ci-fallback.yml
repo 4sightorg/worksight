@@ -1,0 +1,38 @@
+name: Simple CI (Fallback)
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+# This workflow uses npm as a fallback if pnpm issues persist
+jobs:
+  quality-npm:
+    name: Quality Checks (npm)
+    runs-on: ubuntu-latest
+    if: false # Disabled by default, enable if pnpm CI fails
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npm run type-check
+
+      - name: Lint check
+        run: npm run lint
+
+      - name: Build application
+        run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: 1

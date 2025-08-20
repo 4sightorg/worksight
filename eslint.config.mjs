@@ -12,29 +12,17 @@ const compat = new FlatCompat({
 const eslintConfig = [
   ...compat.extends(
     "next/core-web-vitals", 
-    "next/typescript",
-    "@typescript-eslint/recommended",
-    "prettier"
+    "next/typescript"
   ),
   {
-    plugins: ["prettier"],
     rules: {
-      "prettier/prettier": "error",
       "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
       "@typescript-eslint/no-explicit-any": "warn",
-      "@typescript-eslint/explicit-function-return-type": "off",
-      "@typescript-eslint/explicit-module-boundary-types": "off",
       "@typescript-eslint/no-empty-function": "warn",
       "react/react-in-jsx-scope": "off",
-      "react/prop-types": "off",
       "no-console": ["warn", { "allow": ["warn", "error"] }],
       "prefer-const": "error",
       "no-var": "error"
-    },
-    settings: {
-      react: {
-        version: "detect"
-      }
     }
   }
 ];

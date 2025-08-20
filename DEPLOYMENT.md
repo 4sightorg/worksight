@@ -185,6 +185,38 @@ Automatically provisioned by Vercel for all domains.
    pnpm run analyze
    ```
 
+4. **CI/CD Pipeline Issues**
+   - GitHub Actions workflow uses `pnpm/action-setup@v4` for proper pnpm
+     installation
+   - Deployment jobs are commented out until Vercel secrets are configured
+   - To enable automatic deployment, configure these secrets in GitHub:
+     - `VERCEL_TOKEN`
+     - `VERCEL_ORG_ID`
+     - `VERCEL_PROJECT_ID`
+
+### Enabling Automatic Deployment
+
+To enable automatic Vercel deployment in GitHub Actions:
+
+1. **Get Vercel Credentials**:
+
+   ```bash
+   # Install Vercel CLI and login
+   pnpm add -g vercel
+   vercel login
+
+   # Link project and get credentials
+   vercel link
+   ```
+
+2. **Configure GitHub Secrets**:
+   - Go to GitHub Repository → Settings → Secrets and Variables → Actions
+   - Add the required secrets (get these from Vercel dashboard or CLI)
+
+3. **Uncomment Deployment Jobs**:
+   - Edit `.github/workflows/ci.yml`
+   - Uncomment the `deploy-preview` and `deploy-production` jobs
+
 ### Support
 
 - Vercel Documentation: <https://vercel.com/docs>
