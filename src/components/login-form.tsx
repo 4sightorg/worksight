@@ -50,15 +50,28 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
       const { user, error, accessToken } = await signIn({ email, password });
 
       if (user && accessToken) {
+        // Ensure user has required properties for User type
+        const userWithRequiredFields = {
+          id: user.id,
+          email: user.email || '', // Provide fallback for required email
+          name: user.name,
+          role: user.role,
+          accessToken,
+        };
+
         // Update auth state
-        setUser(user);
+        setUser(userWithRequiredFields);
         setAccessToken(accessToken);
 
         // Redirect to dashboard
         router.push('/dashboard');
         setErrorMsg(null);
       } else if (error) {
-        setErrorMsg(error.message || 'Login failed');
+        const errorMessage =
+          error && typeof error === 'object' && 'message' in error
+            ? (error as { message: string }).message
+            : 'Login failed';
+        setErrorMsg(errorMessage);
       }
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Login failed';

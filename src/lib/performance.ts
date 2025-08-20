@@ -20,8 +20,8 @@ export class PerformanceMonitor {
     };
   }
 
-  static measureComponent<P = Record<string, unknown>>(
-    Component: React.ComponentType<P>, 
+  static measureComponent<P extends Record<string, unknown>>(
+    Component: React.ComponentType<P>,
     name: string
   ): React.ComponentType<P> {
     const MeasuredComponent = (props: P) => {
@@ -31,7 +31,7 @@ export class PerformanceMonitor {
         endTimer();
       });
 
-      return React.createElement(Component, props);
+      return React.createElement(Component as React.ComponentType<P>, props);
     };
 
     MeasuredComponent.displayName = `Measured(${name})`;
