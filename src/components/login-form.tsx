@@ -1,13 +1,13 @@
 'use client';
 
+import { signIn, signInWithOAuth, useAuth } from '@/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { providers } from '@/data/authProviders';
-import { signIn, signInWithOAuth } from '@/lib/auth';
 import { cn } from '@/lib/utils';
-import { useAuth } from '@/store/auth-store';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 
@@ -16,8 +16,9 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
   const passwordRef = useRef<HTMLInputElement>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [saveLogin, setSaveLogin] = useState(false);
 
-  const { setUser, setAccessToken } = useAuth();
+  const { setUser, setAccessToken, setSaveLogin: setAuthSaveLogin } = useAuth();
   const router = useRouter();
 
   // Handler for OAuth sign-in
@@ -47,7 +48,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
     const password = passwordRef.current?.value || '';
 
     try {
-      const { user, error, accessToken } = await signIn({ email, password });
+      const { user, error, accessToken } = await signIn({ email, password }, saveLogin);
 
       if (user && accessToken) {
         // Ensure user has required properties for User type
@@ -56,12 +57,13 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
           email: user.email || '', // Provide fallback for required email
           name: user.name,
           role: user.role,
-          accessToken,
+          // Don't include accessToken in user object - it's handled separately
         };
 
-        // Update auth state
+        // Update auth state - these methods now handle localStorage automatically
         setUser(userWithRequiredFields);
         setAccessToken(accessToken);
+        setAuthSaveLogin(saveLogin);
 
         // Redirect to dashboard
         router.push('/dashboard');
@@ -146,6 +148,19 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                     ref={passwordRef}
                   />
                 </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="save-login" 
+                    checked={saveLogin}
+                    onCheckedChange={(checked: boolean) => setSaveLogin(checked)}
+                  />
+                  <Label 
+                    htmlFor="save-login" 
+                    className="text-sm font-normal cursor-pointer"
+                  >
+                    Keep me logged in for 30 days
+                  </Label>
+                </div>
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? 'Logging in...' : 'Login'}
                 </Button>
@@ -164,6 +179,18 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
       <div className="text-muted-foreground text-center text-xs text-balance">
         <p className="mb-2">
           <strong>Offline Mode:</strong> Use test@worksight.app / testuser
+        </p>
+        <p className="mb-2 text-amber-600">
+          <strong>Session timeout:</strong> 5 minutes (30 days if "Keep me logged in" is checked)
+        </p>
+        <p className="mb-4">
+          Don't have an account?{' '}
+          <a 
+            href="/signup" 
+            className="text-blue-600 hover:text-blue-500 dark:text-blue-400 font-medium underline underline-offset-4"
+          >
+            Sign up here
+          </a>
         </p>
         <p>
           By clicking continue, you agree to our{' '}

@@ -1,6 +1,11 @@
 'use client';
 
+import { useAuth } from '@/auth';
 import { AppSidebar } from '@/components/app-sidebar';
+import { ProtectedRoute } from '@/components/protected-route';
+import { SessionTimer } from '@/components/session-timer';
+import { ModeToggle } from '@/components/theme-toggle';
+import { Badge } from '@/components/ui/badge';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -9,11 +14,8 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
-import { Separator } from '@/components/ui/separator';
-import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -22,29 +24,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ModeToggle } from '@/components/theme-toggle';
-import { ProtectedRoute } from '@/components/protected-route';
-import { useAuth } from '@/store/auth-store';
+import { Separator } from '@/components/ui/separator';
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { sections } from '@/data/sections';
-import { LogOut, Plus, Search, CheckSquare, Clock, AlertCircle, GripVertical } from 'lucide-react';
-import { useState, useCallback, useMemo } from 'react';
 import {
-  DndContext,
   closestCenter,
+  DndContext,
+  DragEndEvent,
   KeyboardSensor,
   PointerSensor,
   useSensor,
   useSensors,
-  DragEndEvent,
 } from '@dnd-kit/core';
 import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
+  useSortable,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { AlertCircle, CheckSquare, Clock, GripVertical, LogOut, Plus, Search } from 'lucide-react';
+import { useCallback, useMemo, useState } from 'react';
 
 interface Task {
   id: string;
@@ -442,6 +443,7 @@ export default function TasksPage() {
   return (
     <ProtectedRoute>
       <TasksContent />
+      <SessionTimer />
     </ProtectedRoute>
   );
 }

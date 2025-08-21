@@ -1,25 +1,25 @@
 'use client';
-import * as React from 'react';
-import { SectionGroup } from '@/data/sections';
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarRail,
-  SidebarFooter,
-} from '@/components/ui/sidebar';
-import { Card, CardContent } from '@/components/ui/card';
+import { useAuth } from '@/auth';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { SiteHeader } from './navbar';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+    Sidebar,
+    SidebarContent,
+    SidebarFooter,
+    SidebarGroup,
+    SidebarGroupContent,
+    SidebarGroupLabel,
+    SidebarHeader,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
+    SidebarRail,
+} from '@/components/ui/sidebar';
+import { SectionGroup } from '@/data/sections';
 import { useSidebarStore } from '@/store/sidebar-store';
-import { useAuth } from '@/store/auth-store';
 import { TrendingUp } from 'lucide-react';
+import * as React from 'react';
+import { SiteHeader } from './navbar';
 
 type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
   sections: SectionGroup[];

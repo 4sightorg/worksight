@@ -1,6 +1,10 @@
 'use client';
 
+import { useAuth } from '@/auth';
 import { AppSidebar } from '@/components/app-sidebar';
+import { ProtectedRoute } from '@/components/protected-route';
+import { SessionTimer } from '@/components/session-timer';
+import { ModeToggle } from '@/components/theme-toggle';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -9,15 +13,12 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
-import { Separator } from '@/components/ui/separator';
-import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ModeToggle } from '@/components/theme-toggle';
-import { ProtectedRoute } from '@/components/protected-route';
-import { useAuth } from '@/store/auth-store';
+import { Separator } from '@/components/ui/separator';
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { sections } from '@/data/sections';
-import { LogOut, User, Clock, CheckSquare } from 'lucide-react';
+import { CheckSquare, Clock, LogOut, User } from 'lucide-react';
 
 function DashboardContent() {
   const { user, logout } = useAuth();
@@ -45,7 +46,7 @@ function DashboardContent() {
             </BreadcrumbList>
           </Breadcrumb>
           <div className="ml-auto flex items-center gap-2">
-            <span className="text-muted-foreground hidden text-sm md:inline">{user?.email}</span>
+            {/* <span className="text-muted-foreground hidden text-sm md:inline">{user?.email}</span> */}
             <ModeToggle />
             <Button variant="outline" size="sm" onClick={handleLogout}>
               <LogOut className="mr-2 h-4 w-4" />
@@ -138,6 +139,7 @@ export default function DashboardPage() {
   return (
     <ProtectedRoute>
       <DashboardContent />
+      <SessionTimer />
     </ProtectedRoute>
   );
 }

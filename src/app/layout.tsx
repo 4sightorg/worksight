@@ -1,8 +1,8 @@
-import '@/styles/globals.css';
+import { AuthProvider } from '@/auth';
 import { ThemeProvider } from '@/components/theme-provider';
-import { AuthProvider } from '@/store/auth-store';
-import { ReactNode } from 'react';
+import '@/styles/globals.css';
 import { MetadataRecord } from '@/types/metadata';
+import { ReactNode } from 'react';
 
 type RootLayoutProps = {
   children: ReactNode;
@@ -11,7 +11,7 @@ type RootLayoutProps = {
 export const metadata = new MetadataRecord(
   'Worksight',
   'A way to view work and burnout'
-).toNextMetadata(); // ✅ convert to plain object
+).toNextMetadata();
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (

@@ -17,7 +17,7 @@ const supabase = !isOffline()
     )
   : null;
 
-// Mock user for offline mode
+// User data for offline mode
 const OFFLINE_USER = {
   id: 'offline-user-123',
   email: 'test@worksight.app',

@@ -1,6 +1,7 @@
 import { LoginForm } from '@/components/login-form';
 import { GalleryVerticalEnd } from 'lucide-react';
 import Link from 'next/link';
+import { ModeToggle } from '../../components/theme-toggle';
 
 // Force dynamic rendering to avoid build-time Supabase client creation
 export const dynamic = 'force-dynamic';
@@ -16,6 +17,9 @@ export default function LoginPage() {
           WorkSight
         </Link>
         <LoginForm />
+      </div>
+      <div className="fixed right-4 bottom-4 z-50">
+        <ModeToggle />
       </div>
     </div>
   );
