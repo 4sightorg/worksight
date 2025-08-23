@@ -16,6 +16,10 @@ export default function AuthCallbackPage() {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
+        if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+          throw new Error('NEXT_PUBLIC_SUPABASE_URL environment variable is not set');
+        }
+
         // Get the current session from Supabase
         const { createClient } = await import('@supabase/supabase-js');
         const supabase = createClient(
