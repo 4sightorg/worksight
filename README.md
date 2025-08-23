@@ -11,7 +11,8 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with
 
 1. Update the `.env` file with your Supabase credentials. At minimum, you need:
    - `NEXT_PUBLIC_SUPABASE_URL`: Your Supabase project URL
-   - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`: Your Supabase anonymous/public API key
+   - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`: Your Supabase anonymous/public API
+     key
 
 1. Run the development server:
 
