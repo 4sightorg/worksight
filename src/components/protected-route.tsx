@@ -27,11 +27,7 @@ export function ProtectedRoute({ children, fallback }: ProtectedRouteProps) {
 
   // Show fallback while redirecting to login
   if (!user) {
-    return (
-      fallback || (
-        <LoadingState fullScreen text="Redirecting to login..." />
-      )
-    );
+    return fallback || <LoadingState fullScreen text="Redirecting to login..." />;
   }
 
   return <>{children}</>;

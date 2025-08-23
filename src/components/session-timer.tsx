@@ -91,10 +91,11 @@ export function SessionTimer({ variant = 'header' }: SessionTimerProps) {
     return (
       <div className="flex items-center gap-2">
         <div
-          className={`flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium ${isExpiringSoon
+          className={`flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium ${
+            isExpiringSoon
               ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/20 dark:text-amber-400'
               : 'bg-muted text-muted-foreground'
-            }`}
+          }`}
         >
           <Clock className="h-3 w-3" />
           <span>{timeLeft}</span>
@@ -105,7 +106,7 @@ export function SessionTimer({ variant = 'header' }: SessionTimerProps) {
             size="sm"
             variant="outline"
             onClick={handleExtendSession}
-            className="h-7 px-2 text-xs border-amber-300 text-amber-700 hover:bg-amber-50"
+            className="h-7 border-amber-300 px-2 text-xs text-amber-700 hover:bg-amber-50"
           >
             Extend
           </Button>
@@ -135,12 +136,19 @@ export function SessionTimer({ variant = 'header' }: SessionTimerProps) {
       )}
 
       <div
-        className={`rounded-lg border bg-background p-2 shadow-lg ${isExpiringSoon ? 'border-amber-300 bg-amber-50 dark:bg-amber-950/20' : 'border-border'
-          }`}
+        className={`bg-background rounded-lg border p-2 shadow-lg ${
+          isExpiringSoon ? 'border-amber-300 bg-amber-50 dark:bg-amber-950/20' : 'border-border'
+        }`}
       >
         <div className="flex items-center gap-2 text-xs">
-          <Clock className={`h-3 w-3 ${isExpiringSoon ? 'text-amber-600' : 'text-muted-foreground'}`} />
-          <span className={isExpiringSoon ? 'font-medium text-amber-800 dark:text-amber-200' : 'text-foreground'}>
+          <Clock
+            className={`h-3 w-3 ${isExpiringSoon ? 'text-amber-600' : 'text-muted-foreground'}`}
+          />
+          <span
+            className={
+              isExpiringSoon ? 'font-medium text-amber-800 dark:text-amber-200' : 'text-foreground'
+            }
+          >
             {timeLeft}
           </span>
         </div>

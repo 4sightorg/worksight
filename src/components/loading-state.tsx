@@ -27,18 +27,14 @@ export function LoadingState({
 
   const content = (
     <div className={cn('flex flex-col items-center justify-center gap-3', className)}>
-      <Loader2 className={cn('animate-spin text-primary', sizeClasses[size])} />
-      {text && <p className="text-sm text-muted-foreground">{text}</p>}
+      <Loader2 className={cn('text-primary animate-spin', sizeClasses[size])} />
+      {text && <p className="text-muted-foreground text-sm">{text}</p>}
       {children}
     </div>
   );
 
   if (fullScreen) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        {content}
-      </div>
-    );
+    return <div className="flex min-h-screen items-center justify-center">{content}</div>;
   }
 
   return content;

@@ -85,8 +85,8 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
 
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>
-      <Card className="w-full max-w-md mx-auto">
-        <CardHeader className="text-center space-y-2">
+      <Card className="mx-auto w-full max-w-md">
+        <CardHeader className="space-y-2 text-center">
           <CardTitle className="text-2xl font-semibold">Welcome back</CardTitle>
           <CardDescription>Sign in to your WorkSight account</CardDescription>
         </CardHeader>
@@ -117,7 +117,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                   <span className="w-full border-t" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+                  <span className="bg-background text-muted-foreground px-2">Or continue with</span>
                 </div>
               </div>
             </div>
@@ -140,7 +140,10 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password">Password</Label>
-                  <a href="#" className="text-xs text-muted-foreground hover:text-primary underline-offset-4 hover:underline">
+                  <a
+                    href="#"
+                    className="text-muted-foreground hover:text-primary text-xs underline-offset-4 hover:underline"
+                  >
                     Forgot password?
                   </a>
                 </div>
@@ -162,7 +165,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                   onCheckedChange={(checked: boolean) => setSaveLogin(checked)}
                   disabled={loading}
                 />
-                <Label htmlFor="save-login" className="text-sm font-normal cursor-pointer">
+                <Label htmlFor="save-login" className="cursor-pointer text-sm font-normal">
                   Keep me logged in for 30 days
                 </Label>
               </div>
@@ -175,15 +178,18 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
 
             {/* Error Message */}
             {errorMsg && (
-              <div className="text-center text-sm text-destructive bg-destructive/10 p-3 rounded-md">
+              <div className="text-destructive bg-destructive/10 rounded-md p-3 text-center text-sm">
                 {errorMsg}
               </div>
             )}
 
             {/* Sign Up Link */}
             <div className="text-center text-sm">
-              <span className="text-muted-foreground">Don't have an account? </span>
-              <a href="/signup" className="text-primary hover:underline underline-offset-4 font-medium">
+              <span className="text-muted-foreground">Don&apos;t have an account? </span>
+              <a
+                href="/signup"
+                className="text-primary font-medium underline-offset-4 hover:underline"
+              >
                 Sign up
               </a>
             </div>
@@ -192,12 +198,15 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
       </Card>
 
       {/* Offline Mode Info */}
-      <div className="text-center text-xs text-muted-foreground space-y-2 max-w-md mx-auto">
-        <p className="bg-muted/50 p-3 rounded-md">
-          <strong>Offline Mode:</strong> Use <code className="bg-background px-1 py-0.5 rounded">test@worksight.app</code> / <code className="bg-background px-1 py-0.5 rounded">testuser</code>
+      <div className="text-muted-foreground mx-auto max-w-md space-y-2 text-center text-xs">
+        <p className="bg-muted/50 rounded-md p-3">
+          <strong>Offline Mode:</strong> Use{' '}
+          <code className="bg-background rounded px-1 py-0.5">test@worksight.app</code> /{' '}
+          <code className="bg-background rounded px-1 py-0.5">testuser</code>
         </p>
-        <p className="text-amber-600 bg-amber-50 dark:bg-amber-950/20 p-3 rounded-md">
-          <strong>Session timeout:</strong> 5 minutes (30 days if "Keep me logged in" is checked)
+        <p className="rounded-md bg-amber-50 p-3 text-amber-600 dark:bg-amber-950/20">
+          <strong>Session timeout:</strong> 5 minutes (30 days if &quot;Keep me logged in&quot; is
+          checked)
         </p>
       </div>
     </div>

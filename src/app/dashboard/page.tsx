@@ -32,7 +32,7 @@ function DashboardContent() {
     <SidebarProvider>
       <AppSidebar sections={sections.sections} defaultSection={sections.defaultSection} />
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 flex h-16 shrink-0 items-center gap-2 border-b px-4 backdrop-blur">
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mr-2 data-[orientation=vertical]:h-4" />
           <Breadcrumb>
@@ -47,10 +47,10 @@ function DashboardContent() {
             </BreadcrumbList>
           </Breadcrumb>
           <div className="ml-auto flex items-center gap-2">
-            <ClientOnly fallback={<div className="w-20 h-7 bg-muted rounded animate-pulse" />}>
+            <ClientOnly fallback={<div className="bg-muted h-7 w-20 animate-pulse rounded" />}>
               <SessionTimer />
             </ClientOnly>
-            <ClientOnly fallback={<div className="w-8 h-8 bg-muted rounded animate-pulse" />}>
+            <ClientOnly fallback={<div className="bg-muted h-8 w-8 animate-pulse rounded" />}>
               <ModeToggle />
             </ClientOnly>
             <Button variant="outline" size="sm" onClick={handleLogout}>
@@ -63,61 +63,63 @@ function DashboardContent() {
         <main className="flex flex-1 flex-col gap-6 p-6">
           {/* Welcome Section */}
           <div className="space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight">Welcome back, {user?.name || user?.email}!</h1>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Welcome back, {user?.name || user?.email}!
+            </h1>
             <p className="text-muted-foreground text-lg">
-              Here's what's happening with your work today.
+              Here&apos;s what&apos;s happening with your work today.
             </p>
           </div>
 
           {/* Stats Cards */}
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            <Card className="hover:shadow-md transition-shadow">
+            <Card className="transition-shadow hover:shadow-md">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Active Tasks</CardTitle>
-                <CheckSquare className="h-4 w-4 text-muted-foreground" />
+                <CheckSquare className="text-muted-foreground h-4 w-4" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">12</div>
-                <p className="text-xs text-muted-foreground flex items-center gap-1">
+                <p className="text-muted-foreground flex items-center gap-1 text-xs">
                   <TrendingUp className="h-3 w-3 text-green-600" />
                   +2 from yesterday
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-md transition-shadow">
+            <Card className="transition-shadow hover:shadow-md">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Hours Worked</CardTitle>
-                <Clock className="h-4 w-4 text-muted-foreground" />
+                <Clock className="text-muted-foreground h-4 w-4" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">6.5</div>
-                <p className="text-xs text-muted-foreground flex items-center gap-1">
+                <p className="text-muted-foreground flex items-center gap-1 text-xs">
                   <TrendingUp className="h-3 w-3 text-green-600" />
                   +0.5 from yesterday
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-md transition-shadow">
+            <Card className="transition-shadow hover:shadow-md">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Burnout Level</CardTitle>
-                <User className="h-4 w-4 text-muted-foreground" />
+                <User className="text-muted-foreground h-4 w-4" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-green-600">Low</div>
-                <p className="text-xs text-muted-foreground">Good work-life balance</p>
+                <p className="text-muted-foreground text-xs">Good work-life balance</p>
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-md transition-shadow">
+            <Card className="transition-shadow hover:shadow-md">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Productivity</CardTitle>
-                <Activity className="h-4 w-4 text-muted-foreground" />
+                <Activity className="text-muted-foreground h-4 w-4" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-blue-600">85%</div>
-                <p className="text-xs text-muted-foreground flex items-center gap-1">
+                <p className="text-muted-foreground flex items-center gap-1 text-xs">
                   <TrendingUp className="h-3 w-3 text-green-600" />
                   +5% this week
                 </p>
@@ -136,16 +138,31 @@ function DashboardContent() {
               <CardContent>
                 <div className="space-y-4">
                   {[
-                    { time: '2 hours ago', activity: 'Completed task: Update user documentation', type: 'task' },
-                    { time: '4 hours ago', activity: 'Started working on new feature', type: 'feature' },
-                    { time: '6 hours ago', activity: 'Team meeting - Sprint planning', type: 'meeting' },
+                    {
+                      time: '2 hours ago',
+                      activity: 'Completed task: Update user documentation',
+                      type: 'task',
+                    },
+                    {
+                      time: '4 hours ago',
+                      activity: 'Started working on new feature',
+                      type: 'feature',
+                    },
+                    {
+                      time: '6 hours ago',
+                      activity: 'Team meeting - Sprint planning',
+                      type: 'meeting',
+                    },
                     { time: '1 day ago', activity: 'Code review completed', type: 'review' },
                   ].map((item, index) => (
-                    <div key={index} className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
-                      <div className="w-2 h-2 bg-primary rounded-full"></div>
+                    <div
+                      key={index}
+                      className="hover:bg-muted/50 flex items-center gap-3 rounded-lg p-3 transition-colors"
+                    >
+                      <div className="bg-primary h-2 w-2 rounded-full"></div>
                       <div className="flex-1">
                         <p className="text-sm font-medium">{item.activity}</p>
-                        <p className="text-xs text-muted-foreground">{item.time}</p>
+                        <p className="text-muted-foreground text-xs">{item.time}</p>
                       </div>
                     </div>
                   ))}

@@ -29,13 +29,8 @@ export function ModeToggle() {
   // Prevent hydration mismatch by not rendering until mounted
   if (!mounted) {
     return (
-      <Button
-        variant="ghost"
-        size="icon"
-        className="size-8"
-        disabled
-      >
-        <div className="size-4.5 animate-pulse bg-muted-foreground/20 rounded" />
+      <Button variant="ghost" size="icon" className="size-8" disabled>
+        <div className="bg-muted-foreground/20 size-4.5 animate-pulse rounded" />
         <span className="sr-only">Loading theme</span>
       </Button>
     );
@@ -45,7 +40,7 @@ export function ModeToggle() {
     <Button
       variant="ghost"
       size="icon"
-      className="size-8 hover:bg-muted/50 transition-colors"
+      className="hover:bg-muted/50 size-8 transition-colors"
       onClick={toggleTheme}
       title={`Switch to ${resolvedTheme === 'dark' ? 'light' : 'dark'} theme`}
     >

@@ -19,6 +19,7 @@ export interface CustomSiteMetadataShape {
 export class MetadataRecord implements CustomSiteMetadataShape {
   title: string;
   description: string;
+  metadataBase: URL;
   icons: {
     icon: string;
   };
@@ -32,10 +33,12 @@ export class MetadataRecord implements CustomSiteMetadataShape {
     title: string,
     description: string,
     icon: string = '/assets/favicon.ico',
-    image: string = '/assets/icon.svg'
+    image: string = '/assets/icon.svg',
+    baseUrl: string = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
   ) {
     this.title = title;
     this.description = description;
+    this.metadataBase = new URL(baseUrl);
     this.icons = { icon: icon };
     this.openGraph = {
       title: title,
@@ -49,6 +52,7 @@ export class MetadataRecord implements CustomSiteMetadataShape {
     return {
       title: this.title,
       description: this.description,
+      metadataBase: this.metadataBase,
       icons: this.icons,
       openGraph: {
         title: this.openGraph.title,
