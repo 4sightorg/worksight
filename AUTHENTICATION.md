@@ -25,7 +25,8 @@ application.
 ### 2. Authentication Context (`src/auth/provider.tsx`)
 
 - **React Context**: Global authentication state management
-- **User State**: Stores user data, access token, loading state, save login preference
+- **User State**: Stores user data, access token, loading state, save login
+  preference
 - **Session Timeout**: Automatic session management with 5min/30day options
 - **Auto-refresh**: Automatically refreshes user session on mount
 - **Storage Sync**: Enhanced localStorage management with error handling
@@ -50,8 +51,10 @@ application.
 ### 5. Signup Form (`src/components/signup-form.tsx`)
 
 - **User Registration**: Username, email, password, and full name fields
-- **Enhanced Username Validation**: 3-20 characters, must contain letters, no consecutive underscores
-- **Form Validation**: Client-side validation for all fields with detailed error messages
+- **Enhanced Username Validation**: 3-20 characters, must contain letters, no
+  consecutive underscores
+- **Form Validation**: Client-side validation for all fields with detailed error
+  messages
 - **Password Confirmation**: Ensures passwords match
 - **OAuth Integration**: Google, GitHub, Discord, Facebook signup options
 - **Save Login Option**: 5-minute vs 30-day session preference
@@ -137,7 +140,8 @@ Visit `/signup` or click "Sign up here" from login page:
 
 **Traditional Signup:**
 
-- **Username**: 3-20 characters, letters/numbers/underscores, must contain letters
+- **Username**: 3-20 characters, letters/numbers/underscores, must contain
+  letters
 - **Email**: Valid email address
 - **Password**: 6+ characters minimum
 - **Full Name**: Display name for the user

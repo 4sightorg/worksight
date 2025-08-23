@@ -19,7 +19,7 @@ const storeSession = (user: User, accessToken: string, saveLogin: boolean): void
     timestamp: Date.now(),
     saveLogin,
   };
-  
+
   storage.set(AUTH_CONFIG.STORAGE_KEYS.USER, JSON.stringify(user));
   storage.set(AUTH_CONFIG.STORAGE_KEYS.ACCESS_TOKEN, accessToken);
   storage.set(AUTH_CONFIG.STORAGE_KEYS.SAVE_LOGIN, saveLogin.toString());
@@ -83,20 +83,23 @@ export async function signIn(
       lastLogin: new Date().toISOString(),
     };
     const accessToken = generateMockToken();
-    
+
     storeSession(user, accessToken, saveLogin);
     return { user, error: null, accessToken };
   }
 
   // Legacy test credentials
-  if ((email === 'test' && password === 'testuser') || (email === 'testuser' && password === 'test')) {
+  if (
+    (email === 'test' && password === 'testuser') ||
+    (email === 'testuser' && password === 'test')
+  ) {
     const user = {
       ...AUTH_CONFIG.OFFLINE_USER,
       email: 'testuser@worksight.app',
       lastLogin: new Date().toISOString(),
     };
     const accessToken = generateMockToken();
-    
+
     storeSession(user, accessToken, saveLogin);
     return { user, error: null, accessToken };
   }
@@ -123,10 +126,10 @@ export async function signIn(
           username: data.user.user_metadata?.username || '',
           role: data.user.user_metadata?.role || 'user',
         };
-        
+
         const accessToken = data.session.access_token;
         storeSession(user, accessToken, saveLogin);
-        
+
         return { user, error: null, accessToken };
       }
       return { user: null, error: error || { message: 'Login failed' }, accessToken: null };
@@ -145,7 +148,12 @@ export async function signIn(
 
 // Sign up function
 export async function signUp(
-  { email, username, password, name }: { email: string; username: string; password: string; name: string },
+  {
+    email,
+    username,
+    password,
+    name,
+  }: { email: string; username: string; password: string; name: string },
   saveLogin: boolean = false
 ): Promise<AuthResponse> {
   // Offline mode signup
@@ -178,8 +186,8 @@ export async function signUp(
             name,
             username,
             role: 'user',
-          }
-        }
+          },
+        },
       });
 
       if (error) {
@@ -203,7 +211,10 @@ export async function signUp(
 
       return {
         user: null,
-        error: { message: 'Signup completed but no session created. Please check your email for verification.' },
+        error: {
+          message:
+            'Signup completed but no session created. Please check your email for verification.',
+        },
         accessToken: null,
       };
     } catch (err) {
@@ -230,15 +241,15 @@ export async function signInWithOAuth(provider: 'google' | 'github' | 'discord' 
   if (supabase) {
     try {
       // Set up OAuth with custom redirect URL that includes account validation
-      const { data, error } = await supabase.auth.signInWithOAuth({ 
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
-        }
+        },
       });
 
       return { data, error };
-    } catch (err) {
+    } catch {
       return {
         error: { message: `OAuth signin with ${provider} failed` },
       };
@@ -251,7 +262,7 @@ export async function signInWithOAuth(provider: 'google' | 'github' | 'discord' 
 }
 
 // Validate OAuth user has an account (for use in auth callback)
-export async function validateOAuthUser(user: any): Promise<AuthResponse> {
+export async function validateOAuthUser(user: User): Promise<AuthResponse> {
   if (isOffline()) {
     return {
       user: null,
@@ -297,7 +308,7 @@ export async function getCurrentUser(): Promise<User | null> {
       const {
         data: { session },
       } = await supabase.auth.getSession();
-      
+
       if (session?.user) {
         const user = {
           id: session.user.id,
@@ -332,20 +343,22 @@ export async function signOut(): Promise<void> {
 export const isSessionExpiringSoon = (): boolean => {
   const storedSession = getStoredSession();
   if (!storedSession) return false;
-  
+
   const now = Date.now();
-  const timeout = storedSession.saveLogin ? AUTH_CONFIG.EXTENDED_SESSION_TIMEOUT : AUTH_CONFIG.SESSION_TIMEOUT;
+  const timeout = storedSession.saveLogin
+    ? AUTH_CONFIG.EXTENDED_SESSION_TIMEOUT
+    : AUTH_CONFIG.SESSION_TIMEOUT;
   const expirationTime = storedSession.timestamp + timeout;
   const oneMinute = 60 * 1000;
-  
-  return (expirationTime - now) <= oneMinute;
+
+  return expirationTime - now <= oneMinute;
 };
 
 // Extend session (refresh timestamp)
 export const extendSession = (): boolean => {
   const storedSession = getStoredSession();
   if (!storedSession) return false;
-  
+
   storeSession(storedSession.user, storedSession.accessToken, storedSession.saveLogin);
   return true;
 };

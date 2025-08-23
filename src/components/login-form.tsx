@@ -149,15 +149,12 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                   />
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id="save-login" 
+                  <Checkbox
+                    id="save-login"
                     checked={saveLogin}
                     onCheckedChange={(checked: boolean) => setSaveLogin(checked)}
                   />
-                  <Label 
-                    htmlFor="save-login" 
-                    className="text-sm font-normal cursor-pointer"
-                  >
+                  <Label htmlFor="save-login" className="cursor-pointer text-sm font-normal">
                     Keep me logged in for 30 days
                   </Label>
                 </div>
@@ -181,13 +178,14 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
           <strong>Offline Mode:</strong> Use test@worksight.app / testuser
         </p>
         <p className="mb-2 text-amber-600">
-          <strong>Session timeout:</strong> 5 minutes (30 days if "Keep me logged in" is checked)
+          <strong>Session timeout:</strong> 5 minutes (30 days if &quot;Keep me logged in&quot; is
+          checked)
         </p>
         <p className="mb-4">
-          Don't have an account?{' '}
-          <a 
-            href="/signup" 
-            className="text-blue-600 hover:text-blue-500 dark:text-blue-400 font-medium underline underline-offset-4"
+          Don&apos;t have an account?{' '}
+          <a
+            href="/signup"
+            className="font-medium text-blue-600 underline underline-offset-4 hover:text-blue-500 dark:text-blue-400"
           >
             Sign up here
           </a>

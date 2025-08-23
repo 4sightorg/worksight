@@ -17,7 +17,7 @@ export const generateMockToken = () => {
 export const isSessionExpired = (timestamp: number, saveLogin: boolean): boolean => {
   const now = Date.now();
   const timeout = saveLogin ? AUTH_CONFIG.EXTENDED_SESSION_TIMEOUT : AUTH_CONFIG.SESSION_TIMEOUT;
-  return (now - timestamp) > timeout;
+  return now - timestamp > timeout;
 };
 
 // Safe localStorage operations
@@ -30,7 +30,7 @@ export const storage = {
       return null;
     }
   },
-  
+
   set: (key: string, value: string): void => {
     if (typeof window === 'undefined') return;
     try {
@@ -39,7 +39,7 @@ export const storage = {
       console.warn('Failed to save to localStorage:', error);
     }
   },
-  
+
   remove: (key: string): void => {
     if (typeof window === 'undefined') return;
     try {
@@ -48,15 +48,15 @@ export const storage = {
       console.warn('Failed to remove from localStorage:', error);
     }
   },
-  
+
   clear: (): void => {
     if (typeof window === 'undefined') return;
     try {
-      Object.values(AUTH_CONFIG.STORAGE_KEYS).forEach(key => {
+      Object.values(AUTH_CONFIG.STORAGE_KEYS).forEach((key) => {
         localStorage.removeItem(key);
       });
     } catch (error) {
       console.warn('Failed to clear localStorage:', error);
     }
-  }
+  },
 };

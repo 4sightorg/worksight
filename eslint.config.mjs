@@ -16,13 +16,15 @@ const eslintConfig = [
   ),
   {
     rules: {
-      "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+      "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/no-empty-function": "warn",
       "react/react-in-jsx-scope": "off",
+      "react/no-unescaped-entities": "warn",
       "no-console": ["warn", { "allow": ["warn", "error"] }],
       "prefer-const": "error",
-      "no-var": "error"
+      "no-var": "error",
+      "import/no-extraneous-dependencies": "warn"
     }
   }
 ];

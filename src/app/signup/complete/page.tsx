@@ -2,7 +2,14 @@
 
 import { useAuth } from '@/auth/provider';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -104,7 +111,7 @@ export default function CompleteSignupForm() {
         data: {
           username,
           signup_completed: true,
-        }
+        },
       });
 
       if (updateError) {
@@ -122,14 +129,16 @@ export default function CompleteSignupForm() {
       };
 
       // Get current session to get access token
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (session?.access_token) {
         setUser(user);
         setAccessToken(session.access_token);
-        
+
         // Clear OAuth data from session storage
         sessionStorage.removeItem('oauth_user_data');
-        
+
         router.push('/dashboard');
       } else {
         setError('Session not found. Please try signing in again.');
@@ -143,20 +152,18 @@ export default function CompleteSignupForm() {
 
   if (!oauthData) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="text-center">
           <Loader2 className="mx-auto h-8 w-8 animate-spin text-blue-600" />
-          <p className="mt-4 text-lg font-medium text-gray-900 dark:text-white">
-            Loading...
-          </p>
+          <p className="mt-4 text-lg font-medium text-gray-900 dark:text-white">Loading...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8 dark:bg-gray-900">
+      <div className="w-full max-w-md space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
             Complete Your Signup
@@ -169,14 +176,12 @@ export default function CompleteSignupForm() {
         <Card>
           <CardHeader>
             <CardTitle>Choose Username</CardTitle>
-            <CardDescription>
-              Pick a unique username for your WorkSight account
-            </CardDescription>
+            <CardDescription>Pick a unique username for your WorkSight account</CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
               {error && (
-                <div className="rounded-md bg-red-50 dark:bg-red-900/50 p-4">
+                <div className="rounded-md bg-red-50 p-4 dark:bg-red-900/50">
                   <div className="text-sm text-red-700 dark:text-red-200">{error}</div>
                 </div>
               )}
@@ -213,7 +218,8 @@ export default function CompleteSignupForm() {
                   disabled={isLoading}
                 />
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  3-20 characters, letters/numbers/underscores only. Must contain at least one letter.
+                  3-20 characters, letters/numbers/underscores only. Must contain at least one
+                  letter.
                 </p>
               </div>
 
@@ -224,20 +230,13 @@ export default function CompleteSignupForm() {
                   onCheckedChange={(checked) => setSaveLogin(checked === true)}
                   disabled={isLoading}
                 />
-                <Label 
-                  htmlFor="saveLogin" 
-                  className="text-sm font-normal cursor-pointer"
-                >
+                <Label htmlFor="saveLogin" className="cursor-pointer text-sm font-normal">
                   Keep me signed in for 30 days (otherwise 5 minutes)
                 </Label>
               </div>
             </CardContent>
             <CardFooter>
-              <Button 
-                type="submit" 
-                className="w-full" 
-                disabled={isLoading}
-              >
+              <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

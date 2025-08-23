@@ -1,7 +1,14 @@
 'use client';
 
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import { signIn as authSignIn, signOut as authSignOut, signUp as authSignUp, extendSession, getStoredSession, isSessionExpiringSoon } from './client';
+import {
+  signIn as authSignIn,
+  signOut as authSignOut,
+  signUp as authSignUp,
+  extendSession,
+  getStoredSession,
+  isSessionExpiringSoon,
+} from './client';
 import { AUTH_CONFIG } from './config';
 import { AuthState, User } from './types';
 import { storage } from './utils';
@@ -11,7 +18,10 @@ interface AuthContextType extends AuthState {
   setAccessToken: (token: string | null) => void;
   setSaveLogin: (saveLogin: boolean) => void;
   signIn: (credentials: { email: string; password: string }, saveLogin?: boolean) => Promise<void>;
-  signUp: (userData: { email: string; username: string; password: string; name: string }, saveLogin?: boolean) => Promise<void>;
+  signUp: (
+    userData: { email: string; username: string; password: string; name: string },
+    saveLogin?: boolean
+  ) => Promise<void>;
   logout: () => Promise<void>;
   extendCurrentSession: () => boolean;
 }
@@ -92,7 +102,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     storage.set(AUTH_CONFIG.STORAGE_KEYS.SAVE_LOGIN, saveLogin.toString());
   };
 
-  const handleSignIn = async (credentials: { email: string; password: string }, saveLogin: boolean = false) => {
+  const handleSignIn = async (
+    credentials: { email: string; password: string },
+    saveLogin: boolean = false
+  ) => {
     const result = await authSignIn(credentials, saveLogin);
     if (result.user) {
       setUser(result.user);
@@ -103,7 +116,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const handleSignUp = async (userData: { email: string; username: string; password: string; name: string }, saveLogin: boolean = false) => {
+  const handleSignUp = async (
+    userData: { email: string; username: string; password: string; name: string },
+    saveLogin: boolean = false
+  ) => {
     const result = await authSignUp(userData, saveLogin);
     if (result.user) {
       setUser(result.user);
@@ -141,19 +157,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      accessToken, 
-      saveLogin,
-      isLoading,
-      setUser: handleSetUser, 
-      setAccessToken: handleSetAccessToken,
-      setSaveLogin: handleSetSaveLogin,
-      signIn: handleSignIn,
-      signUp: handleSignUp,
-      logout,
-      extendCurrentSession
-    }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        accessToken,
+        saveLogin,
+        isLoading,
+        setUser: handleSetUser,
+        setAccessToken: handleSetAccessToken,
+        setSaveLogin: handleSetSaveLogin,
+        signIn: handleSignIn,
+        signUp: handleSignUp,
+        logout,
+        extendCurrentSession,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

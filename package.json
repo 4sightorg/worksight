@@ -21,8 +21,7 @@
     "type-check": "tsc --noEmit",
     "quality": "pnpm run type-check && pnpm run format:check",
     "pre-commit": "pnpm run quality && pnpm run build",
-    "deploy": "vercel --prod",
-    "deploy:preview": "vercel"
+    "clean": "rm -rf .next dist"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -36,9 +35,10 @@
     "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-tabs": "^1.1.13",
     "@radix-ui/react-tooltip": "^1.2.8",
-    "@supabase/ssr": "^0.6.1",
-    "@supabase/supabase-js": "^2.55.0",
+    "@supabase/ssr": "^0.7.0",
+    "@supabase/supabase-js": "^2.56.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.539.0",

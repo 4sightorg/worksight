@@ -24,8 +24,8 @@ export function SessionTimer() {
       }
 
       const now = Date.now();
-      const timeout = session.saveLogin 
-        ? AUTH_CONFIG.EXTENDED_SESSION_TIMEOUT 
+      const timeout = session.saveLogin
+        ? AUTH_CONFIG.EXTENDED_SESSION_TIMEOUT
         : AUTH_CONFIG.SESSION_TIMEOUT;
       const expirationTime = session.timestamp + timeout;
       const remaining = expirationTime - now;
@@ -38,7 +38,7 @@ export function SessionTimer() {
       // Format time remaining
       const minutes = Math.floor(remaining / (60 * 1000));
       const seconds = Math.floor((remaining % (60 * 1000)) / 1000);
-      
+
       if (session.saveLogin) {
         // For 30-day sessions, show days and hours
         const days = Math.floor(remaining / (24 * 60 * 60 * 1000));
@@ -51,7 +51,7 @@ export function SessionTimer() {
       // Check if expiring soon
       const expiringSoon = isSessionExpiringSoon();
       setIsExpiringSoon(expiringSoon);
-      
+
       // Show warning for last minute of short sessions
       if (!session.saveLogin && remaining <= 60 * 1000 && remaining > 0) {
         setShowWarning(true);
@@ -78,7 +78,7 @@ export function SessionTimer() {
   if (!user) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
+    <div className="fixed right-4 bottom-4 z-50">
       {showWarning && (
         <div className="mb-2 rounded-lg border border-amber-200 bg-amber-50 p-3 shadow-lg">
           <div className="flex items-center gap-2 text-amber-800">
@@ -86,30 +86,22 @@ export function SessionTimer() {
             <span className="text-sm font-medium">Session expiring soon!</span>
           </div>
           <div className="mt-2 flex gap-2">
-            <Button 
-              size="sm" 
-              variant="outline" 
-              onClick={handleExtendSession}
-              className="text-xs"
-            >
+            <Button size="sm" variant="outline" onClick={handleExtendSession} className="text-xs">
               Extend Session
             </Button>
-            <Button 
-              size="sm" 
-              variant="ghost" 
-              onClick={logout}
-              className="text-xs"
-            >
+            <Button size="sm" variant="ghost" onClick={logout} className="text-xs">
               Logout
             </Button>
           </div>
         </div>
       )}
-      
-      <div className={`rounded-lg border bg-white p-2 shadow-lg ${isExpiringSoon ? 'border-amber-300 bg-amber-50' : 'border-gray-200'}`}>
+
+      <div
+        className={`rounded-lg border bg-white p-2 shadow-lg ${isExpiringSoon ? 'border-amber-300 bg-amber-50' : 'border-gray-200'}`}
+      >
         <div className="flex items-center gap-2 text-xs">
           <Clock className={`h-3 w-3 ${isExpiringSoon ? 'text-amber-600' : 'text-gray-500'}`} />
-          <span className={isExpiringSoon ? 'text-amber-800 font-medium' : 'text-gray-600'}>
+          <span className={isExpiringSoon ? 'font-medium text-amber-800' : 'text-gray-600'}>
             {timeLeft}
           </span>
         </div>

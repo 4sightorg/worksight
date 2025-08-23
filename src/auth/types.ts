@@ -1,10 +1,16 @@
 // User interface for type safety
 export interface User {
   id: string;
-  email: string;
+  email?: string;
   name?: string;
   avatar_url?: string;
   role?: string;
+  user_metadata?: {
+    name?: string;
+    username?: string;
+    role?: string;
+  };
+  access_token?: string;
   [key: string]: unknown;
 }
 

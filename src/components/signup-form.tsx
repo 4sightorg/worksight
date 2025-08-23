@@ -3,7 +3,14 @@
 import { signInWithOAuth } from '@/auth';
 import { useAuth } from '@/auth/provider';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -35,7 +42,7 @@ export default function SignupForm() {
         setError(error.message || `Failed to sign up with ${providerName}`);
       }
       // OAuth will redirect to callback page which handles account validation
-    } catch (err) {
+    } catch {
       setError(`Failed to sign up with ${providerName}`);
     } finally {
       setIsLoading(false);
@@ -106,15 +113,18 @@ export default function SignupForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8 dark:bg-gray-900">
+      <div className="w-full max-w-md space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
             Create your account
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
             Or{' '}
-            <Link href="/login" className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400">
+            <Link
+              href="/login"
+              className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
+            >
               sign in to your account
             </Link>
           </p>
@@ -123,14 +133,12 @@ export default function SignupForm() {
         <Card>
           <CardHeader>
             <CardTitle>Sign Up</CardTitle>
-            <CardDescription>
-              Enter your details to create a new account
-            </CardDescription>
+            <CardDescription>Enter your details to create a new account</CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
               {error && (
-                <div className="rounded-md bg-red-50 dark:bg-red-900/50 p-4">
+                <div className="rounded-md bg-red-50 p-4 dark:bg-red-900/50">
                   <div className="text-sm text-red-700 dark:text-red-200">{error}</div>
                 </div>
               )}
@@ -148,7 +156,7 @@ export default function SignupForm() {
                       variant="outline"
                       onClick={() => handleOAuthSignIn(provider.name)}
                       disabled={isLoading}
-                      className="w-full flex items-center gap-2"
+                      className="flex w-full items-center gap-2"
                     >
                       <provider.icon className="h-4 w-4" />
                       {provider.displayName}
@@ -160,7 +168,7 @@ export default function SignupForm() {
                     <span className="w-full border-t" />
                   </div>
                   <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-background px-2 text-muted-foreground">
+                    <span className="bg-background text-muted-foreground px-2">
                       Or continue with email
                     </span>
                   </div>
@@ -192,7 +200,8 @@ export default function SignupForm() {
                   disabled={isLoading}
                 />
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  3-20 characters, letters/numbers/underscores only. Must contain at least one letter.
+                  3-20 characters, letters/numbers/underscores only. Must contain at least one
+                  letter.
                 </p>
               </div>
 
@@ -245,20 +254,13 @@ export default function SignupForm() {
                   onCheckedChange={(checked) => setSaveLogin(checked === true)}
                   disabled={isLoading}
                 />
-                <Label 
-                  htmlFor="saveLogin" 
-                  className="text-sm font-normal cursor-pointer"
-                >
+                <Label htmlFor="saveLogin" className="cursor-pointer text-sm font-normal">
                   Keep me signed in for 30 days (otherwise 5 minutes)
                 </Label>
               </div>
             </CardContent>
             <CardFooter>
-              <Button 
-                type="submit" 
-                className="w-full" 
-                disabled={isLoading}
-              >
+              <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
