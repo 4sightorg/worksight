@@ -10,6 +10,20 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ['@radix-ui/react-icons', 'lucide-react', '@dnd-kit/core'],
   },
 
+  // Development server configuration
+  allowedDevOrigins: [
+    'http://localhost:3000',
+    ...(process.env.NEXT_PUBLIC_DEV_URL
+      ? [
+          process.env.NEXT_PUBLIC_DEV_URL,
+          // Also allow without port if DEV_URL includes a port
+          process.env.NEXT_PUBLIC_DEV_URL.includes(':')
+            ? process.env.NEXT_PUBLIC_DEV_URL.replace(/:\d+$/, '')
+            : null,
+        ].filter(Boolean)
+      : []),
+  ] as string[],
+
   // Turbopack configuration
   turbopack: {
     rules: {
