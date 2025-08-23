@@ -85,121 +85,119 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
 
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>
-      <Card>
-        <CardHeader className="text-center">
-          <CardTitle className="text-xl">Welcome back</CardTitle>
-          <CardDescription>Login with your Apple or Google account</CardDescription>
+      <Card className="w-full max-w-md mx-auto">
+        <CardHeader className="text-center space-y-2">
+          <CardTitle className="text-2xl font-semibold">Welcome back</CardTitle>
+          <CardDescription>Sign in to your WorkSight account</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleLogin}>
-            <div className="grid gap-6">
-              {/* OAuth row with a screen-reader-only label */}
-              <div>
-                <span className="sr-only" id="oauth-label">
-                  Login with an OAuth provider
-                </span>
-                <div className="grid grid-cols-4 gap-4">
-                  {providers.map((provider) => (
-                    <Button
-                      key={provider.name}
-                      type="button"
-                      aria-label={`Login with ${provider.displayName}`}
-                      className="flex h-12 w-full items-center justify-center"
-                      onClick={() => handleOAuthSignIn(provider.name)}
-                      disabled={loading}
-                    >
-                      <span className="flex items-center justify-center text-2xl">
-                        <provider.icon />
-                      </span>
-                    </Button>
-                  ))}
+          <form onSubmit={handleLogin} className="space-y-6">
+            {/* OAuth Section */}
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                {providers.map((provider) => (
+                  <Button
+                    key={provider.name}
+                    type="button"
+                    variant="outline"
+                    aria-label={`Login with ${provider.displayName}`}
+                    className="h-10 w-full"
+                    onClick={() => handleOAuthSignIn(provider.name)}
+                    disabled={loading}
+                  >
+                    <span className="flex items-center justify-center text-lg">
+                      <provider.icon />
+                    </span>
+                  </Button>
+                ))}
+              </div>
+
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
                 </div>
               </div>
-              <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
-                <span className="bg-card text-muted-foreground relative z-10 px-2">
-                  Or continue with
-                </span>
+            </div>
+
+            {/* Email/Password Form */}
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="test@worksight.app"
+                  required
+                  ref={emailRef}
+                  disabled={loading}
+                />
               </div>
-              <div className="grid gap-6">
-                <div className="grid gap-3">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder="test@worksight.app"
-                    required
-                    ref={emailRef}
-                  />
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password">Password</Label>
+                  <a href="#" className="text-xs text-muted-foreground hover:text-primary underline-offset-4 hover:underline">
+                    Forgot password?
+                  </a>
                 </div>
-                <div className="grid gap-3">
-                  <div className="flex items-center">
-                    <Label htmlFor="password">Password</Label>
-                    <a href="#" className="ml-auto text-sm underline-offset-4 hover:underline">
-                      Forgot your password?
-                    </a>
-                  </div>
-                  <Input
-                    id="password"
-                    name="password"
-                    type="password"
-                    placeholder="testuser"
-                    required
-                    ref={passwordRef}
-                  />
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="save-login"
-                    checked={saveLogin}
-                    onCheckedChange={(checked: boolean) => setSaveLogin(checked)}
-                  />
-                  <Label htmlFor="save-login" className="cursor-pointer text-sm font-normal">
-                    Keep me logged in for 30 days
-                  </Label>
-                </div>
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? 'Logging in...' : 'Login'}
-                </Button>
-                {errorMsg && <div className="text-destructive text-center text-sm">{errorMsg}</div>}
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  placeholder="testuser"
+                  required
+                  ref={passwordRef}
+                  disabled={loading}
+                />
               </div>
-              <div className="text-center text-sm">
-                Don&apos;t have an account?{' '}
-                <a href="#" className="underline underline-offset-4">
-                  Sign up
-                </a>
+
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="save-login"
+                  checked={saveLogin}
+                  onCheckedChange={(checked: boolean) => setSaveLogin(checked)}
+                  disabled={loading}
+                />
+                <Label htmlFor="save-login" className="text-sm font-normal cursor-pointer">
+                  Keep me logged in for 30 days
+                </Label>
               </div>
+            </div>
+
+            {/* Submit Button */}
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? 'Signing in...' : 'Sign in'}
+            </Button>
+
+            {/* Error Message */}
+            {errorMsg && (
+              <div className="text-center text-sm text-destructive bg-destructive/10 p-3 rounded-md">
+                {errorMsg}
+              </div>
+            )}
+
+            {/* Sign Up Link */}
+            <div className="text-center text-sm">
+              <span className="text-muted-foreground">Don't have an account? </span>
+              <a href="/signup" className="text-primary hover:underline underline-offset-4 font-medium">
+                Sign up
+              </a>
             </div>
           </form>
         </CardContent>
       </Card>
-      <div className="text-muted-foreground text-center text-xs text-balance">
-        <p className="mb-2">
-          <strong>Offline Mode:</strong> Use test@worksight.app / testuser
+
+      {/* Offline Mode Info */}
+      <div className="text-center text-xs text-muted-foreground space-y-2 max-w-md mx-auto">
+        <p className="bg-muted/50 p-3 rounded-md">
+          <strong>Offline Mode:</strong> Use <code className="bg-background px-1 py-0.5 rounded">test@worksight.app</code> / <code className="bg-background px-1 py-0.5 rounded">testuser</code>
         </p>
-        <p className="mb-2 text-amber-600">
-          <strong>Session timeout:</strong> 5 minutes (30 days if &quot;Keep me logged in&quot; is
-          checked)
-        </p>
-        <p className="mb-4">
-          Don&apos;t have an account?{' '}
-          <a
-            href="/signup"
-            className="font-medium text-blue-600 underline underline-offset-4 hover:text-blue-500 dark:text-blue-400"
-          >
-            Sign up here
-          </a>
-        </p>
-        <p>
-          By clicking continue, you agree to our{' '}
-          <a href="#" className="hover:text-primary underline underline-offset-4">
-            Terms of Service
-          </a>{' '}
-          and{' '}
-          <a href="#" className="hover:text-primary underline underline-offset-4">
-            Privacy Policy
-          </a>
-          .
+        <p className="text-amber-600 bg-amber-50 dark:bg-amber-950/20 p-3 rounded-md">
+          <strong>Session timeout:</strong> 5 minutes (30 days if "Keep me logged in" is checked)
         </p>
       </div>
     </div>

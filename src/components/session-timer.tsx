@@ -7,14 +7,23 @@ import { Button } from '@/components/ui/button';
 import { AlertCircle, Clock } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-export function SessionTimer() {
+interface SessionTimerProps {
+  variant?: 'header' | 'floating';
+}
+
+export function SessionTimer({ variant = 'header' }: SessionTimerProps) {
   const { user, logout, extendCurrentSession } = useAuth();
   const [timeLeft, setTimeLeft] = useState<string>('');
   const [isExpiringSoon, setIsExpiringSoon] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    if (!user) return;
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!user || !mounted) return;
 
     const updateTimer = () => {
       const session = getStoredSession();
@@ -65,7 +74,7 @@ export function SessionTimer() {
     const interval = setInterval(updateTimer, 1000);
 
     return () => clearInterval(interval);
-  }, [user, logout]);
+  }, [user, logout, mounted]);
 
   const handleExtendSession = () => {
     const success = extendCurrentSession();
@@ -75,13 +84,42 @@ export function SessionTimer() {
     }
   };
 
-  if (!user) return null;
+  if (!user || !mounted) return null;
 
+  // Header variant - compact display
+  if (variant === 'header') {
+    return (
+      <div className="flex items-center gap-2">
+        <div
+          className={`flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium ${isExpiringSoon
+              ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/20 dark:text-amber-400'
+              : 'bg-muted text-muted-foreground'
+            }`}
+        >
+          <Clock className="h-3 w-3" />
+          <span>{timeLeft}</span>
+        </div>
+
+        {showWarning && (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleExtendSession}
+            className="h-7 px-2 text-xs border-amber-300 text-amber-700 hover:bg-amber-50"
+          >
+            Extend
+          </Button>
+        )}
+      </div>
+    );
+  }
+
+  // Floating variant - full warning display
   return (
     <div className="fixed right-4 bottom-4 z-50">
       {showWarning && (
-        <div className="mb-2 rounded-lg border border-amber-200 bg-amber-50 p-3 shadow-lg">
-          <div className="flex items-center gap-2 text-amber-800">
+        <div className="mb-2 rounded-lg border border-amber-200 bg-amber-50 p-3 shadow-lg dark:border-amber-800 dark:bg-amber-950/20">
+          <div className="flex items-center gap-2 text-amber-800 dark:text-amber-200">
             <AlertCircle className="h-4 w-4" />
             <span className="text-sm font-medium">Session expiring soon!</span>
           </div>
@@ -97,11 +135,12 @@ export function SessionTimer() {
       )}
 
       <div
-        className={`rounded-lg border bg-white p-2 shadow-lg ${isExpiringSoon ? 'border-amber-300 bg-amber-50' : 'border-gray-200'}`}
+        className={`rounded-lg border bg-background p-2 shadow-lg ${isExpiringSoon ? 'border-amber-300 bg-amber-50 dark:bg-amber-950/20' : 'border-border'
+          }`}
       >
         <div className="flex items-center gap-2 text-xs">
-          <Clock className={`h-3 w-3 ${isExpiringSoon ? 'text-amber-600' : 'text-gray-500'}`} />
-          <span className={isExpiringSoon ? 'font-medium text-amber-800' : 'text-gray-600'}>
+          <Clock className={`h-3 w-3 ${isExpiringSoon ? 'text-amber-600' : 'text-muted-foreground'}`} />
+          <span className={isExpiringSoon ? 'font-medium text-amber-800 dark:text-amber-200' : 'text-foreground'}>
             {timeLeft}
           </span>
         </div>
