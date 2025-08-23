@@ -5,10 +5,18 @@ import { generateMockToken, isOffline, isSessionExpired, storage } from './utils
 
 // Client-side Supabase instance for auth (only if not offline)
 const supabase = !isOffline()
-  ? createSupabaseClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || ''
-    )
+  ? (() => {
+      if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+        throw new Error('NEXT_PUBLIC_SUPABASE_URL environment variable is not set');
+      }
+      if (!process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) {
+        throw new Error('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY environment variable is not set');
+      }
+      return createSupabaseClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+      );
+    })()
   : null;
 
 // Store session data with timestamp
