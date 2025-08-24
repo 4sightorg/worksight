@@ -1,7 +1,7 @@
 'use client';
 
 import { ClientOnly } from '@/components/core/client-only';
-import { AnimatePresence, motion } from 'motion/react';
+import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
 import { ReactNode, useEffect, useState } from 'react';
 
@@ -9,37 +9,22 @@ interface PageTransitionProps {
   children: ReactNode;
 }
 
-const pageVariants = {
-  initial: {
-    opacity: 0,
-    y: 20,
-    scale: 0.98,
-  },
-  in: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-  },
-  out: {
-    opacity: 0,
-    y: -20,
-    scale: 1.02,
-  },
-};
-
-const pageTransition = {
-  type: 'tween' as const,
-  ease: 'anticipate' as const,
-  duration: 0.5,
-};
-
 export function PageTransition({ children }: PageTransitionProps) {
   const pathname = usePathname();
   const [isClient, setIsClient] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(true);
 
   useEffect(() => {
     setIsClient(true);
-  }, []);
+    setIsAnimating(true);
+
+    // Reset animation state after transition completes
+    const timer = setTimeout(() => {
+      setIsAnimating(false);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [pathname]);
 
   // Render without animations on server and during hydration
   if (!isClient) {
@@ -48,67 +33,75 @@ export function PageTransition({ children }: PageTransitionProps) {
 
   return (
     <ClientOnly fallback={<div className="min-h-screen">{children}</div>}>
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.div
-          key={pathname}
-          initial="initial"
-          animate="in"
-          exit="out"
-          variants={pageVariants}
-          transition={pageTransition}
-          className="min-h-screen"
-        >
-          {children}
-        </motion.div>
-      </AnimatePresence>
+      <div
+        key={pathname}
+        className={cn(
+          'min-h-screen transition-all duration-500 ease-out',
+          isAnimating
+            ? 'translate-y-5 scale-[0.98] opacity-0'
+            : 'translate-y-0 scale-100 opacity-100'
+        )}
+      >
+        {children}
+      </div>
     </ClientOnly>
   );
 }
 
-// Route-specific transition variants
-export const routeVariants = {
+// Route-specific transition classes
+export const routeTransitions = {
   // Home to Survey
-  homeToSurvey: {
-    initial: { opacity: 0, x: 100, scale: 0.95 },
-    in: { opacity: 1, x: 0, scale: 1 },
-    out: { opacity: 0, x: -100, scale: 1.05 },
-  },
+  homeToSurvey:
+    'transition-all duration-500 ease-out opacity-0 translate-x-24 scale-95 data-[mounted]:opacity-100 data-[mounted]:translate-x-0 data-[mounted]:scale-100',
 
   // Survey to Results
-  surveyToResults: {
-    initial: { opacity: 0, y: 50, rotateX: -10 },
-    in: { opacity: 1, y: 0, rotateX: 0 },
-    out: { opacity: 0, y: -50, rotateX: 10 },
-  },
+  surveyToResults:
+    'transition-all duration-500 ease-out opacity-0 translate-y-12 data-[mounted]:opacity-100 data-[mounted]:translate-y-0',
 
   // Results back to Survey
-  resultsToSurvey: {
-    initial: { opacity: 0, x: -100, scale: 0.95 },
-    in: { opacity: 1, x: 0, scale: 1 },
-    out: { opacity: 0, x: 100, scale: 1.05 },
-  },
+  resultsToSurvey:
+    'transition-all duration-500 ease-out opacity-0 -translate-x-24 scale-95 data-[mounted]:opacity-100 data-[mounted]:translate-x-0 data-[mounted]:scale-100',
 
   // General fade
-  fade: {
-    initial: { opacity: 0 },
-    in: { opacity: 1 },
-    out: { opacity: 0 },
-  },
+  fade: 'transition-opacity duration-500 ease-out opacity-0 data-[mounted]:opacity-100',
 };
 
 // Custom transition hook for specific routes
 export function usePageTransition() {
   const pathname = usePathname();
+  const [isMounted, setIsMounted] = useState(false);
 
-  const getTransitionVariant = () => {
-    if (pathname === '/survey') return routeVariants.homeToSurvey;
-    if (pathname === '/survey/results') return routeVariants.surveyToResults;
-    if (pathname === '/dashboard') return routeVariants.fade;
-    return pageVariants;
+  useEffect(() => {
+    setIsMounted(false);
+    const timer = setTimeout(() => {
+      setIsMounted(true);
+    }, 50);
+
+    return () => clearTimeout(timer);
+  }, [pathname]);
+
+  const getTransitionClass = () => {
+    const baseClass = 'min-h-screen transition-all duration-500 ease-out';
+
+    if (pathname === '/survey') {
+      return cn(baseClass, routeTransitions.homeToSurvey);
+    }
+    if (pathname === '/survey/results') {
+      return cn(baseClass, routeTransitions.surveyToResults);
+    }
+    if (pathname === '/dashboard') {
+      return cn(baseClass, routeTransitions.fade);
+    }
+
+    return cn(
+      baseClass,
+      'opacity-0 translate-y-5 scale-[0.98]',
+      isMounted && 'opacity-100 translate-y-0 scale-100'
+    );
   };
 
   return {
-    variants: getTransitionVariant(),
-    transition: pageTransition,
+    className: getTransitionClass(),
+    'data-mounted': isMounted,
   };
 }

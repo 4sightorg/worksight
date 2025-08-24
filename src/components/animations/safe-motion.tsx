@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'motion/react';
+import { cn } from '@/lib/utils';
 import { ReactNode, useEffect, useRef, useState } from 'react';
 
 interface SafeMotionProps {
@@ -12,7 +12,7 @@ interface SafeMotionProps {
   triggerOnce?: boolean; // Only animate once
 }
 
-// Simplified motion component that's safe for Vercel deployment
+// Simplified motion component using Tailwind CSS transitions
 export function SafeMotion({
   children,
   className = '',
@@ -23,18 +23,44 @@ export function SafeMotion({
 }: SafeMotionProps) {
   const [hasAnimated, setHasAnimated] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const elementRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
+  useEffect(() => {
+    if (!isClient) return;
+
+    // Check if animations should be reduced
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (prefersReducedMotion || (triggerOnce && hasAnimated)) {
+      setIsVisible(true);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+      if (triggerOnce) {
+        setHasAnimated(true);
+      }
+    }, delay * 1000);
+
+    return () => clearTimeout(timer);
+  }, [isClient, delay, triggerOnce, hasAnimated]);
+
   // Check if animations should be reduced
   const prefersReducedMotion =
     typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // During SSR, if reduced motion is preferred, or if already animated and triggerOnce is true
-  if (typeof window === 'undefined' || prefersReducedMotion || (triggerOnce && hasAnimated)) {
+  if (
+    typeof window === 'undefined' ||
+    prefersReducedMotion ||
+    (triggerOnce && hasAnimated && isVisible)
+  ) {
     return (
       <div ref={elementRef} className={className}>
         {children}
@@ -42,56 +68,40 @@ export function SafeMotion({
     );
   }
 
-  // If not on client yet, render without animation
-  if (!isClient) {
-    return (
-      <div ref={elementRef} className={className}>
-        {children}
-      </div>
-    );
-  }
+  const getAnimationClasses = () => {
+    const durationClass = `duration-${Math.round(duration * 1000)}`;
 
-  const variants = {
-    fade: {
-      initial: { opacity: 0 },
-      animate: { opacity: 1 },
-      exit: { opacity: 0 },
-    },
-    slide: {
-      initial: { opacity: 0, y: 10 },
-      animate: { opacity: 1, y: 0 },
-      exit: { opacity: 0, y: -10 },
-    },
-    scale: {
-      initial: { opacity: 0, scale: 0.95 },
-      animate: { opacity: 1, scale: 1 },
-      exit: { opacity: 0, scale: 0.95 },
-    },
-  };
-
-  const handleAnimationComplete = () => {
-    if (triggerOnce) {
-      setHasAnimated(true);
+    switch (type) {
+      case 'fade':
+        return cn(
+          'transition-opacity ease-out',
+          durationClass,
+          isVisible ? 'opacity-100' : 'opacity-0'
+        );
+      case 'slide':
+        return cn(
+          'transition-all ease-out',
+          durationClass,
+          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2.5'
+        );
+      case 'scale':
+        return cn(
+          'transition-all ease-out',
+          durationClass,
+          isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+        );
+      default:
+        return cn(
+          'transition-opacity ease-out',
+          durationClass,
+          isVisible ? 'opacity-100' : 'opacity-0'
+        );
     }
   };
 
   return (
-    <motion.div
-      ref={elementRef}
-      initial="initial"
-      animate="animate"
-      exit="exit"
-      variants={variants[type]}
-      transition={{
-        duration,
-        delay,
-        ease: [0.25, 0.1, 0.25, 1],
-      }}
-      className={className}
-      onAnimationComplete={handleAnimationComplete}
-      layout={false} // Disable layout animations to prevent retriggering
-    >
+    <div ref={elementRef} className={cn(getAnimationClasses(), className)}>
       {children}
-    </motion.div>
+    </div>
   );
 }

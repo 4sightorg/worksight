@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'motion/react';
+import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { MouseEvent, ReactNode } from 'react';
@@ -39,39 +39,26 @@ export function AnimatedLink({
     router.push(href);
   };
 
-  const animationVariants = {
-    slide: {
-      whileHover: { x: 5, transition: { duration: 0.2 } },
-      whileTap: { scale: 0.98, x: 2 },
-    },
-    fade: {
-      whileHover: { opacity: 0.8, transition: { duration: 0.2 } },
-      whileTap: { opacity: 0.6 },
-    },
-    scale: {
-      whileHover: { scale: 1.05, transition: { duration: 0.2 } },
-      whileTap: { scale: 0.95 },
-    },
-    bounce: {
-      whileHover: {
-        y: -2,
-        transition: {
-          duration: 0.2,
-          type: 'spring' as const,
-          stiffness: 400,
-          damping: 10,
-        },
-      },
-      whileTap: { scale: 0.95, y: 0 },
-    },
+  const animationClasses = {
+    slide:
+      'transition-transform duration-200 hover:translate-x-1 active:scale-98 active:translate-x-0.5',
+    fade: 'transition-opacity duration-200 hover:opacity-80 active:opacity-60',
+    scale: 'transition-transform duration-200 hover:scale-105 active:scale-95',
+    bounce:
+      'transition-transform duration-200 hover:-translate-y-0.5 active:scale-95 active:translate-y-0',
   };
 
   return (
-    <motion.div {...animationVariants[animationType]} className="inline-block">
-      <Link href={href} onClick={handleClick} className={className} prefetch={prefetch}>
+    <div className="inline-block">
+      <Link
+        href={href}
+        onClick={handleClick}
+        className={cn(animationClasses[animationType], className)}
+        prefetch={prefetch}
+      >
         {children}
       </Link>
-    </motion.div>
+    </div>
   );
 }
 
@@ -101,39 +88,25 @@ export function InlineAnimatedLink({
     router.push(href);
   };
 
-  const animationVariants = {
-    slide: {
-      whileHover: { x: 2, transition: { duration: 0.2 } },
-      whileTap: { scale: 0.98 },
-    },
-    fade: {
-      whileHover: { opacity: 0.8, transition: { duration: 0.2 } },
-      whileTap: { opacity: 0.6 },
-    },
-    scale: {
-      whileHover: { scale: 1.02, transition: { duration: 0.2 } },
-      whileTap: { scale: 0.98 },
-    },
-    bounce: {
-      whileHover: {
-        y: -1,
-        transition: {
-          duration: 0.2,
-          type: 'spring' as const,
-          stiffness: 400,
-          damping: 10,
-        },
-      },
-      whileTap: { scale: 0.98, y: 0 },
-    },
+  const animationClasses = {
+    slide: 'transition-transform duration-200 hover:translate-x-0.5 active:scale-98',
+    fade: 'transition-opacity duration-200 hover:opacity-80 active:opacity-60',
+    scale: 'transition-transform duration-200 hover:scale-102 active:scale-98',
+    bounce:
+      'transition-transform duration-200 hover:-translate-y-px active:scale-98 active:translate-y-0',
   };
 
   return (
-    <motion.span {...animationVariants[animationType]} className="inline">
-      <Link href={href} onClick={handleClick} className={className} prefetch={prefetch}>
+    <span className="inline">
+      <Link
+        href={href}
+        onClick={handleClick}
+        className={cn(animationClasses[animationType], className)}
+        prefetch={prefetch}
+      >
         {children}
       </Link>
-    </motion.span>
+    </span>
   );
 }
 

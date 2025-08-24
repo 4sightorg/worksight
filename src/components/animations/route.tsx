@@ -1,7 +1,7 @@
 'use client';
 
 import { ClientOnly } from '@/components/core/client-only';
-import { motion } from 'motion/react';
+import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
 import { ReactNode, useEffect, useState } from 'react';
 
@@ -13,132 +13,139 @@ interface RouteAnimationProps {
 export function RouteAnimation({ children, className = '' }: RouteAnimationProps) {
   const pathname = usePathname();
   const [isClient, setIsClient] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(true);
 
   useEffect(() => {
     setIsClient(true);
-  }, []);
+    setIsAnimating(true);
 
-  // Define route-specific animations
-  const getRouteAnimation = () => {
-    const easing = [0.6, -0.05, 0.01, 0.99] as const;
+    // Reset animation state after transition completes
+    const timer = setTimeout(() => {
+      setIsAnimating(false);
+    }, 600);
+
+    return () => clearTimeout(timer);
+  }, [pathname]);
+
+  // Define route-specific animation classes
+  const getRouteAnimationClass = () => {
+    const baseClass = 'min-h-screen transition-all ease-out';
 
     switch (pathname) {
       case '/':
-        return {
-          initial: { opacity: 0, scale: 0.95, y: 20 },
-          animate: { opacity: 1, scale: 1, y: 0 },
-          exit: { opacity: 0, scale: 1.05, y: -20 },
-          transition: { duration: 0.6, ease: easing },
-        };
+        return cn(
+          baseClass,
+          'duration-600',
+          isAnimating ? 'opacity-0 scale-95 translate-y-5' : 'opacity-100 scale-100 translate-y-0'
+        );
 
       case '/survey':
-        return {
-          initial: { opacity: 0, x: 100, scale: 0.95 },
-          animate: { opacity: 1, x: 0, scale: 1 },
-          exit: { opacity: 0, x: -100, scale: 1.05 },
-          transition: { duration: 0.5, ease: easing },
-        };
+        return cn(
+          baseClass,
+          'duration-500',
+          isAnimating ? 'opacity-0 translate-x-24 scale-95' : 'opacity-100 translate-x-0 scale-100'
+        );
 
       case '/survey/results':
-        return {
-          initial: { opacity: 0, y: 50, rotateX: -5 },
-          animate: { opacity: 1, y: 0, rotateX: 0 },
-          exit: { opacity: 0, y: -50, rotateX: 5 },
-          transition: { duration: 0.7, ease: easing },
-        };
+        return cn(
+          baseClass,
+          'duration-700',
+          isAnimating ? 'opacity-0 translate-y-12' : 'opacity-100 translate-y-0'
+        );
 
       case '/dashboard':
-        return {
-          initial: { opacity: 0, scale: 0.9 },
-          animate: { opacity: 1, scale: 1 },
-          exit: { opacity: 0, scale: 1.1 },
-          transition: { duration: 0.4, ease: easing },
-        };
+        return cn(
+          baseClass,
+          'duration-400',
+          isAnimating ? 'opacity-0 scale-90' : 'opacity-100 scale-100'
+        );
 
       default:
-        return {
-          initial: { opacity: 0, y: 20 },
-          animate: { opacity: 1, y: 0 },
-          exit: { opacity: 0, y: -20 },
-          transition: { duration: 0.4, ease: easing },
-        };
+        return cn(
+          baseClass,
+          'duration-400',
+          isAnimating ? 'opacity-0 translate-y-5' : 'opacity-100 translate-y-0'
+        );
     }
   };
 
   // Render without animations on server and during hydration
   if (!isClient) {
-    return <div className={`min-h-screen ${className}`}>{children}</div>;
+    return <div className={cn('min-h-screen', className)}>{children}</div>;
   }
 
-  const animation = getRouteAnimation();
-
   return (
-    <ClientOnly fallback={<div className={`min-h-screen ${className}`}>{children}</div>}>
-      <motion.div
-        key={pathname}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-        variants={{
-          initial: animation.initial,
-          animate: animation.animate,
-          exit: animation.exit,
-        }}
-        transition={animation.transition}
-        className={`min-h-screen ${className}`}
-      >
+    <ClientOnly fallback={<div className={cn('min-h-screen', className)}>{children}</div>}>
+      <div key={pathname} className={cn(getRouteAnimationClass(), className)}>
         {children}
-      </motion.div>
+      </div>
     </ClientOnly>
   );
 }
 
 // Specific page animation components
 export function HomePageAnimation({ children }: { children: ReactNode }) {
-  const easing = [0.6, -0.05, 0.01, 0.99] as const;
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsMounted(true);
+    }, 50);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95, y: 20 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 1.05, y: -20 }}
-      transition={{ duration: 0.6, ease: easing }}
-      className="min-h-screen"
+    <div
+      className={cn(
+        'min-h-screen transition-all duration-600 ease-out',
+        isMounted ? 'translate-y-0 scale-100 opacity-100' : 'translate-y-5 scale-95 opacity-0'
+      )}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }
 
 export function SurveyPageAnimation({ children }: { children: ReactNode }) {
-  const easing = [0.6, -0.05, 0.01, 0.99] as const;
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsMounted(true);
+    }, 50);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, x: 100, scale: 0.95 }}
-      animate={{ opacity: 1, x: 0, scale: 1 }}
-      exit={{ opacity: 0, x: -100, scale: 1.05 }}
-      transition={{ duration: 0.5, ease: easing }}
-      className="min-h-screen"
+    <div
+      className={cn(
+        'min-h-screen transition-all duration-500 ease-out',
+        isMounted ? 'translate-x-0 scale-100 opacity-100' : 'translate-x-24 scale-95 opacity-0'
+      )}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }
 
 export function ResultsPageAnimation({ children }: { children: ReactNode }) {
-  const easing = [0.6, -0.05, 0.01, 0.99] as const;
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsMounted(true);
+    }, 50);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 50, rotateX: -5 }}
-      animate={{ opacity: 1, y: 0, rotateX: 0 }}
-      exit={{ opacity: 0, y: -50, rotateX: 5 }}
-      transition={{ duration: 0.7, ease: easing }}
-      className="min-h-screen"
-      style={{ perspective: 1000 }}
+    <div
+      className={cn(
+        'min-h-screen transition-all duration-700 ease-out',
+        isMounted ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'
+      )}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }
