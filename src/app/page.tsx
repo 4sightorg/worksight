@@ -3,6 +3,7 @@
 import { BounceLink, ScaleLink, SlideLink } from '@/components/animations';
 import { Button } from '@/components/ui/button';
 import { motion } from 'motion/react';
+import Link from 'next/link';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -115,13 +116,19 @@ export default function Home() {
         >
           <p className="text-xs text-gray-500 dark:text-gray-400">
             By signing up, you agree to our{' '}
-            <SlideLink href="/terms" className="transition-colors duration-200 hover:underline">
+            <Link
+              href="/terms"
+              className="transition-colors duration-200 hover:underline hover:opacity-80"
+            >
               Terms of Service
-            </SlideLink>{' '}
+            </Link>{' '}
             and{' '}
-            <SlideLink href="/privacy" className="transition-colors duration-200 hover:underline">
+            <Link
+              href="/privacy"
+              className="transition-colors duration-200 hover:underline hover:opacity-80"
+            >
               Privacy Policy
-            </SlideLink>
+            </Link>
           </p>
         </motion.div>
       </div>

@@ -1,8 +1,9 @@
 'use client';
 
+import { ClientOnly } from '@/components/core/client-only';
 import { motion } from 'motion/react';
 import { usePathname } from 'next/navigation';
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 
 interface RouteAnimationProps {
   children: ReactNode;
@@ -11,6 +12,11 @@ interface RouteAnimationProps {
 
 export function RouteAnimation({ children, className = '' }: RouteAnimationProps) {
   const pathname = usePathname();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Define route-specific animations
   const getRouteAnimation = () => {
@@ -59,24 +65,31 @@ export function RouteAnimation({ children, className = '' }: RouteAnimationProps
     }
   };
 
+  // Render without animations on server and during hydration
+  if (!isClient) {
+    return <div className={`min-h-screen ${className}`}>{children}</div>;
+  }
+
   const animation = getRouteAnimation();
 
   return (
-    <motion.div
-      key={pathname}
-      initial="initial"
-      animate="animate"
-      exit="exit"
-      variants={{
-        initial: animation.initial,
-        animate: animation.animate,
-        exit: animation.exit,
-      }}
-      transition={animation.transition}
-      className={`min-h-screen ${className}`}
-    >
-      {children}
-    </motion.div>
+    <ClientOnly fallback={<div className={`min-h-screen ${className}`}>{children}</div>}>
+      <motion.div
+        key={pathname}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+        variants={{
+          initial: animation.initial,
+          animate: animation.animate,
+          exit: animation.exit,
+        }}
+        transition={animation.transition}
+        className={`min-h-screen ${className}`}
+      >
+        {children}
+      </motion.div>
+    </ClientOnly>
   );
 }
 

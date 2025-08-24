@@ -1,6 +1,19 @@
 // Animation components index - allows importing from '@/components/animations'
 
-// Export animation components from within this directory
-export * from './link';
+// Export animation configuration and components
+export * from './config';
+export {
+  AnimatedLink,
+  BounceLink,
+  FadeLink,
+  InlineAnimatedLink,
+  InlineBounceLink,
+  InlineFadeLink,
+  InlineScaleLink,
+  InlineSlideLink,
+  ScaleLink,
+  SlideLink,
+} from './link';
 export * from './page';
 export * from './route';
+export * from './safe-motion';

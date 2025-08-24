@@ -2,7 +2,7 @@
 
 import { useAuth } from '@/auth';
 import { getRoleColor, getUserRoleDisplay } from '@/auth/admin';
-import { User, UserRole } from '@/auth/types';
+import { UserRole } from '@/auth/types';
 import { AdminRoute } from '@/components/admin';
 import { SessionTimer } from '@/components/features';
 import { AppSidebar } from '@/components/main/sidebar';
@@ -30,6 +30,12 @@ import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { sections } from '@/data/sections';
 import {
+  UserFilters,
+  UserWithMetrics,
+  validateUserArray,
+  validateUserFilters,
+} from '@/schemas/user';
+import {
   AlertTriangle,
   CheckCircle,
   Clock,
@@ -41,18 +47,7 @@ import {
   Shield,
   Users,
 } from 'lucide-react';
-import { motion } from 'motion/react';
 import { useEffect, useMemo, useState } from 'react';
-
-interface UserWithMetrics extends User {
-  burnoutScore: number;
-  lastActive: string;
-  surveyCompleted: boolean;
-  riskLevel: 'low' | 'medium' | 'high';
-  tasksCompleted: number;
-  department: string;
-  team: string;
-}
 
 const mockUsers: UserWithMetrics[] = [
   {
@@ -129,14 +124,42 @@ function UserManagementContent() {
   const [departmentFilter, setDepartmentFilter] = useState<string>('all');
   const [riskFilter, setRiskFilter] = useState<string>('all');
   const [isLoading, setIsLoading] = useState(true);
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
   useEffect(() => {
-    // Simulate API call
+    // Simulate API call with validation
     setTimeout(() => {
-      setUsers(mockUsers);
+      // Validate mock data using Zod
+      const validationResult = validateUserArray(mockUsers);
+
+      if (!validationResult.allValid) {
+        const errors = validationResult.invalid.map(
+          (item) =>
+            `User at index ${item.index}: ${item.errors?.map((e: { message: string }) => e.message).join(', ')}`
+        );
+        setValidationErrors(errors);
+      }
+
+      // Use only valid users
+      setUsers(validationResult.valid.map((item) => item.data!));
       setIsLoading(false);
     }, 1000);
   }, []);
+
+  // Validate filters when they change
+  useEffect(() => {
+    const filters: UserFilters = {
+      searchTerm,
+      department: departmentFilter,
+      riskLevel: riskFilter as 'all' | 'low' | 'medium' | 'high',
+      role: 'all',
+    };
+
+    const validationResult = validateUserFilters(filters);
+    if (!validationResult.success) {
+      console.warn('Filter validation errors:', validationResult.error.issues);
+    }
+  }, [searchTerm, departmentFilter, riskFilter]);
 
   const handleLogout = async () => {
     await logout();
@@ -210,10 +233,11 @@ function UserManagementContent() {
         </header>
 
         <main className="flex flex-1 flex-col gap-6 p-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+          <div
+            className="fade-in"
+            style={{
+              animationDelay: '0ms',
+            }}
           >
             {/* Header */}
             <div className="flex items-center justify-between">
@@ -231,6 +255,27 @@ function UserManagementContent() {
                 Add User
               </Button>
             </div>
+
+            {/* Validation Errors */}
+            {validationErrors.length > 0 && (
+              <Card className="border-red-200 bg-red-50">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-red-700">
+                    <AlertTriangle className="h-5 w-5" />
+                    Data Validation Errors
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-1">
+                    {validationErrors.map((error, index) => (
+                      <p key={index} className="text-sm text-red-600">
+                        {error}
+                      </p>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Stats */}
             <div className="grid gap-4 md:grid-cols-4">
@@ -337,12 +382,13 @@ function UserManagementContent() {
               <CardContent>
                 <div className="space-y-4">
                   {filteredUsers.map((user, index) => (
-                    <motion.div
-                      key={user.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
+                    <div
+                      key={`user-${user.id}-${user.email}`}
                       className="hover:bg-muted/50 flex items-center justify-between rounded-lg border p-4 transition-colors"
+                      style={{
+                        animationDelay: `${index * 50}ms`,
+                        animation: 'fadeIn 0.3s ease-out forwards',
+                      }}
                     >
                       <div className="flex items-center gap-4">
                         <Avatar>
@@ -398,12 +444,12 @@ function UserManagementContent() {
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </div>
-                    </motion.div>
+                    </div>
                   ))}
                 </div>
               </CardContent>
             </Card>
-          </motion.div>
+          </div>
         </main>
       </SidebarInset>
     </SidebarProvider>

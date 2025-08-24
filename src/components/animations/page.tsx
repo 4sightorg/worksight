@@ -1,8 +1,9 @@
 'use client';
 
+import { ClientOnly } from '@/components/core/client-only';
 import { AnimatePresence, motion } from 'motion/react';
 import { usePathname } from 'next/navigation';
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 
 interface PageTransitionProps {
   children: ReactNode;
@@ -34,21 +35,33 @@ const pageTransition = {
 
 export function PageTransition({ children }: PageTransitionProps) {
   const pathname = usePathname();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Render without animations on server and during hydration
+  if (!isClient) {
+    return <div className="min-h-screen">{children}</div>;
+  }
 
   return (
-    <AnimatePresence mode="wait" initial={false}>
-      <motion.div
-        key={pathname}
-        initial="initial"
-        animate="in"
-        exit="out"
-        variants={pageVariants}
-        transition={pageTransition}
-        className="min-h-screen"
-      >
-        {children}
-      </motion.div>
-    </AnimatePresence>
+    <ClientOnly fallback={<div className="min-h-screen">{children}</div>}>
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={pathname}
+          initial="initial"
+          animate="in"
+          exit="out"
+          variants={pageVariants}
+          transition={pageTransition}
+          className="min-h-screen"
+        >
+          {children}
+        </motion.div>
+      </AnimatePresence>
+    </ClientOnly>
   );
 }
 
