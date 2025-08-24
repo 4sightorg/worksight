@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["jest", "@testing-library/jest-dom", "node"],
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "isolatedModules": false
+  },
+  "include": ["src/__tests__/**/*", "**/*.test.ts", "**/*.test.tsx", "jest.config.js", "jest.setup.js"],
+  "exclude": ["node_modules", "dist", ".next"]
+}
