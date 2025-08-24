@@ -1,8 +1,8 @@
 'use client';
 
 import { useAuth } from '@/auth';
-import { AppSidebar } from '@/components/app-sidebar';
-import { ProtectedRoute } from '@/components/protected-route';
+import { ProtectedRoute } from '@/components/auth/protected-route';
+import { AppSidebar } from '@/components/main/sidebar';
 import { SessionTimer } from '@/components/session-timer';
 import { Badge } from '@/components/ui/badge';
 import {

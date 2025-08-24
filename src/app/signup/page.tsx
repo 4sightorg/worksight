@@ -1,4 +1,4 @@
-import SignupForm from '@/components/auth';
+import { SignupForm } from '@/components/auth';
 import Branding from '../../components/branding';
 
 export default function SignUpPage() {

@@ -1,7 +1,9 @@
 import { AuthProvider } from '@/auth';
+import { PageTransition } from '@/components/anim/page';
 import { ErrorBoundary } from '@/components/error-boundary';
-import { ThemeProvider } from '@/components/theme-provider';
-import { ModeToggle } from '@/components/theme-toggle';
+import { ThemeProvider } from '@/components/theme/theme-provider';
+import { ThemeScript } from '@/components/theme/theme-script';
+import { ModeToggle } from '@/components/theme/theme-toggle';
 import '@/styles/globals.css';
 import { MetadataRecord } from '@/types/metadata';
 import { ReactNode } from 'react';
@@ -20,7 +22,8 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <html lang="en" suppressHydrationWarning>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#000000" />
+        <meta name="theme-color" content="#ffffff" />
+        <ThemeScript />
       </head>
       <body suppressHydrationWarning>
         <ErrorBoundary>
@@ -31,7 +34,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
             disableTransitionOnChange
             storageKey="worksight-theme"
           >
-            <AuthProvider>{children}</AuthProvider>
+            <AuthProvider>
+              <PageTransition>{children}</PageTransition>
+            </AuthProvider>
             <div className="fixed right-4 bottom-4 z-50">
               <ModeToggle />
             </div>
