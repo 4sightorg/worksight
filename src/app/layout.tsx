@@ -1,6 +1,7 @@
 import { AuthProvider } from '@/auth';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { ThemeProvider } from '@/components/theme-provider';
+import { ModeToggle } from '@/components/theme-toggle';
 import '@/styles/globals.css';
 import { MetadataRecord } from '@/types/metadata';
 import { ReactNode } from 'react';
@@ -31,6 +32,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
             storageKey="worksight-theme"
           >
             <AuthProvider>{children}</AuthProvider>
+            <div className="fixed right-4 bottom-4 z-50">
+              <ModeToggle />
+            </div>
           </ThemeProvider>
         </ErrorBoundary>
       </body>

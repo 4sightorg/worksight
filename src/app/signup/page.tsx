@@ -1,5 +1,4 @@
 import SignupForm from '@/components/auth';
-import { ModeToggle } from '@/components/theme-toggle';
 import Branding from '../../components/branding';
 
 export default function SignUpPage() {
@@ -8,9 +7,6 @@ export default function SignUpPage() {
       <div className="flex w-full max-w-sm flex-col gap-6">
         <Branding />
         <SignupForm />
-      </div>
-      <div className="fixed right-4 bottom-4 z-50">
-        <ModeToggle />
       </div>
     </div>
   );

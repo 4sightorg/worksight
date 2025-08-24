@@ -1,5 +1,3 @@
-import { ClientOnly } from '@/components/client-only';
-import { ModeToggle } from '@/components/theme-toggle';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
@@ -30,11 +28,6 @@ export default function Home() {
           </Link>
         </div>
 
-        <div className="fixed right-4 bottom-4 z-50">
-          <ClientOnly fallback={<div className="bg-muted h-8 w-8 animate-pulse rounded" />}>
-            <ModeToggle />
-          </ClientOnly>
-        </div>
         <div className="fixed bottom-6 z-50 text-center">
           <p className="text-xs text-gray-500 dark:text-gray-400">
             By signing up, you agree to our{' '}

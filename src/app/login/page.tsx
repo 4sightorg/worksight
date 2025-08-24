@@ -1,5 +1,4 @@
 import { LoginForm } from '@/components/auth';
-import { ModeToggle } from '@/components/theme-toggle';
 import Branding from '../../components/branding';
 
 // Force dynamic rendering to avoid build-time Supabase client creation
@@ -11,9 +10,6 @@ export default function LoginPage() {
       <div className="flex w-full max-w-sm flex-col gap-6">
         <Branding />
         <LoginForm />
-      </div>
-      <div className="fixed right-4 bottom-4 z-50">
-        <ModeToggle />
       </div>
     </div>
   );

@@ -4,7 +4,6 @@ import { useAuth } from '@/auth';
 import { AppSidebar } from '@/components/app-sidebar';
 import { ProtectedRoute } from '@/components/protected-route';
 import { SessionTimer } from '@/components/session-timer';
-import { ModeToggle } from '@/components/theme-toggle';
 import { Badge } from '@/components/ui/badge';
 import {
   Breadcrumb,
@@ -332,7 +331,6 @@ function TasksContent() {
           </Breadcrumb>
           <div className="ml-auto flex items-center gap-2">
             <span className="text-muted-foreground hidden text-sm md:inline">{user?.email}</span>
-            <ModeToggle />
             <Button variant="outline" size="sm" onClick={handleLogout}>
               <LogOut className="mr-2 h-4 w-4" />
               Logout

@@ -1,9 +1,8 @@
-import { ModeToggle } from './theme-toggle';
-import { Button } from './ui/button';
+import { sections } from '@/data/sections';
 import Link from 'next/link';
 import { SiGithub } from 'react-icons/si';
+import { Button } from './ui/button';
 import { ViewSwitcher } from './version-switcher';
-import { sections } from '@/data/sections';
 
 export function SiteHeader() {
   return (
@@ -23,7 +22,7 @@ export function SiteHeader() {
                   <span className="sr-only">GitHub</span>
                 </Link>
               </Button>
-              <ModeToggle />
+              {/* <ModeToggle /> */}
             </nav>
           </div>
         </div>

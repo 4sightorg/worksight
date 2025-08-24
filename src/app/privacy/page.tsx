@@ -190,7 +190,7 @@ export default function PrivacyPolicy() {
 
           <Card>
             <CardHeader>
-              <CardTitle>8. Children's Privacy</CardTitle>
+              <CardTitle>8. Children&apos;s Privacy</CardTitle>
             </CardHeader>
             <CardContent className="prose prose-gray dark:prose-invert max-w-none">
               <p>
@@ -222,8 +222,8 @@ export default function PrivacyPolicy() {
             <CardContent className="prose prose-gray dark:prose-invert max-w-none">
               <p>
                 We may update this Privacy Policy from time to time. We will notify you of any
-                material changes by posting the new policy on this page and updating the "Last
-                updated" date. We encourage you to review this policy periodically.
+                material changes by posting the new policy on this page and updating the &quot;Last
+                updated&quot; date. We encourage you to review this policy periodically.
               </p>
             </CardContent>
           </Card>
@@ -239,7 +239,7 @@ export default function PrivacyPolicy() {
                   <strong>Consent:</strong> For optional features and marketing communications
                 </li>
                 <li>
-                  <strong>Contract:</strong> To provide WorkSight services you've signed up for
+                  <strong>Contract:</strong> To provide WorkSight services you&apos;ve signed up for
                 </li>
                 <li>
                   <strong>Legitimate Interest:</strong> For service improvement and security
@@ -294,7 +294,7 @@ export default function PrivacyPolicy() {
               <ul>
                 <li>Right to know about personal information collected, used, or shared</li>
                 <li>Right to delete personal information</li>
-                <li>Right to opt-out of sale (we don't sell your information)</li>
+                <li>Right to opt-out of sale (we don&apos;t sell your information)</li>
                 <li>Right to non-discrimination for exercising your rights</li>
                 <li>Right to correct inaccurate personal information</li>
                 <li>Right to limit use of sensitive personal information</li>
@@ -387,8 +387,8 @@ export default function PrivacyPolicy() {
                 WorkSight may integrate with third-party services. When you use these integrations:
               </p>
               <ul>
-                <li>You'll be clearly informed before any data sharing</li>
-                <li>We'll obtain your explicit consent for data transfers</li>
+                <li>You&apos;ll be clearly informed before any data sharing</li>
+                <li>We&apos;ll obtain your explicit consent for data transfers</li>
                 <li>Third parties must meet our data protection standards</li>
                 <li>You can revoke permissions at any time through your account settings</li>
               </ul>

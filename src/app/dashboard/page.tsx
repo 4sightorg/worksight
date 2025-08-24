@@ -5,7 +5,6 @@ import { AppSidebar } from '@/components/app-sidebar';
 import { ClientOnly } from '@/components/client-only';
 import { ProtectedRoute } from '@/components/protected-route';
 import { SessionTimer } from '@/components/session-timer';
-import { ModeToggle } from '@/components/theme-toggle';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -50,9 +49,9 @@ function DashboardContent() {
             <ClientOnly fallback={<div className="bg-muted h-7 w-20 animate-pulse rounded" />}>
               <SessionTimer />
             </ClientOnly>
-            <ClientOnly fallback={<div className="bg-muted h-8 w-8 animate-pulse rounded" />}>
+            {/* <ClientOnly fallback={<div className="bg-muted h-8 w-8 animate-pulse rounded" />}>
               <ModeToggle />
-            </ClientOnly>
+            </ClientOnly> */}
             <Button variant="outline" size="sm" onClick={handleLogout}>
               <LogOut className="mr-2 h-4 w-4" />
               Logout
