@@ -1,5 +1,6 @@
 'use client';
 import { useAuth } from '@/auth';
+import { isAdmin, isManager } from '@/auth/admin';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -19,7 +20,7 @@ import { SectionGroup } from '@/data/sections';
 import { useSidebarStore } from '@/store/sidebar-store';
 import { TrendingUp } from 'lucide-react';
 import * as React from 'react';
-import { SiteHeader } from './navbar';
+import { SiteHeader } from '../navbar';
 
 type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
   sections: SectionGroup[];
@@ -61,6 +62,36 @@ export function AppSidebar({ sections, defaultSection, ...props }: AppSidebarPro
     return 'U';
   };
 
+  // Filter sections and items based on user role
+  const filteredSections = React.useMemo(() => {
+    if (!user) return [];
+
+    return sections
+      .filter((section) => {
+        // Filter sections based on role requirements
+        if (section.adminOnly && !isAdmin(user)) return false;
+        if (section.managerOnly && !isManager(user)) return false;
+
+        // Filter items within each section
+        const filteredItems = section.items.filter((item) => {
+          if (item.adminOnly && !isAdmin(user)) return false;
+          if (item.managerOnly && !isManager(user)) return false;
+          return true;
+        });
+
+        // Only include section if it has visible items
+        return filteredItems.length > 0;
+      })
+      .map((section) => ({
+        ...section,
+        items: section.items.filter((item) => {
+          if (item.adminOnly && !isAdmin(user)) return false;
+          if (item.managerOnly && !isManager(user)) return false;
+          return true;
+        }),
+      }));
+  }, [sections, user]);
+
   return (
     <Sidebar {...props}>
       <SidebarHeader>
@@ -84,7 +115,7 @@ export function AppSidebar({ sections, defaultSection, ...props }: AppSidebarPro
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {sections.map((section) => (
+        {filteredSections.map((section) => (
           <SidebarGroup key={section.title}>
             <SidebarGroupLabel>{section.title}</SidebarGroupLabel>
             <SidebarGroupContent>
