@@ -524,8 +524,8 @@ export default function SignupForm({ className, ...props }: React.ComponentProps
 
       <div className="text-center">
         <p className="text-xs text-gray-500 dark:text-gray-400">
-          By signing up, you agree to our <Link href="#">Terms of Service</Link> and{' '}
-          <Link href="#">Privacy Policy</Link>
+          By signing up, you agree to our <Link href="/terms">Terms of Service</Link> and{' '}
+          <Link href="/privacy">Privacy Policy</Link>
         </p>
       </div>
     </div>
