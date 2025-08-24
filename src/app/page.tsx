@@ -35,6 +35,12 @@ export default function Home() {
             <ModeToggle />
           </ClientOnly>
         </div>
+        <div className="fixed bottom-6 z-50 text-center">
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            By signing up, you agree to our <Link href="#">Terms of Service</Link> and{' '}
+            <Link href="#">Privacy Policy</Link>
+          </p>
+        </div>
       </div>
     </div>
   );
