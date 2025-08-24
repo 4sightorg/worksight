@@ -38,6 +38,7 @@ jobs:
           NEXT_PUBLIC_APP_URL: ${{ vars.NEXT_PUBLIC_APP_URL }}
           NEXT_PUBLIC_DEV_URL: ${{ vars.NEXT_PUBLIC_DEV_URL }}
           NEXT_PUBLIC_IS_OFFLINE: ${{ vars.NEXT_PUBLIC_IS_OFFLINE || 'false' }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${ vars.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }
           IS_OFFLINE: ${{ vars.IS_OFFLINE || 'false' }}
         run: pnpm run build
 
