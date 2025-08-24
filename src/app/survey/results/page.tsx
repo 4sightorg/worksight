@@ -1,6 +1,6 @@
 'use client';
 
-import { BounceLink, ScaleLink } from '@/components/anim/';
+import { BounceLink, ScaleLink } from '@/components/animations';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertTriangle, CheckCircle, Heart, TrendingUp } from 'lucide-react';

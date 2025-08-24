@@ -1,8 +1,8 @@
 import { sections } from '@/data/sections';
 import Link from 'next/link';
 import { SiGithub } from 'react-icons/si';
-import { Button } from './ui/button';
-import { ViewSwitcher } from './version-switcher';
+import { Button } from '@/components/ui';
+import { ViewSwitcher } from '@/components/features';
 
 export function SiteHeader() {
   return (

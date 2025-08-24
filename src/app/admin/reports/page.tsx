@@ -2,8 +2,8 @@
 
 import { useAuth } from '@/auth';
 import { AdminRoute } from '@/components/admin';
+import { SessionTimer } from '@/components/features';
 import { AppSidebar } from '@/components/main/sidebar';
-import { SessionTimer } from '@/components/session-timer';
 import { Badge } from '@/components/ui/badge';
 import {
   Breadcrumb,
@@ -46,7 +46,7 @@ interface MetricCard {
   value: string;
   change: string;
   trend: 'up' | 'down';
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<{ className?: string }>;
   color: string;
 }
 
@@ -89,7 +89,7 @@ const mockBurnoutData: BurnoutData[] = [
 ];
 
 function ReportsContent() {
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const [data, setData] = useState<BurnoutData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -327,7 +327,7 @@ function ReportsContent() {
                   <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-3">
                     <h4 className="font-semibold text-yellow-800">Survey Completion</h4>
                     <p className="text-sm text-yellow-700">
-                      13% of employees haven't completed their quarterly burnout assessment.
+                      13% of employees haven&apos;t completed their quarterly burnout assessment.
                     </p>
                   </div>
                   <div className="rounded-lg border border-blue-200 bg-blue-50 p-3">

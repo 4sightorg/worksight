@@ -2,8 +2,8 @@
 
 import { useAuth } from '@/auth';
 import { AdminRoute } from '@/components/admin';
+import { SessionTimer } from '@/components/features';
 import { AppSidebar } from '@/components/main/sidebar';
-import { SessionTimer } from '@/components/session-timer';
 import { Badge } from '@/components/ui/badge';
 import {
   Breadcrumb,
@@ -45,7 +45,7 @@ interface AdminStats {
 }
 
 function AdminDashboardContent() {
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const [stats, setStats] = useState<AdminStats>({
     totalUsers: 0,
     activeSurveys: 0,

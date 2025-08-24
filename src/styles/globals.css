@@ -3,10 +3,11 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Prevent flash of unstyled content */
+/* Prevent flash of unstyled content and smooth scrolling */
 html {
   background: oklch(100% 0 0deg);
   color: oklch(14.5% 0 0deg);
+  scroll-behavior: smooth;
 }
 
 html.dark {
@@ -17,11 +18,6 @@ html.dark {
 /* View Transitions API for smooth page navigation */
 @view-transition {
   navigation: auto;
-}
-
-/* Smooth page transitions */
-html {
-  scroll-behavior: smooth;
 }
 
 /* View transition animations */

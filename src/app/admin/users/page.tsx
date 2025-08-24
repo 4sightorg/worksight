@@ -4,8 +4,8 @@ import { useAuth } from '@/auth';
 import { getRoleColor, getUserRoleDisplay } from '@/auth/admin';
 import { User, UserRole } from '@/auth/types';
 import { AdminRoute } from '@/components/admin';
+import { SessionTimer } from '@/components/features';
 import { AppSidebar } from '@/components/main/sidebar';
-import { SessionTimer } from '@/components/session-timer';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -123,7 +123,7 @@ const mockUsers: UserWithMetrics[] = [
 ];
 
 function UserManagementContent() {
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const [users, setUsers] = useState<UserWithMetrics[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [departmentFilter, setDepartmentFilter] = useState<string>('all');

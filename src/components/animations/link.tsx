@@ -2,7 +2,8 @@
 
 import { motion } from 'motion/react';
 import Link from 'next/link';
-import { ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
+import { MouseEvent, ReactNode } from 'react';
 
 interface AnimatedLinkProps {
   href: string;
@@ -62,11 +63,7 @@ export function AnimatedLinkComponent({
   );
 }
 
-('use client');
-
-import { useRouter } from 'next/navigation';
-import { MouseEvent } from 'react';
-
+// Alternative simpler animated link
 interface AnimatedLinkProps {
   href: string;
   children: ReactNode;

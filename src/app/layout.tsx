@@ -1,6 +1,6 @@
 import { AuthProvider } from '@/auth';
-import { PageTransition } from '@/components/anim/page';
-import { ErrorBoundary } from '@/components/error-boundary';
+import { PageTransition } from '@/components/animations';
+import { ErrorBoundary } from '@/components/core';
 import { ThemeProvider } from '@/components/theme/theme-provider';
 import { ThemeScript } from '@/components/theme/theme-script';
 import { ModeToggle } from '@/components/theme/theme-toggle';

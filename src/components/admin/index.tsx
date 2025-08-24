@@ -58,7 +58,7 @@ export function AdminRoute({
             </div>
             <CardTitle className="mt-4">Access Denied</CardTitle>
             <CardDescription>
-              You don't have permission to access this page. This area is restricted to
+              You don&apos;t have permission to access this page. This area is restricted to
               administrators and managers only.
             </CardDescription>
           </CardHeader>

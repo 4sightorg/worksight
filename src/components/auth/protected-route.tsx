@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuth } from '@/auth';
-import { LoadingState } from '@/components/loading-state';
+import { LoadingState } from '@/components/core';
 import { useRouter } from 'next/navigation';
 import { ReactNode, useEffect } from 'react';
 

@@ -2,8 +2,8 @@
 
 import { useAuth } from '@/auth';
 import { ProtectedRoute } from '@/components/auth/protected-route';
+import { SessionTimer } from '@/components/features';
 import { AppSidebar } from '@/components/main/sidebar';
-import { SessionTimer } from '@/components/session-timer';
 import { Badge } from '@/components/ui/badge';
 import {
   Breadcrumb,

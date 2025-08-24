@@ -2,9 +2,9 @@
 
 import { useAuth } from '@/auth';
 import { ProtectedRoute } from '@/components/auth/protected-route';
-import { ClientOnly } from '@/components/client-only';
+import { ClientOnly } from '@/components/core';
+import { SessionTimer } from '@/components/features';
 import { AppSidebar } from '@/components/main/sidebar';
-import { SessionTimer } from '@/components/session-timer';
 import {
   Breadcrumb,
   BreadcrumbItem,

@@ -1,5 +1,5 @@
 import { SignupForm } from '@/components/auth';
-import Branding from '../../components/branding';
+import { Branding } from '@/components/layout';
 
 export default function SignUpPage() {
   return (

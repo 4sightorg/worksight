@@ -1,5 +1,5 @@
 import { LoginForm } from '@/components/auth';
-import Branding from '../../components/branding';
+import { Branding } from '@/components/layout';
 
 // Force dynamic rendering to avoid build-time Supabase client creation
 export const dynamic = 'force-dynamic';

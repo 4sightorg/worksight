@@ -2,8 +2,8 @@
 
 import { useAuth } from '@/auth';
 import { AdminRoute } from '@/components/admin';
+import { SessionTimer } from '@/components/features';
 import { AppSidebar } from '@/components/main/sidebar';
-import { SessionTimer } from '@/components/session-timer';
 import { Badge } from '@/components/ui/badge';
 import {
   Breadcrumb,
@@ -126,7 +126,7 @@ const mockSurveys: Survey[] = [
 ];
 
 function SurveyManagementContent() {
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const [surveys, setSurveys] = useState<Survey[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');

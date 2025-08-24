@@ -1,6 +1,6 @@
 'use client';
 
-import { BounceLink, ScaleLink, SlideLink } from '@/components/anim';
+import { BounceLink, ScaleLink, SlideLink } from '@/components/animations';
 import { Button } from '@/components/ui/button';
 import { motion } from 'motion/react';
 

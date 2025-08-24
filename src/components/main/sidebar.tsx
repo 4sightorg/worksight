@@ -20,7 +20,10 @@ import { SectionGroup } from '@/data/sections';
 import { useSidebarStore } from '@/store/sidebar-store';
 import { TrendingUp } from 'lucide-react';
 import * as React from 'react';
-import { SiteHeader } from '../navbar';
+// Update the import path below to the correct location of SiteHeader
+import { SiteHeader } from '@/components/layout';
+// or, if the correct path is different, update accordingly, e.g.:
+// import { SiteHeader } from '@/components/main/navbar';
 
 type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
   sections: SectionGroup[];

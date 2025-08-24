@@ -1,6 +1,6 @@
 'use client';
 
-import { ErrorBoundary } from '@/components/error-boundary';
+import { ErrorBoundary } from '@/components/core';
 import { ReactNode, useCallback, useEffect, useState } from 'react';
 
 interface ClientOnlyProps {
