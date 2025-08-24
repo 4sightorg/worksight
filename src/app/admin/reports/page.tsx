@@ -30,7 +30,6 @@ import {
   TrendingDown,
   TrendingUp,
 } from 'lucide-react';
-import { motion } from 'motion/react';
 import { useEffect, useState } from 'react';
 
 interface BurnoutData {
@@ -200,11 +199,7 @@ function ReportsContent() {
         </header>
 
         <main className="flex flex-1 flex-col gap-6 p-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
+          <div className="animate-in fade-in slide-in-from-bottom-5 opacity-100 duration-500">
             {/* Header */}
             <div className="flex items-center justify-between">
               <div className="space-y-1">
@@ -235,11 +230,10 @@ function ReportsContent() {
             {/* Key Metrics */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
               {metrics.map((metric, index) => (
-                <motion.div
+                <div
                   key={metric.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
+                  className="animate-in fade-in slide-in-from-bottom-5 opacity-100 duration-500"
+                  style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -258,7 +252,7 @@ function ReportsContent() {
                       </p>
                     </CardContent>
                   </Card>
-                </motion.div>
+                </div>
               ))}
             </div>
 
@@ -273,12 +267,10 @@ function ReportsContent() {
               <CardContent>
                 <div className="space-y-4">
                   {data.map((dept, index) => (
-                    <motion.div
+                    <div
                       key={dept.department}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      className="flex items-center justify-between rounded-lg border p-4"
+                      className="animate-in fade-in slide-in-from-left-5 flex items-center justify-between rounded-lg border p-4 opacity-100 duration-500"
+                      style={{ animationDelay: `${index * 100}ms` }}
                     >
                       <div className="flex items-center gap-4">
                         <div>
@@ -301,7 +293,7 @@ function ReportsContent() {
 
                         {getTrendIcon(dept.trend)}
                       </div>
-                    </motion.div>
+                    </div>
                   ))}
                 </div>
               </CardContent>
@@ -368,7 +360,7 @@ function ReportsContent() {
                 </CardContent>
               </Card>
             </div>
-          </motion.div>
+          </div>
         </main>
       </SidebarInset>
     </SidebarProvider>

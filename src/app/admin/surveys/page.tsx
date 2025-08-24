@@ -39,7 +39,6 @@ import {
   Settings,
   Users,
 } from 'lucide-react';
-import { motion } from 'motion/react';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -240,11 +239,7 @@ function SurveyManagementContent() {
         </header>
 
         <main className="flex flex-1 flex-col gap-6 p-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
+          <div className="animate-in fade-in slide-in-from-bottom-5 opacity-100 duration-500">
             {/* Header */}
             <div className="flex items-center justify-between">
               <div className="space-y-1">
@@ -375,11 +370,10 @@ function SurveyManagementContent() {
             {/* Surveys Grid */}
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {filteredSurveys.map((survey, index) => (
-                <motion.div
+                <div
                   key={survey.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
+                  className="animate-in fade-in slide-in-from-bottom-5 opacity-100 duration-500"
+                  style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <Card className="h-full transition-shadow hover:shadow-lg">
                     <CardHeader className="pb-3">
@@ -438,7 +432,7 @@ function SurveyManagementContent() {
                       </div>
                     </CardContent>
                   </Card>
-                </motion.div>
+                </div>
               ))}
             </div>
 
@@ -461,7 +455,7 @@ function SurveyManagementContent() {
                 </CardContent>
               </Card>
             )}
-          </motion.div>
+          </div>
         </main>
       </SidebarInset>
     </SidebarProvider>

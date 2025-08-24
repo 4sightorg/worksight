@@ -18,6 +18,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { sections } from '@/data/sections';
+import { cn } from '@/lib/utils';
 import {
   AlertTriangle,
   BarChart3,
@@ -31,7 +32,6 @@ import {
   TrendingUp,
   Users,
 } from 'lucide-react';
-import { motion } from 'motion/react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -54,6 +54,16 @@ function AdminDashboardContent() {
     highRiskUsers: 0,
     recentActivity: 0,
   });
+  const [isAnimated, setIsAnimated] = useState(false);
+
+  useEffect(() => {
+    // Trigger animations after component mounts
+    const timer = setTimeout(() => {
+      setIsAnimated(true);
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     // Simulate fetching admin stats
@@ -72,21 +82,6 @@ function AdminDashboardContent() {
 
   const handleLogout = async () => {
     await logout();
-  };
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 },
   };
 
   return (
@@ -117,9 +112,19 @@ function AdminDashboardContent() {
         </header>
 
         <main className="flex flex-1 flex-col gap-6 p-6">
-          <motion.div initial="hidden" animate="visible" variants={containerVariants}>
+          <div
+            className={cn(
+              'transition-all duration-500 ease-out',
+              isAnimated ? 'opacity-100' : 'opacity-0'
+            )}
+          >
             {/* Welcome Section */}
-            <motion.div variants={itemVariants} className="space-y-2">
+            <div
+              className={cn(
+                'space-y-2 transition-all delay-100 duration-500 ease-out',
+                isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'
+              )}
+            >
               <div className="flex items-center gap-2">
                 <Shield className="h-6 w-6 text-purple-600" />
                 <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
@@ -127,12 +132,14 @@ function AdminDashboardContent() {
               <p className="text-muted-foreground text-lg">
                 Manage users, surveys, and monitor organizational burnout metrics.
               </p>
-            </motion.div>
+            </div>
 
             {/* Quick Stats */}
-            <motion.div
-              variants={itemVariants}
-              className="grid gap-4 md:grid-cols-2 lg:grid-cols-4"
+            <div
+              className={cn(
+                'grid gap-4 transition-all delay-200 duration-500 ease-out md:grid-cols-2 lg:grid-cols-4',
+                isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'
+              )}
             >
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -185,12 +192,14 @@ function AdminDashboardContent() {
                   <p className="text-muted-foreground text-xs">Require immediate attention</p>
                 </CardContent>
               </Card>
-            </motion.div>
+            </div>
 
             {/* Action Cards */}
-            <motion.div
-              variants={itemVariants}
-              className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+            <div
+              className={cn(
+                'grid gap-6 transition-all delay-300 duration-500 ease-out md:grid-cols-2 lg:grid-cols-3',
+                isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'
+              )}
             >
               <Card className="cursor-pointer transition-shadow hover:shadow-lg">
                 <Link href="/admin/users">
@@ -303,8 +312,8 @@ function AdminDashboardContent() {
                   </CardContent>
                 </Link>
               </Card>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         </main>
       </SidebarInset>
     </SidebarProvider>
