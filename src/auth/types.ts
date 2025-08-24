@@ -1,14 +1,27 @@
+// User roles enum for type safety
+export enum UserRole {
+  EMPLOYEE = 'employee',
+  TEAM_LEAD = 'team_lead',
+  MANAGER = 'manager',
+  ADMIN = 'admin',
+  SUPER_ADMIN = 'super_admin',
+}
+
 // User interface for type safety
 export interface User {
   id: string;
   email?: string;
   name?: string;
   avatar_url?: string;
-  role?: string;
+  role?: UserRole | string;
+  department?: string;
+  team?: string;
   user_metadata?: {
     name?: string;
     username?: string;
-    role?: string;
+    role?: UserRole | string;
+    department?: string;
+    team?: string;
   };
   access_token?: string;
   [key: string]: unknown;

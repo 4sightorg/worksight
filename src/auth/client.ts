@@ -96,6 +96,30 @@ export async function signIn(
     return { user, error: null, accessToken };
   }
 
+  // Admin test credentials
+  if (email === 'admin@worksight.app' && password === 'admin123') {
+    const user = {
+      ...AUTH_CONFIG.ADMIN_USER,
+      lastLogin: new Date().toISOString(),
+    };
+    const accessToken = generateMockToken();
+
+    storeSession(user, accessToken, saveLogin);
+    return { user, error: null, accessToken };
+  }
+
+  // Manager test credentials
+  if (email === 'manager@worksight.app' && password === 'manager123') {
+    const user = {
+      ...AUTH_CONFIG.MANAGER_USER,
+      lastLogin: new Date().toISOString(),
+    };
+    const accessToken = generateMockToken();
+
+    storeSession(user, accessToken, saveLogin);
+    return { user, error: null, accessToken };
+  }
+
   // Legacy test credentials
   if (
     (email === 'test' && password === 'testuser') ||
@@ -116,7 +140,10 @@ export async function signIn(
   if (isOffline()) {
     return {
       user: null,
-      error: { message: 'Invalid credentials. In offline mode, use test@worksight.app / testuser' },
+      error: {
+        message:
+          'Invalid credentials. Use test@worksight.app/testuser, admin@worksight.app/admin123, or manager@worksight.app/manager123',
+      },
       accessToken: null,
     };
   }

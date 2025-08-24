@@ -1,4 +1,6 @@
 // Authentication configuration
+import { UserRole } from './types';
+
 export const AUTH_CONFIG = {
   // Session timeouts
   SESSION_TIMEOUT: 5 * 60 * 1000, // 5 minutes in milliseconds
@@ -12,12 +14,30 @@ export const AUTH_CONFIG = {
     LOGIN_TIMESTAMP: 'worksight_login_timestamp',
   },
 
-  // Mock user for offline mode
+  // Mock users for offline mode
   OFFLINE_USER: {
     id: 'offline-user-123',
     email: 'test@worksight.app',
     name: 'Test User',
-    role: 'user',
+    role: UserRole.EMPLOYEE,
+  },
+
+  ADMIN_USER: {
+    id: 'admin-user-456',
+    email: 'admin@worksight.app',
+    name: 'Admin User',
+    role: UserRole.ADMIN,
+    department: 'IT',
+    team: 'System Administration',
+  },
+
+  MANAGER_USER: {
+    id: 'manager-user-789',
+    email: 'manager@worksight.app',
+    name: 'Manager User',
+    role: UserRole.MANAGER,
+    department: 'Engineering',
+    team: 'Product Development',
   },
 
   // OAuth providers
