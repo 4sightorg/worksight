@@ -41,7 +41,7 @@ function SurveyResultsContent() {
     name: 'Name',
     email: 'Email',
     role: 'Role',
-    
+
     // Workload & Job Demands
     workload_1: 'I often feel emotionally drained after a typical workday.',
     workload_2: 'My workload feels unmanageable in most weeks.',
@@ -49,21 +49,21 @@ function SurveyResultsContent() {
     workload_4: 'My job demands a lot of sustained mental and emotional effort.',
     workload_5: "Some days I have so much to do that I don't know where to start.",
     workload_6: 'The number of meetings in a typical week prevents me from completing core tasks.',
-    
+
     // Work–Life Balance & Recovery
     balance_1: 'I have enough energy for my personal life after work.',
     balance_2: 'I find it hard to switch off from work during my time off.',
     balance_3: 'I feel uneasy about using my leaves or holidays.',
     balance_4: 'Weekends or days off leave me feeling recharged.',
     balance_5: 'My job interferes with responsibilities at home.',
-    
+
     // Social Support & Autonomy
     support_1: 'I feel supported by my teammates.',
     support_2: 'My immediate supervisor shows genuine concern for my well-being.',
     support_3: 'I have a say in how I plan and do my work.',
     support_4: 'I often feel isolated at work, even with my team around.',
     support_5: 'I receive regular, constructive feedback that helps me improve.',
-    
+
     // Personal Accomplishment & Engagement
     engagement_1: 'I feel proud of the work I accomplish.',
     engagement_2: 'I am enthusiastic about my job.',
@@ -120,7 +120,12 @@ function SurveyResultsContent() {
   };
 
   // Render response card
-  const renderResponseCard = (response: SurveyResponse, index: number, borderColor: string, baseDelay: number) => (
+  const renderResponseCard = (
+    response: SurveyResponse,
+    index: number,
+    borderColor: string,
+    baseDelay: number
+  ) => (
     <Card
       key={response.questionId}
       className={`bg-muted/30 hover:bg-muted/50 animate-in fade-in border-l-4 ${borderColor} transition-all duration-300 hover:shadow-md`}
@@ -129,11 +134,11 @@ function SurveyResultsContent() {
       <CardContent className="p-4">
         <div className="space-y-2">
           <div className="flex items-start justify-between gap-4">
-            <h4 className="text-sm font-medium leading-relaxed text-foreground">
+            <h4 className="text-foreground text-sm leading-relaxed font-medium">
               {questionTitles[response.questionId] || response.questionId}
             </h4>
-            <div className="text-right flex-shrink-0">
-              <span className="text-primary font-semibold text-base">
+            <div className="flex-shrink-0 text-right">
+              <span className="text-primary text-base font-semibold">
                 {formatValue(response.value)}
               </span>
             </div>
@@ -144,18 +149,18 @@ function SurveyResultsContent() {
   );
 
   // Render response section
-  const renderResponseSection = (section: typeof responseSections[0]) => {
+  const renderResponseSection = (section: (typeof responseSections)[0]) => {
     const sectionResponses = responses.filter(section.filter);
-    
+
     if (sectionResponses.length === 0) return null;
 
     return (
       <div key={section.title} className="space-y-3">
-        <h3 className="text-lg font-semibold text-foreground border-b border-border pb-2">
+        <h3 className="text-foreground border-border border-b pb-2 text-lg font-semibold">
           {section.title}
         </h3>
         <div className="space-y-3">
-          {sectionResponses.map((response, index) => 
+          {sectionResponses.map((response, index) =>
             renderResponseCard(response, index, section.borderColor, section.animationDelay)
           )}
         </div>
@@ -675,9 +680,7 @@ function SurveyResultsContent() {
               <CardTitle>Your Response Summary</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-8">
-                {responseSections.map(renderResponseSection)}
-              </div>
+              <div className="space-y-8">{responseSections.map(renderResponseSection)}</div>
             </CardContent>
           </Card>
         )}

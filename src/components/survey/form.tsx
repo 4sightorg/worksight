@@ -238,7 +238,7 @@ export function SurveyForm({ questions, onComplete, onProgress }: SurveyFormProp
             // If it's the last question, complete the survey
             const responseArray: SurveyResponse[] = Object.entries({
               ...responses,
-              [questionId]: value
+              [questionId]: value,
             }).map(([id, val]) => ({
               questionId: id,
               value: val,
@@ -262,7 +262,15 @@ export function SurveyForm({ questions, onComplete, onProgress }: SurveyFormProp
         }
       }, 750); // Increased delay slightly to ensure user sees the selection
     },
-    [isAnimating, currentIndex, questions.length, responses, clearSurveyData, setIsCompleted, onComplete]
+    [
+      isAnimating,
+      currentIndex,
+      questions.length,
+      responses,
+      clearSurveyData,
+      setIsCompleted,
+      onComplete,
+    ]
   );
 
   const updateRadioResponse = useCallback(
@@ -279,7 +287,7 @@ export function SurveyForm({ questions, onComplete, onProgress }: SurveyFormProp
             // If it's the last question, complete the survey
             const responseArray: SurveyResponse[] = Object.entries({
               ...responses,
-              [questionId]: value
+              [questionId]: value,
             }).map(([id, val]) => ({
               questionId: id,
               value: val,
@@ -303,7 +311,15 @@ export function SurveyForm({ questions, onComplete, onProgress }: SurveyFormProp
         }
       }, 750); // Same delay as scale questions for consistency
     },
-    [isAnimating, currentIndex, questions.length, responses, clearSurveyData, setIsCompleted, onComplete]
+    [
+      isAnimating,
+      currentIndex,
+      questions.length,
+      responses,
+      clearSurveyData,
+      setIsCompleted,
+      onComplete,
+    ]
   );
 
   // Keyboard handling for different question types
@@ -398,7 +414,7 @@ export function SurveyForm({ questions, onComplete, onProgress }: SurveyFormProp
             value={currentResponse?.toString() || ''}
             onChange={(e) => updateResponse(currentQuestion.id, e.target.value)}
             placeholder={currentQuestion.placeholder || 'Type your answer...'}
-            className="focus:border-primary hover:border-primary/50 h-12 lg:h-14 transform border-2 p-3 lg:p-4 text-base lg:text-lg transition-all duration-300 focus:scale-[1.02]"
+            className="focus:border-primary hover:border-primary/50 h-12 transform border-2 p-3 text-base transition-all duration-300 focus:scale-[1.02] lg:h-14 lg:p-4 lg:text-lg"
             autoComplete="off"
           />
         );
@@ -411,7 +427,7 @@ export function SurveyForm({ questions, onComplete, onProgress }: SurveyFormProp
             value={currentResponse?.toString() || ''}
             onChange={(e) => updateResponse(currentQuestion.id, e.target.value)}
             placeholder={currentQuestion.placeholder || 'Enter a number...'}
-            className="focus:border-primary hover:border-primary/50 h-12 lg:h-14 transform border-2 p-3 lg:p-4 text-base lg:text-lg transition-all duration-300 focus:scale-[1.02]"
+            className="focus:border-primary hover:border-primary/50 h-12 transform border-2 p-3 text-base transition-all duration-300 focus:scale-[1.02] lg:h-14 lg:p-4 lg:text-lg"
             min={currentQuestion.min}
             max={currentQuestion.max}
           />
@@ -425,16 +441,16 @@ export function SurveyForm({ questions, onComplete, onProgress }: SurveyFormProp
                 key={option}
                 className={`hover:border-primary transform cursor-pointer rounded-lg border-2 p-3 transition-all duration-300 hover:scale-[1.02] hover:shadow-md ${
                   currentResponse === option
-                    ? 'border-primary bg-primary/5 scale-[1.02] shadow-md animate-pulse'
+                    ? 'border-primary bg-primary/5 scale-[1.02] animate-pulse shadow-md'
                     : 'border-border hover:border-primary/50'
                 }`}
                 onClick={() => updateRadioResponse(currentQuestion.id, option)}
               >
                 <div className="flex items-center gap-3">
-                  <span className="text-muted-foreground bg-muted rounded px-2 py-1 font-mono text-xs transition-all duration-200 flex-shrink-0">
+                  <span className="text-muted-foreground bg-muted flex-shrink-0 rounded px-2 py-1 font-mono text-xs transition-all duration-200">
                     {index + 1}
                   </span>
-                  <span className="text-sm lg:text-base transition-all duration-200">{option}</span>
+                  <span className="text-sm transition-all duration-200 lg:text-base">{option}</span>
                 </div>
               </div>
             ))}
@@ -457,9 +473,9 @@ export function SurveyForm({ questions, onComplete, onProgress }: SurveyFormProp
                   <button
                     key={value}
                     onClick={() => updateScaleResponse(currentQuestion.id, value)}
-                    className={`hover:border-primary h-10 w-10 lg:h-12 lg:w-12 transform rounded-full border-2 transition-all duration-300 hover:scale-110 active:scale-95 text-sm lg:text-base ${
+                    className={`hover:border-primary h-10 w-10 transform rounded-full border-2 text-sm transition-all duration-300 hover:scale-110 active:scale-95 lg:h-12 lg:w-12 lg:text-base ${
                       currentResponse === value
-                        ? 'border-primary bg-primary text-primary-foreground scale-110 shadow-lg animate-pulse'
+                        ? 'border-primary bg-primary text-primary-foreground scale-110 animate-pulse shadow-lg'
                         : 'border-border hover:border-primary/50 hover:shadow-md'
                     }`}
                     style={{
@@ -560,15 +576,15 @@ export function SurveyForm({ questions, onComplete, onProgress }: SurveyFormProp
           <CardContent className="p-8" ref={containerRef}>
             <div className="space-y-6">
               {/* Single Row: Question (left) + Answer (right) */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+              <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-2">
                 {/* Question Section - Left Side */}
                 <div className="animate-in fade-in slide-in-from-left-4 space-y-3 duration-500">
-                  <h2 className="text-xl lg:text-2xl leading-tight font-semibold">
+                  <h2 className="text-xl leading-tight font-semibold lg:text-2xl">
                     {currentQuestion.title}
                     {currentQuestion.required && <span className="text-destructive ml-1">*</span>}
                   </h2>
                   {currentQuestion.subtitle && (
-                    <p className="text-muted-foreground animate-in fade-in delay-200 duration-300 text-sm lg:text-base">
+                    <p className="text-muted-foreground animate-in fade-in text-sm delay-200 duration-300 lg:text-base">
                       {currentQuestion.subtitle}
                     </p>
                   )}
@@ -581,7 +597,7 @@ export function SurveyForm({ questions, onComplete, onProgress }: SurveyFormProp
               </div>
 
               {/* Navigation */}
-              <div className="animate-in fade-in slide-in-from-bottom-4 flex items-center justify-between pt-4 delay-300 duration-500 border-t border-border">
+              <div className="animate-in fade-in slide-in-from-bottom-4 border-border flex items-center justify-between border-t pt-4 delay-300 duration-500">
                 <Button
                   variant="ghost"
                   onClick={currentIndex === 0 ? handleGoBack : previousQuestion}

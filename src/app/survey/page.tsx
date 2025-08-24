@@ -13,7 +13,7 @@ const burnoutSurveyQuestions: SurveyQuestion[] = [
     subtitle: 'This helps us personalize your experience',
     required: true,
     placeholder: 'Enter your full name',
-    defaultValue: 'Test User'
+    defaultValue: 'Test User',
   },
   {
     id: 'email',
