@@ -21,6 +21,7 @@ export interface SurveyQuestion {
   min?: number;
   max?: number;
   placeholder?: string;
+  defaultValue?: string | number;
 }
 
 export interface SurveyResponse {
@@ -41,7 +42,6 @@ export function SurveyForm({ questions, onComplete, onProgress }: SurveyFormProp
   const [isAnimating, setIsAnimating] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [redirectCountdown, setRedirectCountdown] = useState(5);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -60,9 +60,22 @@ export function SurveyForm({ questions, onComplete, onProgress }: SurveyFormProp
       const savedResponses = localStorage.getItem(STORAGE_KEY_RESPONSES);
       const savedIndex = localStorage.getItem(STORAGE_KEY_INDEX);
 
+      let initialResponses: Record<string, string | number> = {};
+
+      // Initialize default values from questions
+      questions.forEach((question) => {
+        if (question.defaultValue !== undefined) {
+          initialResponses[question.id] = question.defaultValue;
+        }
+      });
+
       if (savedResponses) {
-        setResponses(JSON.parse(savedResponses));
+        const parsed = JSON.parse(savedResponses);
+        // Merge default values with saved responses (saved responses take priority)
+        initialResponses = { ...initialResponses, ...parsed };
       }
+
+      setResponses(initialResponses);
 
       if (savedIndex) {
         setCurrentIndex(parseInt(savedIndex, 10));
@@ -72,7 +85,7 @@ export function SurveyForm({ questions, onComplete, onProgress }: SurveyFormProp
     } finally {
       setIsLoaded(true);
     }
-  }, []);
+  }, [questions]);
 
   const saveResponsesToStorage = useCallback(() => {
     if (!isLoaded) return;
@@ -192,32 +205,14 @@ export function SurveyForm({ questions, onComplete, onProgress }: SurveyFormProp
       // Call the completion handler
       onComplete(responseArray);
 
-      // Start countdown
-      let countdown = 5;
-      const countdownInterval = setInterval(() => {
-        countdown--;
-        setRedirectCountdown(countdown);
-
-        if (countdown <= 0) {
-          clearInterval(countdownInterval);
-          handleGoBack();
-        }
-      }, 1000);
+      // No countdown or redirect - let the parent component handle navigation
     } else {
       setTimeout(() => {
         setCurrentIndex((prev) => prev + 1);
         setIsAnimating(false);
       }, 150);
     }
-  }, [
-    canProceed,
-    isAnimating,
-    isLastQuestion,
-    responses,
-    onComplete,
-    clearSurveyData,
-    handleGoBack,
-  ]);
+  }, [canProceed, isAnimating, isLastQuestion, responses, onComplete, clearSurveyData]);
 
   const previousQuestion = useCallback(() => {
     if (currentIndex === 0 || isAnimating) return;
@@ -228,6 +223,88 @@ export function SurveyForm({ questions, onComplete, onProgress }: SurveyFormProp
       setIsAnimating(false);
     }, 150);
   }, [currentIndex, isAnimating]);
+
+  const updateScaleResponse = useCallback(
+    (questionId: string, value: string | number) => {
+      setResponses((prev) => ({ ...prev, [questionId]: value }));
+
+      // Auto-advance to next question after a short delay for scale questions
+      setTimeout(() => {
+        if (!isAnimating) {
+          // Force advance since we know we just answered the question
+          setIsAnimating(true);
+
+          if (currentIndex === questions.length - 1) {
+            // If it's the last question, complete the survey
+            const responseArray: SurveyResponse[] = Object.entries({
+              ...responses,
+              [questionId]: value
+            }).map(([id, val]) => ({
+              questionId: id,
+              value: val,
+            }));
+
+            // Clear saved data before completing
+            clearSurveyData();
+
+            // Set completion state
+            setIsCompleted(true);
+
+            // Call the completion handler
+            onComplete(responseArray);
+          } else {
+            // Move to next question
+            setTimeout(() => {
+              setCurrentIndex((prev) => prev + 1);
+              setIsAnimating(false);
+            }, 150);
+          }
+        }
+      }, 750); // Increased delay slightly to ensure user sees the selection
+    },
+    [isAnimating, currentIndex, questions.length, responses, clearSurveyData, setIsCompleted, onComplete]
+  );
+
+  const updateRadioResponse = useCallback(
+    (questionId: string, value: string | number) => {
+      setResponses((prev) => ({ ...prev, [questionId]: value }));
+
+      // Auto-advance to next question after a short delay for radio questions
+      setTimeout(() => {
+        if (!isAnimating) {
+          // Force advance since we know we just answered the question
+          setIsAnimating(true);
+
+          if (currentIndex === questions.length - 1) {
+            // If it's the last question, complete the survey
+            const responseArray: SurveyResponse[] = Object.entries({
+              ...responses,
+              [questionId]: value
+            }).map(([id, val]) => ({
+              questionId: id,
+              value: val,
+            }));
+
+            // Clear saved data before completing
+            clearSurveyData();
+
+            // Set completion state
+            setIsCompleted(true);
+
+            // Call the completion handler
+            onComplete(responseArray);
+          } else {
+            // Move to next question
+            setTimeout(() => {
+              setCurrentIndex((prev) => prev + 1);
+              setIsAnimating(false);
+            }, 150);
+          }
+        }
+      }, 750); // Same delay as scale questions for consistency
+    },
+    [isAnimating, currentIndex, questions.length, responses, clearSurveyData, setIsCompleted, onComplete]
+  );
 
   // Keyboard handling for different question types
   const handleQuestionTypeKeydown = useCallback(
@@ -245,27 +322,23 @@ export function SurveyForm({ questions, onComplete, onProgress }: SurveyFormProp
           const radioIndex = parseInt(e.key) - 1;
           if (radioIndex >= 0 && radioIndex < (question.options?.length || 0)) {
             e.preventDefault();
-            updateResponse(question.id, question.options![radioIndex]);
+            updateRadioResponse(question.id, question.options![radioIndex]);
           }
           break;
 
         case 'scale':
-          let scaleValue = parseInt(e.key);
-          const minValue = question.min || 0;
-          const maxValue = question.max || 9;
-
-          if (e.key === '0') {
-            scaleValue = maxValue;
-          }
+          const scaleValue = parseInt(e.key);
+          const minValue = question.min || 1;
+          const maxValue = question.max || 5;
 
           if (scaleValue >= minValue && scaleValue <= maxValue) {
             e.preventDefault();
-            updateResponse(question.id, scaleValue);
+            updateScaleResponse(question.id, scaleValue);
           }
           break;
       }
     },
-    [currentResponse, updateResponse]
+    [currentResponse, updateResponse, updateScaleResponse, updateRadioResponse]
   );
 
   // Navigation keyboard handling
@@ -325,7 +398,7 @@ export function SurveyForm({ questions, onComplete, onProgress }: SurveyFormProp
             value={currentResponse?.toString() || ''}
             onChange={(e) => updateResponse(currentQuestion.id, e.target.value)}
             placeholder={currentQuestion.placeholder || 'Type your answer...'}
-            className="focus:border-primary hover:border-primary/50 h-14 transform border-2 p-4 text-lg transition-all duration-300 focus:scale-[1.02]"
+            className="focus:border-primary hover:border-primary/50 h-12 lg:h-14 transform border-2 p-3 lg:p-4 text-base lg:text-lg transition-all duration-300 focus:scale-[1.02]"
             autoComplete="off"
           />
         );
@@ -338,7 +411,7 @@ export function SurveyForm({ questions, onComplete, onProgress }: SurveyFormProp
             value={currentResponse?.toString() || ''}
             onChange={(e) => updateResponse(currentQuestion.id, e.target.value)}
             placeholder={currentQuestion.placeholder || 'Enter a number...'}
-            className="focus:border-primary hover:border-primary/50 h-14 transform border-2 p-4 text-lg transition-all duration-300 focus:scale-[1.02]"
+            className="focus:border-primary hover:border-primary/50 h-12 lg:h-14 transform border-2 p-3 lg:p-4 text-base lg:text-lg transition-all duration-300 focus:scale-[1.02]"
             min={currentQuestion.min}
             max={currentQuestion.max}
           />
@@ -350,51 +423,61 @@ export function SurveyForm({ questions, onComplete, onProgress }: SurveyFormProp
             {currentQuestion.options?.map((option, index) => (
               <div
                 key={option}
-                className={`hover:border-primary transform cursor-pointer rounded-lg border-2 p-4 transition-all duration-300 hover:scale-[1.02] hover:shadow-md ${
+                className={`hover:border-primary transform cursor-pointer rounded-lg border-2 p-3 transition-all duration-300 hover:scale-[1.02] hover:shadow-md ${
                   currentResponse === option
-                    ? 'border-primary bg-primary/5 scale-[1.02] shadow-md'
+                    ? 'border-primary bg-primary/5 scale-[1.02] shadow-md animate-pulse'
                     : 'border-border hover:border-primary/50'
                 }`}
-                onClick={() => updateResponse(currentQuestion.id, option)}
+                onClick={() => updateRadioResponse(currentQuestion.id, option)}
               >
                 <div className="flex items-center gap-3">
-                  <span className="text-muted-foreground bg-muted rounded px-2 py-1 font-mono text-sm transition-all duration-200">
+                  <span className="text-muted-foreground bg-muted rounded px-2 py-1 font-mono text-xs transition-all duration-200 flex-shrink-0">
                     {index + 1}
                   </span>
-                  <span className="text-lg transition-all duration-200">{option}</span>
+                  <span className="text-sm lg:text-base transition-all duration-200">{option}</span>
                 </div>
               </div>
             ))}
+            <div className="text-muted-foreground animate-in fade-in text-center text-xs delay-300 duration-500">
+              Press 1-{currentQuestion.options?.length} • Auto-advances
+            </div>
           </div>
         );
 
       case 'scale':
         const min = currentQuestion.min || 1;
-        const max = currentQuestion.max || 10;
+        const max = currentQuestion.max || 5;
         const scaleOptions = Array.from({ length: max - min + 1 }, (_, i) => min + i);
 
         return (
           <div className="space-y-4">
-            <div className="flex items-center justify-between gap-2">
-              {scaleOptions.map((value, index) => (
-                <button
-                  key={value}
-                  onClick={() => updateResponse(currentQuestion.id, value)}
-                  className={`hover:border-primary h-12 w-12 transform rounded-full border-2 transition-all duration-300 hover:scale-110 active:scale-95 ${
-                    currentResponse === value
-                      ? 'border-primary bg-primary text-primary-foreground scale-110 shadow-lg'
-                      : 'border-border hover:border-primary/50 hover:shadow-md'
-                  }`}
-                  style={{
-                    animationDelay: `${index * 50}ms`,
-                  }}
-                >
-                  {value}
-                </button>
-              ))}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between gap-2">
+                {scaleOptions.map((value, index) => (
+                  <button
+                    key={value}
+                    onClick={() => updateScaleResponse(currentQuestion.id, value)}
+                    className={`hover:border-primary h-10 w-10 lg:h-12 lg:w-12 transform rounded-full border-2 transition-all duration-300 hover:scale-110 active:scale-95 text-sm lg:text-base ${
+                      currentResponse === value
+                        ? 'border-primary bg-primary text-primary-foreground scale-110 shadow-lg animate-pulse'
+                        : 'border-border hover:border-primary/50 hover:shadow-md'
+                    }`}
+                    style={{
+                      animationDelay: `${index * 50}ms`,
+                    }}
+                  >
+                    {value}
+                  </button>
+                ))}
+              </div>
+              <div className="text-muted-foreground flex justify-between text-xs">
+                <span>Strongly Disagree</span>
+                <span className="hidden sm:inline">Neutral</span>
+                <span>Strongly Agree</span>
+              </div>
             </div>
-            <div className="text-muted-foreground animate-in fade-in text-center text-sm delay-300 duration-500">
-              Press {min}-{max} on your keyboard to select
+            <div className="text-muted-foreground animate-in fade-in text-center text-xs delay-300 duration-500">
+              Press {min}-{max} • Auto-advances
             </div>
           </div>
         );
@@ -433,11 +516,8 @@ export function SurveyForm({ questions, onComplete, onProgress }: SurveyFormProp
               </p>
               <div className="bg-muted animate-in fade-in slide-in-from-bottom-4 rounded-lg p-4 delay-700 duration-700">
                 <p className="text-muted-foreground text-sm">
-                  Redirecting you back in{' '}
-                  <span className="text-primary transform font-bold transition-all duration-300">
-                    {redirectCountdown}
-                  </span>{' '}
-                  seconds...
+                  Your responses have been submitted successfully. You should be redirected to the
+                  results page shortly.
                 </p>
               </div>
               <Button
@@ -459,7 +539,7 @@ export function SurveyForm({ questions, onComplete, onProgress }: SurveyFormProp
 
   return (
     <div className="from-background to-muted/20 flex min-h-screen items-center justify-center bg-gradient-to-br p-4 pb-24 transition-all duration-500 ease-in-out">
-      <div className="animate-in fade-in slide-in-from-bottom-8 w-full max-w-2xl duration-700">
+      <div className="animate-in fade-in slide-in-from-bottom-8 w-full max-w-6xl duration-700">
         {/* Restored data notification */}
         {hasRestoredData && currentIndex === 0 && (
           <div className="animate-in fade-in slide-in-from-top-4 mb-4 rounded-lg border border-blue-200 bg-blue-50 p-3 duration-500 dark:border-blue-800 dark:bg-blue-900/20">
@@ -469,7 +549,7 @@ export function SurveyForm({ questions, onComplete, onProgress }: SurveyFormProp
           </div>
         )}
 
-        {/* Question card */}
+        {/* Question card - Single Row Layout */}
         <Card
           className={`transform transition-all duration-500 ease-in-out ${
             isAnimating
@@ -479,26 +559,29 @@ export function SurveyForm({ questions, onComplete, onProgress }: SurveyFormProp
         >
           <CardContent className="p-8" ref={containerRef}>
             <div className="space-y-6">
-              {/* Question header */}
-              <div className="animate-in fade-in slide-in-from-left-4 space-y-2 duration-500">
-                <h2 className="text-2xl leading-tight font-semibold">
-                  {currentQuestion.title}
-                  {currentQuestion.required && <span className="text-destructive ml-1">*</span>}
-                </h2>
-                {currentQuestion.subtitle && (
-                  <p className="text-muted-foreground animate-in fade-in delay-200 duration-300">
-                    {currentQuestion.subtitle}
-                  </p>
-                )}
-              </div>
+              {/* Single Row: Question (left) + Answer (right) */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                {/* Question Section - Left Side */}
+                <div className="animate-in fade-in slide-in-from-left-4 space-y-3 duration-500">
+                  <h2 className="text-xl lg:text-2xl leading-tight font-semibold">
+                    {currentQuestion.title}
+                    {currentQuestion.required && <span className="text-destructive ml-1">*</span>}
+                  </h2>
+                  {currentQuestion.subtitle && (
+                    <p className="text-muted-foreground animate-in fade-in delay-200 duration-300 text-sm lg:text-base">
+                      {currentQuestion.subtitle}
+                    </p>
+                  )}
+                </div>
 
-              {/* Question input */}
-              <div className="animate-in fade-in slide-in-from-right-4 space-y-4 delay-100 duration-500">
-                {renderQuestion()}
+                {/* Answer Section - Right Side */}
+                <div className="animate-in fade-in slide-in-from-right-4 space-y-4 delay-100 duration-500">
+                  {renderQuestion()}
+                </div>
               </div>
 
               {/* Navigation */}
-              <div className="animate-in fade-in slide-in-from-bottom-4 flex items-center justify-between pt-4 delay-300 duration-500">
+              <div className="animate-in fade-in slide-in-from-bottom-4 flex items-center justify-between pt-4 delay-300 duration-500 border-t border-border">
                 <Button
                   variant="ghost"
                   onClick={currentIndex === 0 ? handleGoBack : previousQuestion}
@@ -543,8 +626,8 @@ export function SurveyForm({ questions, onComplete, onProgress }: SurveyFormProp
           )}
           {currentQuestion.type === 'scale' && (
             <p className="animate-in slide-in-from-bottom-2 duration-500">
-              Press {currentQuestion.min || 1}-{currentQuestion.max || 10} to rate (0 ={' '}
-              {currentQuestion.max || 10})
+              Press {currentQuestion.min || 1}-{currentQuestion.max || 5} to rate • Auto-advances
+              after selection
             </p>
           )}
           {currentQuestion.type === 'number' && (
@@ -570,7 +653,7 @@ export function SurveyForm({ questions, onComplete, onProgress }: SurveyFormProp
 
       {/* Sticky Progress bar at bottom */}
       <div className="bg-background/95 border-border animate-in slide-in-from-bottom-4 fixed right-0 bottom-0 left-0 z-50 border-t p-4 backdrop-blur-sm delay-300 duration-700">
-        <div className="mx-auto max-w-2xl">
+        <div className="mx-auto max-w-6xl">
           <div className="text-muted-foreground mb-2 flex justify-between text-sm">
             <span className="transition-all duration-300">
               Question {currentIndex + 1} of {questions.length}
