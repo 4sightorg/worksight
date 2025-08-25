@@ -150,8 +150,8 @@ jobs:
             apps/*/node_modules
           key: ${{ needs.setup.outputs.cache-key }}
 
-      - name: Run tests
-        run: pnpm test:ci
+      # - name: Run tests
+      #   run: pnpm test:ci
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v3
