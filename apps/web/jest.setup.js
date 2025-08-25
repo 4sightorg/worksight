@@ -42,16 +42,6 @@ jest.mock('next/navigation', () => ({
   },
 }));
 
-// Mock motion/react for testing
-jest.mock('motion/react', () => ({
-  motion: {
-    div: ({ children, ...props }) => <div {...props}>{children}</div>,
-    span: ({ children, ...props }) => <span {...props}>{children}</span>,
-    button: ({ children, ...props }) => <button {...props}>{children}</button>,
-  },
-  AnimatePresence: ({ children }) => children,
-}));
-
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
