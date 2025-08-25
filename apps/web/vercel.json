@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "installCommand": "pnpm install --filter=web...",
+  "installCommand": "pnpm install --filter=web",
   "buildCommand": "pnpm build --filter=web",
   "outputDirectory": ".next",
   "framework": "nextjs",
