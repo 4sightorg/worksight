@@ -354,7 +354,7 @@ function TasksContent() {
 
           {/* Search */}
           <div className="relative max-w-md">
-            <Search className="text-muted-foreground absolute top-3 left-3 h-4 w-4" />
+            <Search className="text-muted-foreground absolute left-3 top-3 h-4 w-4" />
             <Input
               placeholder="Search tasks..."
               value={searchTerm}

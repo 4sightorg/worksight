@@ -1,12 +1,15 @@
 # WorkSight Documentation
 
-Welcome to the WorkSight documentation! WorkSight is a comprehensive Employee Burnout Assessment Tool designed to help organizations monitor and improve workplace well-being.
+Welcome to the WorkSight documentation! WorkSight is a comprehensive Employee
+Burnout Assessment Tool designed to help organizations monitor and improve
+workplace well-being.
 
 ## What is WorkSight?
 
 WorkSight is a modern web application that provides:
 
-- **Comprehensive Burnout Assessment**: Evidence-based 25-question survey covering 4 key dimensions
+- **Comprehensive Burnout Assessment**: Evidence-based 25-question survey
+  covering 4 key dimensions
 - **Real-time Analytics**: Detailed insights into employee well-being trends
 - **Admin Dashboard**: Powerful tools for HR professionals and managers
 - **Privacy-First Design**: Secure handling of sensitive employee data
@@ -64,4 +67,4 @@ For questions and support:
 
 ---
 
-*Built with ❤️ by the 4Sight Organization*
+_Built with ❤️ by the 4Sight Organization_

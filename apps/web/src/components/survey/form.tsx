@@ -539,7 +539,7 @@ export function SurveyForm({ questions, onComplete, onProgress }: SurveyFormProp
               <Button
                 onClick={handleGoBack}
                 variant="outline"
-                className="animate-in fade-in slide-in-from-bottom-4 w-full transition-all delay-900 duration-700 hover:scale-105"
+                className="animate-in fade-in slide-in-from-bottom-4 delay-900 w-full transition-all duration-700 hover:scale-105"
               >
                 Go Back Now
               </Button>
@@ -579,7 +579,7 @@ export function SurveyForm({ questions, onComplete, onProgress }: SurveyFormProp
               <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-2">
                 {/* Question Section - Left Side */}
                 <div className="animate-in fade-in slide-in-from-left-4 space-y-3 duration-500">
-                  <h2 className="text-xl leading-tight font-semibold lg:text-2xl">
+                  <h2 className="text-xl font-semibold leading-tight lg:text-2xl">
                     {currentQuestion.title}
                     {currentQuestion.required && <span className="text-destructive ml-1">*</span>}
                   </h2>
@@ -668,7 +668,7 @@ export function SurveyForm({ questions, onComplete, onProgress }: SurveyFormProp
       </div>
 
       {/* Sticky Progress bar at bottom */}
-      <div className="bg-background/95 border-border animate-in slide-in-from-bottom-4 fixed right-0 bottom-0 left-0 z-50 border-t p-4 backdrop-blur-sm delay-300 duration-700">
+      <div className="bg-background/95 border-border animate-in slide-in-from-bottom-4 fixed bottom-0 left-0 right-0 z-50 border-t p-4 backdrop-blur-sm delay-300 duration-700">
         <div className="mx-auto max-w-6xl">
           <div className="text-muted-foreground mb-2 flex justify-between text-sm">
             <span className="transition-all duration-300">

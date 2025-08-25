@@ -24,7 +24,7 @@ export function MainNav() {
   const [selectedSection, setSelectedSection] = React.useState(defaultSection);
 
   return (
-    <div className="mr-4 ml-4 hidden md:flex">
+    <div className="ml-4 mr-4 hidden md:flex">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <SidebarMenuButton

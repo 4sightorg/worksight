@@ -134,7 +134,7 @@ function SurveyResultsContent() {
       <CardContent className="p-4">
         <div className="space-y-2">
           <div className="flex items-start justify-between gap-4">
-            <h4 className="text-foreground text-sm leading-relaxed font-medium">
+            <h4 className="text-foreground text-sm font-medium leading-relaxed">
               {questionTitles[response.questionId] || response.questionId}
             </h4>
             <div className="flex-shrink-0 text-right">
@@ -497,7 +497,7 @@ function SurveyResultsContent() {
                     ? 'High Burnout Risk'
                     : 'Severe Burnout Risk'}
             </CardTitle>
-            <div className="mt-4 mb-2 text-6xl font-bold">
+            <div className="mb-2 mt-4 text-6xl font-bold">
               <span
                 className={
                   result.overallLevel === 'low'

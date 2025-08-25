@@ -1,10 +1,12 @@
 # Survey System
 
-The WorkSight Survey System is the core component that provides comprehensive burnout assessment capabilities.
+The WorkSight Survey System is the core component that provides comprehensive
+burnout assessment capabilities.
 
 ## Overview
 
-The survey system implements a scientifically validated 25-question assessment tool designed to measure four key dimensions of workplace well-being:
+The survey system implements a scientifically validated 25-question assessment
+tool designed to measure four key dimensions of workplace well-being:
 
 1. **Workload & Job Demands** - Emotional exhaustion and work pressure
 2. **Work-Life Balance & Recovery** - Ability to disconnect and recharge
@@ -18,7 +20,7 @@ The survey system implements a scientifically validated 25-question assessment t
 All assessment questions use a standardized 1-5 Likert scale:
 
 - **1** - Strongly Disagree
-- **2** - Disagree  
+- **2** - Disagree
 - **3** - Neutral
 - **4** - Agree
 - **5** - Strongly Agree
@@ -30,7 +32,8 @@ The survey includes intelligent auto-advance features:
 - **Scale Questions**: Automatically advance after selection (750ms delay)
 - **Radio Questions**: Automatically advance after selection (750ms delay)
 - **Visual Feedback**: Clear indication of auto-advance behavior
-- **Manual Override**: Users can still navigate manually using Previous/Next buttons
+- **Manual Override**: Users can still navigate manually using Previous/Next
+  buttons
 
 ### 📱 Responsive Design
 
@@ -138,7 +141,7 @@ Each dimension is calculated by summing individual question scores:
 ```javascript
 // Example: Workload dimension
 const workloadScore = workloadItems.reduce((sum, item) => {
-  const response = responses.find(r => r.questionId === item);
+  const response = responses.find((r) => r.questionId === item);
   return sum + (Number(response?.value) || 1);
 }, 0);
 ```
@@ -149,7 +152,8 @@ The overall risk score is calculated as a weighted percentage:
 
 ```javascript
 const totalMaxScore = 30 + 25 + 25 + 45; // 125 total points
-const totalScore = workloadScore + balanceScore + supportScore + engagementScore;
+const totalScore =
+  workloadScore + balanceScore + supportScore + engagementScore;
 const overallRiskScore = Math.round((totalScore / totalMaxScore) * 100);
 ```
 
@@ -161,7 +165,7 @@ const overallRiskScore = Math.round((totalScore / totalMaxScore) * 100);
 SurveyForm
 ├── Question Rendering
 │   ├── Text Input
-│   ├── Number Input  
+│   ├── Number Input
 │   ├── Radio Selection (with auto-advance)
 │   └── Scale Selection (with auto-advance)
 ├── Navigation Controls
@@ -172,7 +176,7 @@ SurveyForm
 ### Key Functions
 
 - `updateScaleResponse()` - Handles scale selections with auto-advance
-- `updateRadioResponse()` - Handles radio selections with auto-advance  
+- `updateRadioResponse()` - Handles radio selections with auto-advance
 - `loadSavedData()` - Restores progress from localStorage
 - `saveProgress()` - Persists current responses
 

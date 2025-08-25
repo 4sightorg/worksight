@@ -1,6 +1,7 @@
 # Getting Started with WorkSight
 
-This guide will help you set up WorkSight locally and understand its core features.
+This guide will help you set up WorkSight locally and understand its core
+features.
 
 ## Prerequisites
 
@@ -89,7 +90,8 @@ worksight/
 
 ### 🎯 Burnout Assessment
 
-WorkSight provides a comprehensive 25-question assessment covering four key dimensions:
+WorkSight provides a comprehensive 25-question assessment covering four key
+dimensions:
 
 1. **Workload & Job Demands** (6 questions)
 2. **Work-Life Balance & Recovery** (5 questions)
@@ -160,4 +162,5 @@ pnpm type-check
 
 - 📧 **Support:** [support@worksight.app](mailto:support@worksight.app)
 - 🐛 **Issues:** [GitHub Issues](https://github.com/4sightorg/worksight/issues)
-- 💬 **Discussions:** [GitHub Discussions](https://github.com/4sightorg/worksight/discussions)
+- 💬 **Discussions:**
+  [GitHub Discussions](https://github.com/4sightorg/worksight/discussions)

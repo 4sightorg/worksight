@@ -97,7 +97,7 @@ export function HomePageAnimation({ children }: { children: ReactNode }) {
   return (
     <div
       className={cn(
-        'min-h-screen transition-all duration-600 ease-out',
+        'duration-600 min-h-screen transition-all ease-out',
         isMounted ? 'translate-y-0 scale-100 opacity-100' : 'translate-y-5 scale-95 opacity-0'
       )}
     >

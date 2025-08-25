@@ -1,6 +1,7 @@
 # Deployment Guide
 
-This guide covers how to deploy WorkSight to production using Vercel for the web application and GitHub Pages for documentation.
+This guide covers how to deploy WorkSight to production using Vercel for the web
+application and GitHub Pages for documentation.
 
 ## Prerequisites
 
@@ -26,10 +27,10 @@ Before deploying, ensure you have:
    ```bash
    # Build Command
    cd ../.. && pnpm build --filter=@worksight/web
-   
+
    # Output Directory
    apps/web/.next
-   
+
    # Install Command
    pnpm install
    ```
@@ -47,7 +48,8 @@ Before deploying, ensure you have:
 
 ### 2. GitHub Secrets
 
-Add these secrets to your GitHub repository (Settings → Secrets and variables → Actions):
+Add these secrets to your GitHub repository (Settings → Secrets and variables →
+Actions):
 
 ```env
 # Vercel Deployment

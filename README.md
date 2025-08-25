@@ -3,7 +3,9 @@
 [![CI](https://github.com/4sightorg/worksight/workflows/CI/badge.svg)](https://github.com/4sightorg/worksight/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-WorkSight is an employee well-being analytics platform built with Next.js and Supabase. This monorepo contains the web application, documentation, and shared packages.
+WorkSight is an employee well-being analytics platform built with Next.js and
+Supabase. This monorepo contains the web application, documentation, and shared
+packages.
 
 ## 🏗️ Project Structure
 
@@ -150,7 +152,8 @@ pnpm preview          # Preview production build
    gh workflow run deploy.yml
    ```
 
-See [Deployment Guide](./apps/docs/guide/deployment.md) for detailed instructions.
+See [Deployment Guide](./apps/docs/guide/deployment.md) for detailed
+instructions.
 
 ## 🧪 Testing
 
@@ -287,12 +290,14 @@ chore: upgrade dependencies
 ### Getting Help
 
 - **Issues**: [GitHub Issues](https://github.com/4sightorg/worksight/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/4sightorg/worksight/discussions)
+- **Discussions**:
+  [GitHub Discussions](https://github.com/4sightorg/worksight/discussions)
 - **Documentation**: [Project Documentation](./apps/docs/)
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
+for details.
 
 ## 🙏 Acknowledgments
 

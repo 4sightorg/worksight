@@ -117,7 +117,7 @@ export function SessionTimer({ variant = 'header' }: SessionTimerProps) {
 
   // Floating variant - full warning display
   return (
-    <div className="fixed right-4 bottom-4 z-50">
+    <div className="fixed bottom-4 right-4 z-50">
       {showWarning && (
         <div className="mb-2 rounded-lg border border-amber-200 bg-amber-50 p-3 shadow-lg dark:border-amber-800 dark:bg-amber-950/20">
           <div className="flex items-center gap-2 text-amber-800 dark:text-amber-200">

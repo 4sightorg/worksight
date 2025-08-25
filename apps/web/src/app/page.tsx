@@ -29,7 +29,7 @@ export default function Home() {
         >
           <h1
             className={cn(
-              'text-primary leading-tighter max-w-2xl text-4xl font-bold tracking-tight text-balance transition-all delay-300 duration-700 ease-out lg:text-5xl lg:leading-[1.1] xl:text-6xl xl:tracking-tighter',
+              'text-primary leading-tighter max-w-2xl text-balance text-4xl font-bold tracking-tight transition-all delay-300 duration-700 ease-out lg:text-5xl lg:leading-[1.1] xl:text-6xl xl:tracking-tighter',
               isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'
             )}
           >
@@ -37,7 +37,7 @@ export default function Home() {
           </h1>
           <h2
             className={cn(
-              'text-muted-foreground mt-6 max-w-2xl text-center text-lg leading-relaxed font-normal transition-all delay-500 duration-700 ease-out lg:text-xl',
+              'text-muted-foreground mt-6 max-w-2xl text-center text-lg font-normal leading-relaxed transition-all delay-500 duration-700 ease-out lg:text-xl',
               isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'
             )}
           >
@@ -54,7 +54,7 @@ export default function Home() {
         >
           <div
             className={cn(
-              'transition-all delay-900 duration-400 ease-out',
+              'delay-900 duration-400 transition-all ease-out',
               isAnimated ? 'scale-100 opacity-100' : 'scale-80 opacity-0'
             )}
           >
@@ -67,7 +67,7 @@ export default function Home() {
 
           <div
             className={cn(
-              'transition-all delay-1000 duration-400 ease-out',
+              'duration-400 transition-all delay-1000 ease-out',
               isAnimated ? 'scale-100 opacity-100' : 'scale-80 opacity-0'
             )}
           >
@@ -84,7 +84,7 @@ export default function Home() {
 
           <div
             className={cn(
-              'transition-all delay-1100 duration-400 ease-out',
+              'delay-1100 duration-400 transition-all ease-out',
               isAnimated ? 'scale-100 opacity-100' : 'scale-80 opacity-0'
             )}
           >

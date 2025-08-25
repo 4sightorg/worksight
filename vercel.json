@@ -1,9 +1,7 @@
 {
   "version": 2,
   "name": "worksight",
-  "alias": [
-    "worksight.vercel.app"
-  ],
+  "alias": ["worksight.vercel.app"],
   "buildCommand": "cd ../.. && pnpm build --filter=@worksight/web",
   "outputDirectory": "apps/web/.next",
   "installCommand": "pnpm install",

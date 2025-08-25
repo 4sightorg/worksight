@@ -2,7 +2,7 @@
 
 We are committed to protecting your privacy and personal information.
 
-*Last updated: August 24, 2025*
+_Last updated: August 24, 2025_
 
 ## 1. Information We Collect
 
@@ -29,7 +29,8 @@ We are committed to protecting your privacy and personal information.
 ## 2. How We Use Your Information
 
 - **Service Provision:** To provide and maintain the WorkSight dashboard
-- **Personalization:** To customize your experience and provide relevant insights
+- **Personalization:** To customize your experience and provide relevant
+  insights
 - **Analytics:** To generate burnout risk assessments and well-being trends
 - **Communication:** To send important updates and optional notifications
 - **Improvement:** To enhance our service features and user experience
@@ -41,10 +42,13 @@ We are committed to protecting your privacy and personal information.
 
 We may share your information only in the following circumstances:
 
-- **With your consent:** When you explicitly authorize us to share specific information
-- **Service providers:** With trusted third-party services that help us operate WorkSight
+- **With your consent:** When you explicitly authorize us to share specific
+  information
+- **Service providers:** With trusted third-party services that help us operate
+  WorkSight
 - **Legal requirements:** When required by law or to protect our legal rights
-- **Aggregated data:** Anonymous, aggregated statistics that cannot identify individuals
+- **Aggregated data:** Anonymous, aggregated statistics that cannot identify
+  individuals
 
 ## 4. Data Security
 
@@ -88,19 +92,28 @@ We retain your information for as long as necessary to:
 - Comply with legal obligations
 - Resolve disputes and enforce agreements
 
-When you delete your account, we will remove your personal information within 30 days, except where retention is required by law.
+When you delete your account, we will remove your personal information within 30
+days, except where retention is required by law.
 
 ## 8. Children's Privacy
 
-WorkSight is not intended for children under 13 years of age. We do not knowingly collect personal information from children under 13. If we become aware that we have collected such information, we will take steps to delete it promptly.
+WorkSight is not intended for children under 13 years of age. We do not
+knowingly collect personal information from children under 13. If we become
+aware that we have collected such information, we will take steps to delete it
+promptly.
 
 ## 9. International Data Transfers
 
-Your information may be transferred to and processed in countries other than your own. We ensure appropriate safeguards are in place to protect your information during such transfers, including standard contractual clauses and adequacy decisions.
+Your information may be transferred to and processed in countries other than
+your own. We ensure appropriate safeguards are in place to protect your
+information during such transfers, including standard contractual clauses and
+adequacy decisions.
 
 ## 10. Changes to This Policy
 
-We may update this Privacy Policy from time to time. We will notify you of any material changes by posting the new policy on this page and updating the "Last updated" date. We encourage you to review this policy periodically.
+We may update this Privacy Policy from time to time. We will notify you of any
+material changes by posting the new policy on this page and updating the "Last
+updated" date. We encourage you to review this policy periodically.
 
 ## 11. GDPR Compliance (EU Users)
 
@@ -119,11 +132,13 @@ We may update this Privacy Policy from time to time. We will notify you of any m
 
 ### Data Protection Officer
 
-For GDPR-related inquiries, contact our Data Protection Officer at <dpo@4sight.org>
+For GDPR-related inquiries, contact our Data Protection Officer at
+<dpo@4sight.org>
 
 ## 12. California Privacy Rights (CCPA/CPRA)
 
-California residents have additional rights under the California Consumer Privacy Act:
+California residents have additional rights under the California Consumer
+Privacy Act:
 
 ### Categories of Personal Information We Collect
 
@@ -152,11 +167,14 @@ WorkSight may collect sensitive personal information including:
 - Information about mental health and well-being
 - Work performance and productivity metrics
 
-This information is used solely to provide personalized well-being insights and is protected with enhanced security measures. You can limit the collection of sensitive information through your account settings.
+This information is used solely to provide personalized well-being insights and
+is protected with enhanced security measures. You can limit the collection of
+sensitive information through your account settings.
 
 ## 14. Automated Decision-Making and Profiling
 
-WorkSight uses automated processing to provide burnout risk assessments and personalized recommendations. You have the right to:
+WorkSight uses automated processing to provide burnout risk assessments and
+personalized recommendations. You have the right to:
 
 - Request human review of automated decisions
 - Object to automated decision-making
@@ -166,7 +184,8 @@ Contact us at <privacy@4sight.org> to exercise these rights.
 
 ## 15. Cross-Border Data Transfers
 
-When transferring personal data outside your country, we implement appropriate safeguards:
+When transferring personal data outside your country, we implement appropriate
+safeguards:
 
 - Standard Contractual Clauses (SCCs) approved by the EU Commission
 - Adequacy decisions by relevant data protection authorities
@@ -175,7 +194,8 @@ When transferring personal data outside your country, we implement appropriate s
 
 ## 16. Data Breach Notification
 
-In the event of a data breach that may pose a risk to your rights and freedoms, we will:
+In the event of a data breach that may pose a risk to your rights and freedoms,
+we will:
 
 - Notify relevant supervisory authorities within 72 hours
 - Inform affected users without undue delay
@@ -185,14 +205,16 @@ In the event of a data breach that may pose a risk to your rights and freedoms, 
 
 ## 17. Third-Party Services
 
-WorkSight may integrate with third-party services. When you use these integrations:
+WorkSight may integrate with third-party services. When you use these
+integrations:
 
 - You'll be clearly informed before any data sharing
 - We'll obtain your explicit consent for data transfers
 - Third parties must meet our data protection standards
 - You can revoke permissions at any time through your account settings
 
-Current third-party integrations include authentication providers and analytics services.
+Current third-party integrations include authentication providers and analytics
+services.
 
 ## 18. Contact Information
 
@@ -206,5 +228,5 @@ For privacy-related inquiries, please contact us:
 
 ---
 
-*Last updated: August 24, 2025*  
-*Next scheduled review: August 24, 2026*
+_Last updated: August 24, 2025_  
+_Next scheduled review: August 24, 2026_
