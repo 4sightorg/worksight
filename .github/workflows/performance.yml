@@ -78,7 +78,7 @@ jobs:
         run: pnpm build:analyze --filter=@worksight/web
 
       - name: Upload bundle analysis
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: bundle-analysis
           path: apps/web/.next/analyze/
