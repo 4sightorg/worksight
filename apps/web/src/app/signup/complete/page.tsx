@@ -13,6 +13,7 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { createBrowserClient } from '@/utils/supabase/client';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -101,11 +102,7 @@ export default function CompleteSignupForm() {
 
     try {
       // Update the user's metadata with username
-      const { createClient } = await import('@supabase/supabase-js');
-      const supabase = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-        process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || ''
-      );
+      const supabase = createBrowserClient();
 
       const { error: updateError } = await supabase.auth.updateUser({
         data: {

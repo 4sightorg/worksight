@@ -3,6 +3,7 @@
 import { validateOAuthUser } from '@/auth/client';
 import { useAuth } from '@/auth/provider';
 import { User } from '@/auth/types';
+import { createBrowserClient } from '@/utils/supabase/client';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -21,11 +22,7 @@ export default function AuthCallbackPage() {
         }
 
         // Get the current session from Supabase
-        const { createClient } = await import('@supabase/supabase-js');
-        const supabase = createClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-          process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || ''
-        );
+        const supabase = createBrowserClient();
 
         const {
           data: { session },
