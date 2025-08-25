@@ -52,6 +52,11 @@ export const sections: SectionData = {
           isActive: false,
         },
         {
+          title: 'Wellness Check',
+          url: '/wellness-survey',
+          isActive: false,
+        },
+        {
           title: 'Results',
           url: '/survey/results',
           isActive: false,
