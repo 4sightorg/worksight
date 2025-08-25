@@ -24,6 +24,7 @@ env:
 
 jobs:
   # Job 1: Deploy Web App to Vercel
+  # Job 1: Deploy Web App to Vercel
   deploy-web:
     name: Deploy Web to Vercel
     runs-on: ubuntu-latest
@@ -40,17 +41,14 @@ jobs:
       - name: ⚙️ Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20' # BUMPED TO NODE.JS 20 (LTS)
+          node-version: '20' # Change this line to '20'
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build web application
-        run: pnpm build --filter=@worksight/web
+        run: pnpm install --frozen-lockfile --filter=@worksight/web
         env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ env.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ env.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
 
       - name: Install Vercel CLI
         run: pnpm add -g vercel
