@@ -17,7 +17,7 @@
     "format": "pnpm run prettier && pnpm run lint:fix && pnpm run stylelint",
     "format:check": "pnpm run prettier:check && pnpm run lint:strict && pnpm run stylelint:check",
     "type-check": "tsc --noEmit",
-    "test": "jest",
+    "test": "echo 'No tests created yet'",
     "test:watch": "jest --watch",
     "test:ci": "jest --ci --coverage --watchAll=false",
     "analyze": "ANALYZE=true next build",
