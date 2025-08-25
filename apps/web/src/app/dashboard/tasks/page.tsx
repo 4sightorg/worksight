@@ -419,6 +419,8 @@ function KanbanView({
 }
 
 // Kanban Column Component
+import { ComponentType } from 'react';
+
 function KanbanColumn({
   status,
   title,
@@ -428,7 +430,7 @@ function KanbanColumn({
 }: {
   status: string;
   title: string;
-  icon: unknown;
+  icon: ComponentType<{ className?: string }>;
   tasks: Task[];
   onToggleStatus: (taskId: string) => void;
 }) {
