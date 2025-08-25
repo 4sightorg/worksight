@@ -5,7 +5,7 @@ const env = loadEnv('', process.cwd());
 const hostname = env.VITE_HOSTNAME || 'http://localhost:4173';
 
 export default defineConfig({
-  outDir: 'dist',
+  outDir: '.vitepress/dist',
   cleanUrls: true,
   title: 'WorkSight',
   description: 'Check your tasks, manage your well being.',
