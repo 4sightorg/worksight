@@ -29,6 +29,7 @@
   "devDependencies": {
     "@changesets/cli": "^2.27.1",
     "@types/node": "^20.11.17",
+    "next": "15.4.6",
     "prettier": "^3.2.5",
     "turbo": "^2.5.6",
     "typescript": "^5.3.3"
