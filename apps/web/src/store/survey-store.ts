@@ -33,7 +33,7 @@ interface SurveyState {
 
   // Actions
   addResponse: (response: SurveyResponse) => void;
-  updateResponse: (questionId: string, value: unknown) => void;
+  updateResponse: (questionId: string, value: string | number | boolean | string[]) => void;
   setStep: (step: number) => void;
   setResults: (results: SurveyResults) => void;
   completeSurvey: () => void;
@@ -61,7 +61,9 @@ export const useSurveyStore = create<SurveyState>()(
       updateResponse: (questionId, value) =>
         set((state) => ({
           currentResponses: state.currentResponses.map((r) =>
-            r.questionId === questionId ? { ...r, value } : r
+            r.questionId === questionId
+              ? { ...r, value: value as string | number | boolean | string[] }
+              : r
           ),
         })),
 
