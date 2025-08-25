@@ -41,3 +41,24 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .swc/
+
+# Turbo
+.turbo/
+
+# VitePress
+apps/docs/.vitepress/cache/
+apps/docs/.vitepress/dist/
+
+# Vercel
+.vercel/
+
+# Lighthouse
+lhci_reports/
+lighthouse-results.json
+
+# Coverage
+coverage/
+apps/*/coverage/
+
+# Bundle analysis
+apps/web/.next/analyze/
