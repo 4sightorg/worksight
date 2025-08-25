@@ -23,7 +23,6 @@ env:
 
 
 jobs:
-  # Job 1: Deploy Web App to Vercel
   deploy-web:
     name: Deploy Web to Vercel
     runs-on: ubuntu-latest
@@ -54,47 +53,3 @@ jobs:
 
       - name: Deploy to Vercel
         run: vercel --prod --yes --token=${{ secrets.VERCEL_TOKEN }} --cwd=apps/web
-
-  # Job 2: Deploy Docs to GitHub Pages
-  deploy-docs:
-    name: Deploy Docs to GitHub Pages
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: ⬇️ Checkout code
-        uses: actions/checkout@v4
-
-      - name: ⬇️ Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 8.15.1 # Keep your pnpm version consistent
-
-      - name: ⚙️ Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20' # BUMPED TO NODE.JS 20 (LTS)
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build documentation
-        run: pnpm build --filter=@worksight/docs
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: apps/docs/.vitepress/dist
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4

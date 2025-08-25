@@ -12,11 +12,9 @@ export default defineConfig({
   sitemap: {
     hostname,
   },
-  
-  // TAILORED FOR GITHUB PAGES
-  // The 'base' path must match your repository name, and start/end with a slash.
-  base: '/worksight/',
-  
+
+  // No 'base' property is needed for Vercel deployments.
+
   themeConfig: {
     logo: '/logo.svg',
     siteTitle: 'WorkSight',
