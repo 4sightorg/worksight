@@ -161,9 +161,7 @@ export default function AdminPage() {
                         <TableCell>{employee.name}</TableCell>
                         <TableCell>{employee.email}</TableCell>
                         <TableCell>
-                          <Badge>
-                            {getRoleDisplay(employee)}
-                          </Badge>
+                          <Badge>{getRoleDisplay(employee)}</Badge>
                         </TableCell>
                         <TableCell>{employee.department}</TableCell>
                         <TableCell>{new Date(employee.date_joined).toLocaleDateString()}</TableCell>

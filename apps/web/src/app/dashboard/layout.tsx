@@ -92,13 +92,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const getBurnoutScore = () => {
     if (!surveyData) return null;
     const data = surveyData as any;
-    return (
-      data?.overallScore ??
-      data?.totalScore ??
-      data?.score ??
-      data?.burnoutScore ??
-      null
-    );
+    return data?.overallScore ?? data?.totalScore ?? data?.score ?? data?.burnoutScore ?? null;
   };
 
   const burnoutScore = getBurnoutScore();

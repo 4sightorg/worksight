@@ -665,9 +665,7 @@ function SortableTableRow({
             </SelectContent>
           </Select>
         ) : (
-          <Badge className={`${statusInfo.color}`}>
-            {statusInfo.label}
-          </Badge>
+          <Badge className={`${statusInfo.color}`}>{statusInfo.label}</Badge>
         )}
       </TableCell>
       <TableCell>
@@ -688,9 +686,7 @@ function SortableTableRow({
             </SelectContent>
           </Select>
         ) : (
-          <Badge className={priorityColors[task.priority]}>
-            {task.priority}
-          </Badge>
+          <Badge className={priorityColors[task.priority]}>{task.priority}</Badge>
         )}
       </TableCell>
       <TableCell>
@@ -760,9 +756,7 @@ function TaskCard({
       <CardContent className="pt-0">
         <div className="flex items-center justify-between text-xs">
           <div className="flex items-center gap-2">
-            <Badge className={priorityColors[task.priority]}>
-              {task.priority}
-            </Badge>
+            <Badge className={priorityColors[task.priority]}>{task.priority}</Badge>
             <Badge>{task.storyPoints} pts</Badge>
           </div>
           <div className="text-muted-foreground flex items-center gap-1">

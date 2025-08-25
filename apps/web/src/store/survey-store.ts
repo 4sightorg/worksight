@@ -61,7 +61,9 @@ export const useSurveyStore = create<SurveyState>()(
       updateResponse: (questionId, value) =>
         set((state) => ({
           currentResponses: state.currentResponses.map((r) =>
-            r.questionId === questionId ? { ...r, value: value as string | number | boolean | string[] } : r
+            r.questionId === questionId
+              ? { ...r, value: value as string | number | boolean | string[] }
+              : r
           ),
         })),
 

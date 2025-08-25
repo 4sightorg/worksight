@@ -205,8 +205,13 @@ export default function DashboardPage() {
                         <div className="flex-1">
                           <p className="text-sm font-medium">Took wellness survey</p>
                           <p className="text-muted-foreground text-xs">
-                            {typeof surveyData === 'object' && surveyData !== null && 'completedAt' in surveyData && surveyData.completedAt
-                              ? new Date((surveyData as { completedAt: string }).completedAt).toLocaleDateString()
+                            {typeof surveyData === 'object' &&
+                            surveyData !== null &&
+                            'completedAt' in surveyData &&
+                            surveyData.completedAt
+                              ? new Date(
+                                  (surveyData as { completedAt: string }).completedAt
+                                ).toLocaleDateString()
                               : '1 day ago'}
                           </p>
                         </div>
