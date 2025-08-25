@@ -151,7 +151,7 @@ jobs:
           key: ${{ needs.setup.outputs.cache-key }}
 
       - name: Run tests
-        run: pnpm test --ci
+        run: pnpm test:ci
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v3
