@@ -49,7 +49,9 @@ export default function AdminPage() {
           <div className="text-center">
             <Shield className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
             <h2 className="text-xl font-semibold">Access Denied</h2>
-            <p className="text-muted-foreground">You don't have permission to access this page.</p>
+            <p className="text-muted-foreground">
+              You don&apos;t have permission to access this page.
+            </p>
           </div>
         </div>
       </ProtectedRoute>
@@ -71,9 +73,11 @@ export default function AdminPage() {
       <ClientOnly>
         <div className="space-y-6">
           {/* Header */}
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Admin Settings</h1>
-            <p className="text-muted-foreground">System administration and user management</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">Admin Settings</h1>
+              <p className="text-muted-foreground">System administration and user management</p>
+            </div>
           </div>
 
           {/* Stats Cards */}

@@ -4,17 +4,28 @@ import { User } from './types';
 // Check if app is in offline mode
 export const isOfflineMode = (): boolean => {
   if (typeof window === 'undefined') return false;
-  return localStorage.getItem('offline_mode') === 'true' || !navigator.onLine;
+
+  // Check if forced offline mode is enabled
+  const isForceOffline = process.env.NEXT_PUBLIC_IS_OFFLINE === 'true';
+  if (isForceOffline) return true;
+
+  // Check user preference or network status
+  return localStorage.getItem('connectivity-mode') === 'offline' || !navigator.onLine;
 };
 
 // Enable/disable offline mode
 export const setOfflineMode = (offline: boolean): void => {
   if (typeof window === 'undefined') return;
-  localStorage.setItem('offline_mode', offline.toString());
+
+  // Don't allow changes if forced offline mode is enabled
+  const isForceOffline = process.env.NEXT_PUBLIC_IS_OFFLINE === 'true';
+  if (isForceOffline) return;
+
+  localStorage.setItem('connectivity-mode', offline ? 'offline' : 'online');
 };
 
 // Map employee to user object
-const mapEmployeeToUser = (employeeId: string, employee: any): User => {
+const mapEmployeeToUser = (employeeId: string, employee: unknown): User => {
   return {
     id: employeeId,
     email: employee.email,

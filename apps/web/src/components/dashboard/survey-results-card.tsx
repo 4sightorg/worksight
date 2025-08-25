@@ -1,20 +1,9 @@
 'use client';
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { useSurveyStore } from '@/store/survey-store';
-import {
-  Activity,
-  AlertTriangle,
-  BarChart3,
-  CheckCircle,
-  Heart,
-  TrendingDown,
-  TrendingUp,
-} from 'lucide-react';
-import Link from 'next/link';
+import { Activity, TrendingDown, TrendingUp } from 'lucide-react';
 
 export function SurveyResultsCard() {
   const { getLatestResults } = useSurveyStore();
@@ -54,50 +43,50 @@ export function SurveyResultsCard() {
     return 'bg-red-500';
   };
 
-  const getLevelIcon = (level: string) => {
-    switch (level) {
-      case 'low':
-        return <CheckCircle className="h-5 w-5 text-green-600" />;
-      case 'moderate':
-        return <TrendingUp className="h-5 w-5 text-yellow-600" />;
-      case 'high':
-        return <AlertTriangle className="h-5 w-5 text-orange-600" />;
-      case 'severe':
-        return <Heart className="h-5 w-5 text-red-600" />;
-      default:
-        return <BarChart3 className="h-5 w-5" />;
-    }
-  };
+  // const getLevelIcon = (level: string) => {
+  //   switch (level) {
+  //     case 'low':
+  //       return <CheckCircle className="h-5 w-5 text-green-600" />;
+  //     case 'moderate':
+  //       return <TrendingUp className="h-5 w-5 text-yellow-600" />;
+  //     case 'high':
+  //       return <AlertTriangle className="h-5 w-5 text-orange-600" />;
+  //     case 'severe':
+  //       return <Heart className="h-5 w-5 text-red-600" />;
+  //     default:
+  //       return <BarChart3 className="h-5 w-5" />;
+  //   }
+  // };
 
-  const getLevelColor = (level: string) => {
-    switch (level) {
-      case 'low':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
-      case 'moderate':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
-      case 'high':
-        return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300';
-      case 'severe':
-        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
-      default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
-    }
-  };
+  // const getLevelColor = (level: string) => {
+  //   switch (level) {
+  //     case 'low':
+  //       return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
+  //     case 'moderate':
+  //       return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
+  //     case 'high':
+  //       return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300';
+  //     case 'severe':
+  //       return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
+  //     default:
+  //       return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
+  //   }
+  // };
 
-  const formatLevelTitle = (level: string) => {
-    switch (level) {
-      case 'low':
-        return 'Low Risk';
-      case 'moderate':
-        return 'Moderate Risk';
-      case 'high':
-        return 'High Risk';
-      case 'severe':
-        return 'Severe Risk';
-      default:
-        return 'Unknown';
-    }
-  };
+  // const formatLevelTitle = (level: string) => {
+  //   switch (level) {
+  //     case 'low':
+  //       return 'Low Risk';
+  //     case 'moderate':
+  //       return 'Moderate Risk';
+  //     case 'high':
+  //       return 'High Risk';
+  //     case 'severe':
+  //       return 'Severe Risk';
+  //     default:
+  //       return 'Unknown';
+  //   }
+  // };
 
   return (
     <Card>

@@ -16,7 +16,7 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { settingsApi } from '@/lib/api';
 import { UserSettings } from '@/lib/supabase';
-import { Bell, Moon, Sun, Users } from 'lucide-react';
+import { Bell, Sun, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -70,7 +70,7 @@ export default function SettingsPage() {
     }
   };
 
-  const updateSetting = (key: keyof UserSettings, value: any) => {
+  const updateSetting = (key: keyof UserSettings, value: unknown) => {
     if (!settings) return;
     setSettings({ ...settings, [key]: value });
   };
@@ -90,11 +90,13 @@ export default function SettingsPage() {
       <ClientOnly>
         <div className="space-y-6">
           {/* Header */}
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
-            <p className="text-muted-foreground">
-              Manage your account preferences and application settings
-            </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
+              <p className="text-muted-foreground">
+                Manage your account preferences and application settings
+              </p>
+            </div>
           </div>
 
           <div className="grid gap-6">
@@ -176,7 +178,7 @@ export default function SettingsPage() {
                     </SelectContent>
                   </Select>
                   <p className="text-muted-foreground text-sm">
-                    How often you'd like to receive wellness survey reminders
+                    How often you&apos;d like to receive wellness survey reminders
                   </p>
                 </div>
               </CardContent>

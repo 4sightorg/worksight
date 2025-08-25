@@ -10,9 +10,12 @@ export default function ReportsPage() {
     <ProtectedRoute>
       <ClientOnly>
         <div className="space-y-6">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Reports & Analytics</h1>
-            <p className="text-muted-foreground">Team performance reports and insights</p>
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">Reports & Analytics</h1>
+              <p className="text-muted-foreground">Team performance reports and insights</p>
+            </div>
           </div>
 
           <Card>

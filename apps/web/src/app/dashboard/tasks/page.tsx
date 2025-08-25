@@ -1,6 +1,5 @@
 'use client';
 
-import { useAuth } from '@/auth';
 import { ProtectedRoute } from '@/components/auth/protected-route';
 import { ClientOnly } from '@/components/core';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import {
   Table,
   TableBody,
@@ -24,8 +24,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
-import { Employees } from '@/data/employees';
-import { getEmployeeProductivityStats } from '@/data/work-tracking';
 import {
   DndContext,
   DragEndEvent,
@@ -144,7 +142,6 @@ const priorityColors = {
 const statusOrder: Task['status'][] = ['pending', 'in-progress', 'completed'];
 
 export default function TasksPage() {
-  const { user } = useAuth();
   const [viewMode, setViewMode] = useState<ViewMode>('kanban');
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
@@ -152,12 +149,6 @@ export default function TasksPage() {
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
 
   // Get current user's stats if they're an employee
-  const currentEmployee = user
-    ? Object.entries(Employees).find(([_, emp]) => emp.email === user.email)
-    : null;
-  const currentEmployeeStats = currentEmployee
-    ? getEmployeeProductivityStats(currentEmployee[0])
-    : null;
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -169,7 +160,6 @@ export default function TasksPage() {
 
   const completedTasks = tasks.filter((task) => task.status === 'completed');
   const inProgressTasks = tasks.filter((task) => task.status === 'in-progress');
-  const pendingTasks = tasks.filter((task) => task.status === 'pending');
 
   const totalStoryPoints = tasks.reduce((sum, task) => sum + task.storyPoints, 0);
   const completedStoryPoints = completedTasks.reduce((sum, task) => sum + task.storyPoints, 0);
@@ -257,126 +247,134 @@ export default function TasksPage() {
   return (
     <ProtectedRoute>
       <ClientOnly>
-        <div className="space-y-6">
-          {/* Header */}
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">My Tasks</h1>
-              <p className="text-muted-foreground">Manage your assigned tasks and track progress</p>
-            </div>
-            <div className="flex items-center gap-2">
-              {/* View Toggle */}
-              <div className="flex items-center rounded-lg border p-1">
-                <Button
-                  variant={viewMode === 'kanban' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setViewMode('kanban')}
-                  className="h-8 px-3"
-                >
-                  <LayoutGrid className="mr-1 h-4 w-4" />
-                  Kanban
-                </Button>
-                <Button
-                  variant={viewMode === 'table' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setViewMode('table')}
-                  className="h-8 px-3"
-                >
-                  <List className="mr-1 h-4 w-4" />
-                  Table
-                </Button>
-              </div>
-              <Button onClick={() => setShowNewTaskDialog(true)}>
-                <Plus className="mr-2 h-4 w-4" />
-                New Task
-              </Button>
-            </div>
-          </div>
-
-          {/* Stats Cards */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Tasks</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{tasks.length}</div>
-                <p className="text-muted-foreground text-xs">
-                  {totalStoryPoints} story points total
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Completed</CardTitle>
-                <CheckCircle className="h-4 w-4 text-green-500" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{completedTasks.length}</div>
-                <p className="text-muted-foreground text-xs">{completedStoryPoints} story points</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">In Progress</CardTitle>
-                <AlertCircle className="h-4 w-4 text-blue-500" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{inProgressTasks.length}</div>
-                <p className="text-muted-foreground text-xs">Active work items</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Completion Rate</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {Math.round((completedTasks.length / tasks.length) * 100)}%
+        <SidebarProvider>
+          <SidebarInset>
+            <div className="flex flex-1 flex-col space-y-6 p-6">
+              {/* Header */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-3xl font-bold tracking-tight">My Tasks</h1>
+                  <p className="text-muted-foreground">
+                    Manage your assigned tasks and track progress
+                  </p>
                 </div>
-                <p className="text-muted-foreground text-xs">Task completion rate</p>
-              </CardContent>
-            </Card>
-          </div>
+                <div className="flex items-center gap-2">
+                  {/* View Toggle */}
+                  <div className="flex items-center rounded-lg border p-1">
+                    <Button
+                      variant={viewMode === 'kanban' ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => setViewMode('kanban')}
+                      className="h-8 px-3"
+                    >
+                      <LayoutGrid className="mr-1 h-4 w-4" />
+                      Kanban
+                    </Button>
+                    <Button
+                      variant={viewMode === 'table' ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => setViewMode('table')}
+                      className="h-8 px-3"
+                    >
+                      <List className="mr-1 h-4 w-4" />
+                      Table
+                    </Button>
+                  </div>
+                  <Button onClick={() => setShowNewTaskDialog(true)}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    New Task
+                  </Button>
+                </div>
+              </div>
 
-          {/* Task Views */}
-          <DndContext
-            sensors={sensors}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-            collisionDetection={closestCenter}
-            autoScroll={{
-              enabled: false,
-            }}
-          >
-            {viewMode === 'kanban' ? (
-              <KanbanView tasks={tasks} onToggleStatus={toggleTaskStatus} />
-            ) : (
-              <TableView
-                tasks={tasks}
-                onToggleStatus={toggleTaskStatus}
-                onUpdateTask={updateTask}
-                editingTaskId={editingTaskId}
-                setEditingTaskId={setEditingTaskId}
-                isDragging={!!activeTask}
+              {/* Stats Cards */}
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Total Tasks</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{tasks.length}</div>
+                    <p className="text-muted-foreground text-xs">
+                      {totalStoryPoints} story points total
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Completed</CardTitle>
+                    <CheckCircle className="h-4 w-4 text-green-500" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{completedTasks.length}</div>
+                    <p className="text-muted-foreground text-xs">
+                      {completedStoryPoints} story points
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">In Progress</CardTitle>
+                    <AlertCircle className="h-4 w-4 text-blue-500" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{inProgressTasks.length}</div>
+                    <p className="text-muted-foreground text-xs">Active work items</p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Completion Rate</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">
+                      {Math.round((completedTasks.length / tasks.length) * 100)}%
+                    </div>
+                    <p className="text-muted-foreground text-xs">Task completion rate</p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Task Views */}
+              <DndContext
+                sensors={sensors}
+                onDragStart={handleDragStart}
+                onDragEnd={handleDragEnd}
+                collisionDetection={closestCenter}
+                autoScroll={{
+                  enabled: false,
+                }}
+              >
+                {viewMode === 'kanban' ? (
+                  <KanbanView tasks={tasks} onToggleStatus={toggleTaskStatus} />
+                ) : (
+                  <TableView
+                    tasks={tasks}
+                    onToggleStatus={toggleTaskStatus}
+                    onUpdateTask={updateTask}
+                    editingTaskId={editingTaskId}
+                    setEditingTaskId={setEditingTaskId}
+                    isDragging={!!activeTask}
+                  />
+                )}
+
+                <DragOverlay>
+                  {activeTask ? <TaskCard task={activeTask} isDragging /> : null}
+                </DragOverlay>
+              </DndContext>
+
+              {/* New Task Dialog */}
+              <NewTaskDialog
+                open={showNewTaskDialog}
+                onClose={() => setShowNewTaskDialog(false)}
+                onSave={createNewTask}
               />
-            )}
-
-            <DragOverlay>
-              {activeTask ? <TaskCard task={activeTask} isDragging /> : null}
-            </DragOverlay>
-          </DndContext>
-
-          {/* New Task Dialog */}
-          <NewTaskDialog
-            open={showNewTaskDialog}
-            onClose={() => setShowNewTaskDialog(false)}
-            onSave={createNewTask}
-          />
-        </div>
+            </div>
+          </SidebarInset>
+        </SidebarProvider>
       </ClientOnly>
     </ProtectedRoute>
   );
@@ -430,7 +428,7 @@ function KanbanColumn({
 }: {
   status: string;
   title: string;
-  icon: any;
+  icon: unknown;
   tasks: Task[];
   onToggleStatus: (taskId: string) => void;
 }) {

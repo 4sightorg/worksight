@@ -15,10 +15,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { providers } from '@/data/authProviders';
 import { cn } from '@/lib/utils';
+import { useConnectivityStore } from '@/stores/connectivity-store';
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { OFFLINE_ACCOUNTS } from '../../auth/credentials';
+
+// Check if forced offline mode is enabled via environment variable
+const IS_FORCED_OFFLINE = process.env.NEXT_PUBLIC_IS_OFFLINE === 'true';
 
 // Types
 type OAuthProvider = {
@@ -26,6 +31,9 @@ type OAuthProvider = {
   displayName: string;
   icon: React.ComponentType<{ className?: string }>;
 };
+
+// Helper to capitalize first letter
+const capitalize = (str: string) => (str ? str.charAt(0).toUpperCase() + str.slice(1) : str);
 
 interface OAuthButtonsProps {
   OAuthProviders: OAuthProvider[];
@@ -196,10 +204,26 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
   const passwordRef = useRef<HTMLInputElement>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [saveLogin, setSaveLogin] = useState(false);
+  const [saveLogin, setSaveLogin] = useState(true);
 
   const { setUser, setAccessToken, setSaveLogin: setAuthSaveLogin } = useAuth();
   const router = useRouter();
+  const { mode, setMode } = useConnectivityStore();
+
+  // Initialize mode based on environment or stored preference
+  useEffect(() => {
+    if (IS_FORCED_OFFLINE) {
+      setMode('offline');
+    }
+    // If not forced offline, the store will handle persistence automatically
+  }, [setMode]);
+
+  // Handle mode change with persistence (only if not forced offline)
+  const handleModeChange = (newMode: 'offline' | 'online') => {
+    if (!IS_FORCED_OFFLINE) {
+      setMode(newMode);
+    }
+  };
 
   // Use shared OAuth handler
   const handleOAuthSignIn = useOAuthHandler('Login', setErrorMsg, setLoading);
@@ -254,26 +278,57 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
         <CardHeader className="space-y-2 text-center">
           <CardTitle className="text-2xl font-semibold">Welcome back</CardTitle>
           <CardDescription>Sign in to your WorkSight account</CardDescription>
+
+          {/* Only show mode selector if not forced offline */}
+          {!IS_FORCED_OFFLINE && (
+            <div className="grid grid-cols-2 items-center gap-3 rounded-lg border p-1">
+              <Button
+                variant={mode === 'offline' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => handleModeChange('offline')}
+                className="h-8 px-3"
+              >
+                Offline
+              </Button>
+              <Button
+                variant={mode === 'online' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => handleModeChange('online')}
+                className="h-8 px-3"
+              >
+                Online
+              </Button>
+            </div>
+          )}
+
+          {/* Show offline mode indicator if forced */}
+          {IS_FORCED_OFFLINE && (
+            <div className="bg-muted rounded-lg border p-2">
+              <span className="text-sm font-medium">Offline Mode</span>
+            </div>
+          )}
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-6">
-            {/* OAuth Section */}
-            <div className="space-y-4">
-              <OAuthButtons
-                OAuthProviders={providers}
-                onclick={handleOAuthSignIn}
-                loading={loading}
-              />
+            {/* OAuth Section - Only show when online and not forced offline */}
+            {mode === 'online' && !IS_FORCED_OFFLINE && (
+              <div className="space-y-4">
+                <OAuthButtons
+                  OAuthProviders={providers}
+                  onclick={handleOAuthSignIn}
+                  loading={loading}
+                />
 
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="text-muted-foreground px-2">Or continue with</span>
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="text-muted-foreground px-2">Or continue with</span>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
             {/* Email/Password Form */}
             <Field
               type="email"
@@ -314,28 +369,44 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
               </div>
             )}
 
-            {/* Sign Up Link */}
+            {/* Sign Up Link - Only show when online and not forced offline */}
             <div className="text-center text-sm">
               <span className="text-muted-foreground">Don&apos;t have an account? </span>
-              <a
-                href="/signup"
-                className="text-primary font-medium underline-offset-4 hover:underline"
-              >
-                Sign up
-              </a>
+              {mode === 'online' && !IS_FORCED_OFFLINE ? (
+                <a
+                  href="/signup"
+                  className="text-primary font-medium underline-offset-4 hover:underline"
+                >
+                  Sign up
+                </a>
+              ) : (
+                <span className="text-muted-foreground">
+                  {IS_FORCED_OFFLINE
+                    ? 'Sign up disabled in offline mode'
+                    : 'Sign up unavailable in offline mode'}
+                </span>
+              )}
             </div>
           </form>
         </CardContent>
       </Card>
 
       {/* Offline Mode Info */}
-      <div className="text-muted-foreground mx-auto max-w-md space-y-2 text-center text-xs">
-        <p className="bg-muted/50 rounded-md p-3">
-          <strong>Offline Mode:</strong> Use{' '}
-          <code className="bg-background rounded px-1 py-0.5">test@worksight.app</code> /{' '}
-          <code className="bg-background rounded px-1 py-0.5">testuser</code>
-        </p>
-      </div>
+      {(mode === 'offline' || IS_FORCED_OFFLINE) && (
+        <div className="text-muted-foreground mx-auto max-w-md space-y-2 px-3 text-center text-xs">
+          <strong>Here&apos;s some accounts you can log into</strong>
+          <div className="bg-muted/50 mt-2 flex flex-col gap-2 rounded-md">
+            {OFFLINE_ACCOUNTS.map((user, i) => (
+              <div key={i} className="flex w-full flex-row items-center justify-between">
+                <span className="mr-5 text-sm font-medium">{capitalize(user.role)}</span>
+                <code className="bg-background break-all rounded px-2 py-0.5 text-xs">
+                  {user.email}
+                </code>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -351,9 +422,15 @@ export function SignupForm({ className, ...props }: React.ComponentProps<'div'>)
   const [error, setError] = useState<string | null>(null);
   const { signUp } = useAuth();
   const router = useRouter();
-
+  const { mode } = useConnectivityStore();
   // Use shared OAuth handler
   const handleOAuthSignIn = useOAuthHandler('Signup', setError, setIsLoading);
+
+  // If forced offline or user selected offline mode, redirect to login
+  if (IS_FORCED_OFFLINE || mode === 'offline') {
+    router.push('/login');
+    return null;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -425,7 +502,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<'div'>)
               </div>
             )}
 
-            {/* OAuth Sign Up Buttons */}
+            {/* OAuth Sign Up Buttons - Always shown in signup since we redirect if offline */}
             <div className="space-y-3">
               <OAuthButtons
                 OAuthProviders={providers}
@@ -519,7 +596,6 @@ export function SignupForm({ className, ...props }: React.ComponentProps<'div'>)
           </CardFooter>
         </form>
       </Card>
-
       <div className="text-center">
         <p className="text-xs text-gray-500 dark:text-gray-400">
           By signing up, you agree to our <Link href="/terms">Terms of Service</Link> and{' '}

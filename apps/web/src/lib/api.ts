@@ -144,7 +144,11 @@ export const tasksApi = {
 
 // Survey API
 export const surveyApi = {
-  submit: async (userId: string, responses: any, burnoutScore: number): Promise<SurveyResponse> => {
+  submit: async (
+    userId: string,
+    responses: unknown,
+    burnoutScore: number
+  ): Promise<SurveyResponse> => {
     if (isOfflineMode()) {
       // Store in localStorage for offline mode
       const offlineResponse: SurveyResponse = {

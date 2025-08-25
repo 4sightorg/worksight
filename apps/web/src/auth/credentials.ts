@@ -1,6 +1,15 @@
 // Authentication configuration
 import { UserRole } from './types';
 
+type OFFLINE_USER = {
+  id: string;
+  email: string;
+  name: string;
+  role: UserRole | string;
+  department?: string;
+  team?: string;
+};
+
 export const AUTH_CONFIG = {
   // Session timeouts
   SESSION_TIMEOUT: 5 * 60 * 1000, // 5 minutes in milliseconds
@@ -15,14 +24,16 @@ export const AUTH_CONFIG = {
   },
 
   // Mock users for offline mode
-  OFFLINE_USER: {
+  EMPLOYEE: {
     id: 'offline-user-123',
     email: 'test@worksight.app',
     name: 'Test User',
     role: UserRole.EMPLOYEE,
+    department: 'IT',
+    team: 'System Administration',
   },
 
-  ADMIN_USER: {
+  ADMIN: {
     id: 'admin-user-456',
     email: 'admin@worksight.app',
     name: 'Admin User',
@@ -31,7 +42,7 @@ export const AUTH_CONFIG = {
     team: 'System Administration',
   },
 
-  MANAGER_USER: {
+  MANAGER: {
     id: 'manager-user-789',
     email: 'manager@worksight.app',
     name: 'Manager User',
@@ -43,5 +54,11 @@ export const AUTH_CONFIG = {
   // OAuth providers
   OAUTH_PROVIDERS: ['google', 'github', 'discord', 'facebook'] as const,
 } as const;
+
+export const OFFLINE_ACCOUNTS: OFFLINE_USER[] = [
+  AUTH_CONFIG.EMPLOYEE,
+  AUTH_CONFIG.ADMIN,
+  AUTH_CONFIG.MANAGER,
+];
 
 export type OAuthProvider = (typeof AUTH_CONFIG.OAUTH_PROVIDERS)[number];

@@ -1,5 +1,5 @@
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
-import { AUTH_CONFIG } from './config';
+import { AUTH_CONFIG } from './identity';
 import { AuthResponse, SessionData, User } from './types';
 import { generateMockToken, isOffline, isSessionExpired, storage } from './utils';
 
@@ -87,7 +87,7 @@ export async function signIn(
   // Check for offline credentials first
   if (email === 'test@worksight.app' && password === 'testuser') {
     const user = {
-      ...AUTH_CONFIG.OFFLINE_USER,
+      ...AUTH_CONFIG.EMPLOYEE,
       lastLogin: new Date().toISOString(),
     };
     const accessToken = generateMockToken();
@@ -99,7 +99,7 @@ export async function signIn(
   // Admin test credentials
   if (email === 'admin@worksight.app' && password === 'admin123') {
     const user = {
-      ...AUTH_CONFIG.ADMIN_USER,
+      ...AUTH_CONFIG.ADMIN,
       lastLogin: new Date().toISOString(),
     };
     const accessToken = generateMockToken();
@@ -111,7 +111,7 @@ export async function signIn(
   // Manager test credentials
   if (email === 'manager@worksight.app' && password === 'manager123') {
     const user = {
-      ...AUTH_CONFIG.MANAGER_USER,
+      ...AUTH_CONFIG.MANAGER,
       lastLogin: new Date().toISOString(),
     };
     const accessToken = generateMockToken();
@@ -126,7 +126,7 @@ export async function signIn(
     (email === 'testuser' && password === 'test')
   ) {
     const user = {
-      ...AUTH_CONFIG.OFFLINE_USER,
+      ...AUTH_CONFIG.EMPLOYEE,
       email: 'testuser@worksight.app',
       lastLogin: new Date().toISOString(),
     };

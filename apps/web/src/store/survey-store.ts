@@ -33,7 +33,7 @@ interface SurveyState {
 
   // Actions
   addResponse: (response: SurveyResponse) => void;
-  updateResponse: (questionId: string, value: any) => void;
+  updateResponse: (questionId: string, value: unknown) => void;
   setStep: (step: number) => void;
   setResults: (results: SurveyResults) => void;
   completeSurvey: () => void;

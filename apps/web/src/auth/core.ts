@@ -1,23 +1,9 @@
+// Session Checks and localStorage Operations Management
+
 import { AUTH_CONFIG } from './identity';
 
-// Check if we're in offline mode
-export const isOffline = () => {
-  if (typeof window !== 'undefined') {
-    return process.env.NEXT_PUBLIC_IS_OFFLINE === 'true' || !navigator.onLine;
-  }
-  return process.env.IS_OFFLINE === 'true';
-};
-
-// Generate mock access token
 export const generateMockToken = () => {
   return `mock-token-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-};
-
-// Check if session is expired
-export const isSessionExpired = (timestamp: number, saveLogin: boolean): boolean => {
-  const now = Date.now();
-  const timeout = saveLogin ? AUTH_CONFIG.EXTENDED_SESSION_TIMEOUT : AUTH_CONFIG.SESSION_TIMEOUT;
-  return now - timestamp > timeout;
 };
 
 // Safe localStorage operations

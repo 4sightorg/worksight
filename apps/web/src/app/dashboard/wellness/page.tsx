@@ -1,6 +1,5 @@
 'use client';
 
-import { useAuth } from '@/auth';
 import { ProtectedRoute } from '@/components/auth/protected-route';
 import { ClientOnly } from '@/components/core';
 import { Badge } from '@/components/ui/badge';
@@ -9,9 +8,40 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Activity, Calendar, TrendingUp, Users } from 'lucide-react';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 export default function WellnessPage() {
-  const { user } = useAuth();
+  const [canTakeSurvey, setCanTakeSurvey] = useState(true);
+  const [nextSurveyTime, setNextSurveyTime] = useState<string>('');
+
+  useEffect(() => {
+    // Check survey availability
+    const checkSurveyAvailability = () => {
+      const lastSurveyTime = localStorage.getItem('last_survey_time');
+
+      if (lastSurveyTime) {
+        const lastTime = new Date(lastSurveyTime);
+        const now = new Date();
+        const timeDiff = now.getTime() - lastTime.getTime();
+        const oneHour = 60 * 60 * 1000; // 1 hour in milliseconds
+
+        if (timeDiff < oneHour) {
+          setCanTakeSurvey(false);
+          const nextTime = new Date(lastTime.getTime() + oneHour);
+          setNextSurveyTime(nextTime.toLocaleString());
+        } else {
+          setCanTakeSurvey(true);
+          setNextSurveyTime('');
+        }
+      }
+    };
+
+    checkSurveyAvailability();
+
+    // Update every minute
+    const interval = setInterval(checkSurveyAvailability, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Mock wellness data - replace with real data
   const wellnessData = {
@@ -56,12 +86,24 @@ export default function WellnessPage() {
                 Track your wellness surveys and burnout levels
               </p>
             </div>
-            <Button asChild>
-              <Link href="/survey">
-                <Activity className="mr-2 h-4 w-4" />
-                Take Survey
-              </Link>
-            </Button>
+            {canTakeSurvey ? (
+              <Button asChild>
+                <Link href="/survey">
+                  <Activity className="mr-2 h-4 w-4" />
+                  Take Survey
+                </Link>
+              </Button>
+            ) : (
+              <div className="text-center">
+                <Button disabled>
+                  <Activity className="mr-2 h-4 w-4" />
+                  Survey Unavailable
+                </Button>
+                <p className="text-muted-foreground mt-1 text-xs">
+                  Next available: {nextSurveyTime}
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Current Status */}

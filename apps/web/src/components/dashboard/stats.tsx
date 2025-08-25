@@ -17,7 +17,8 @@ import { useEffect, useState } from 'react';
 
 export function DashboardStats() {
   const { user } = useAuth();
-  const [isOffline, setIsOffline] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, setIsOffline] = useState(false);
 
   useEffect(() => {
     setIsOffline(isOfflineMode());

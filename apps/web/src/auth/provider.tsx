@@ -8,11 +8,11 @@ interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<{ user: User | null; error: string | null }>;
   signup: (
-    userData: any,
+    userData: unknown,
     saveLogin?: boolean
   ) => Promise<{ user: User | null; error: string | null }>;
   signUp: (
-    userData: any,
+    userData: unknown,
     saveLogin?: boolean
   ) => Promise<{ user: User | null; error: string | null }>;
   logout: () => Promise<void>;
@@ -29,8 +29,9 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [saveLogin, setSaveLogin] = useState(false);
+
+  const [setAccessToken] = useState<string | null>(null);
+  const [setSaveLogin] = useState(false);
 
   useEffect(() => {
     // Check for saved user session
@@ -79,11 +80,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signup = async (
-    userData: any,
-    saveLogin: boolean = false
+    _userData: unknown,
+    _saveLogin: boolean = false
   ): Promise<{ user: User | null; error: string | null }> => {
-    // Signup not implemented for offline mode
-    return { user: null, error: 'Signup not available in offline mode' };
+    // Check if forced offline mode
+    const isForceOffline = process.env.NEXT_PUBLIC_IS_OFFLINE === 'true';
+
+    if (isOfflineMode() || isForceOffline) {
+      return {
+        user: null,
+        error: isForceOffline
+          ? 'Signup is disabled in offline mode'
+          : 'Signup not available in offline mode',
+      };
+    }
+
+    // Online signup logic would go here
+    return { user: null, error: 'Signup not implemented for online mode yet' };
   };
 
   const logout = async (): Promise<void> => {

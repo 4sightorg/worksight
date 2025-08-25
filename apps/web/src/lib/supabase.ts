@@ -92,21 +92,21 @@ export type Database = {
         Row: {
           id: string;
           user_id: string;
-          responses: any;
+          responses: unknown;
           burnout_score: number;
           created_at: string;
         };
         Insert: {
           id?: string;
           user_id: string;
-          responses: any;
+          responses: unknown;
           burnout_score: number;
           created_at?: string;
         };
         Update: {
           id?: string;
           user_id?: string;
-          responses?: any;
+          responses?: unknown;
           burnout_score?: number;
           created_at?: string;
         };

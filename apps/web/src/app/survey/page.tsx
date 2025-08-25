@@ -1,7 +1,11 @@
 'use client';
 
 import { SurveyForm, SurveyQuestion, SurveyResponse } from '@/components/survey/form';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { AlertCircle, Clock } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 // Employee Burnout and Work Engagement Assessment Tool
 const burnoutSurveyQuestions: SurveyQuestion[] = [
@@ -294,8 +298,50 @@ const burnoutSurveyQuestions: SurveyQuestion[] = [
 
 export default function SurveyPage() {
   const router = useRouter();
+  const [canTakeSurvey, setCanTakeSurvey] = useState(true);
+  const [timeRemaining, setTimeRemaining] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [surveyStartTime] = useState(() => new Date().toISOString());
+
+  useEffect(() => {
+    // Check if user can take survey (1 hour cooldown)
+    const checkSurveyEligibility = () => {
+      const lastSurveyTime = localStorage.getItem('last_survey_time');
+
+      if (lastSurveyTime) {
+        const lastTime = new Date(lastSurveyTime);
+        const now = new Date();
+        const timeDiff = now.getTime() - lastTime.getTime();
+        const oneHour = 60 * 60 * 1000; // 1 hour in milliseconds
+
+        if (timeDiff < oneHour) {
+          setCanTakeSurvey(false);
+          const remaining = oneHour - timeDiff;
+          const minutes = Math.ceil(remaining / (60 * 1000));
+          setTimeRemaining(`${minutes} minutes`);
+        } else {
+          setCanTakeSurvey(true);
+        }
+      }
+      setIsLoading(false);
+    };
+
+    checkSurveyEligibility();
+
+    // Update timer every minute if survey is not available
+    const interval = setInterval(() => {
+      if (!canTakeSurvey) {
+        checkSurveyEligibility();
+      }
+    }, 60000); // Check every minute
+
+    return () => clearInterval(interval);
+  }, [canTakeSurvey]);
 
   const handleSurveyComplete = (responses: SurveyResponse[]) => {
+    // Record survey completion time
+    const completionTime = new Date().toISOString();
+    localStorage.setItem('last_survey_time', completionTime);
     // Calculate scores for each dimension according to the Employee Burnout Assessment Tool
 
     // Helper function to handle reverse scoring
@@ -380,7 +426,9 @@ export default function SurveyPage() {
         supportScore,
         engagementScore,
         responses,
-        completedAt: new Date().toISOString(),
+        startedAt: surveyStartTime,
+        completedAt: completionTime,
+        submittedAt: completionTime,
       })
     );
 
@@ -404,6 +452,50 @@ export default function SurveyPage() {
   const handleProgress = (_current: number, _total: number) => {
     // Progress tracking can be used for analytics
   };
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="border-primary h-8 w-8 animate-spin rounded-full border-b-2"></div>
+      </div>
+    );
+  }
+
+  // Show cooldown message if survey was taken recently
+  if (!canTakeSurvey) {
+    return (
+      <div className="mx-auto max-w-2xl p-6">
+        <Card>
+          <CardHeader className="text-center">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100">
+              <Clock className="h-6 w-6 text-yellow-600" />
+            </div>
+            <CardTitle className="text-xl">Survey Cooldown Active</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 text-center">
+            <div className="text-muted-foreground flex items-center justify-center gap-2">
+              <AlertCircle className="h-4 w-4" />
+              <p>You can take the survey again in {timeRemaining}</p>
+            </div>
+            <p className="text-muted-foreground text-sm">
+              To ensure meaningful data and prevent survey fatigue, there&apos;s a 1-hour cooldown
+              between survey submissions. This helps us provide better insights into your wellbeing
+              patterns.
+            </p>
+            <div className="flex justify-center gap-3">
+              <Button variant="outline" onClick={() => router.push('/dashboard')}>
+                Return to Dashboard
+              </Button>
+              <Button variant="outline" onClick={() => router.push('/survey/results')}>
+                View Last Results
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div>

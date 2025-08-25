@@ -2,7 +2,7 @@
 
 import { useAuth } from '@/auth';
 import { getStoredSession, isSessionExpiringSoon } from '@/auth/client';
-import { AUTH_CONFIG } from '@/auth/config';
+import { AUTH_CONFIG } from '@/auth/identity';
 import { Button } from '@/components/ui/button';
 import { AlertCircle, Clock } from 'lucide-react';
 import { useEffect, useState } from 'react';
