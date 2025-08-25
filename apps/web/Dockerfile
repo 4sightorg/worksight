@@ -8,17 +8,17 @@ RUN corepack enable
 FROM base AS deps
 COPY pnpm-lock.yaml package.json ./
 COPY apps/web/package.json apps/web/
-RUN pnpm install --frozen-lockfile --filter web...
+RUN pnpm install --frozen-lockfile --filter=@worksight/web...
 
 # ---- Lint & Test ----
 FROM deps AS lint-test
 COPY . .
-RUN pnpm lint --filter web && pnpm test --filter web
+RUN pnpm lint --filter=@worksight/web && pnpm test --filter=@worksight/web
 
 # ---- Build ----
 FROM deps AS build
 COPY . .
-RUN pnpm build --filter web
+RUN pnpm build --filter=@worksight/web
 
 # ---- Runtime ----
 FROM node:20-alpine AS runner
