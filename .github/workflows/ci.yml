@@ -203,7 +203,7 @@ jobs:
           retention-days: 1
 
       - name: Run quality checks
-        run: pnpm run quality
+        run: pnpm run --filter ${{matrix.app}} quality
 
       - name: Build application
         env:

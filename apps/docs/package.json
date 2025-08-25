@@ -8,7 +8,7 @@
     "build": "vitepress build",
     "preview": "vitepress preview",
     "type-check": "echo 'Type checking skipped for docs - VitePress handles this during build'",
-    "quality": "pnpm run type-check",
+    "quality": "echo 'pnpm quality doesnt exist, give up.' ",
     "clean": "rm -r .next dist .turbo"
   },
   "devDependencies": {
