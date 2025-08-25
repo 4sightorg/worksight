@@ -62,3 +62,4 @@ apps/*/coverage/
 
 # Bundle analysis
 apps/web/.next/analyze/
+.secrets
