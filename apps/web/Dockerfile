@@ -6,7 +6,7 @@ RUN corepack enable
 
 # ---- Dependencies ----
 FROM base AS deps
-COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+COPY pnpm-lock.yaml package.json ./
 COPY apps/web/package.json apps/web/
 RUN pnpm install --frozen-lockfile --filter web...
 
