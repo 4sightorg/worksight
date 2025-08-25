@@ -1,76 +1,28 @@
 // Only import server-only modules in server code
-import { createClient as createSupabaseClient } from '@supabase/supabase-js';
-
-// Check if we're in offline mode
-const isOffline = () => {
-  if (typeof window !== 'undefined') {
-    return process.env.NEXT_PUBLIC_IS_OFFLINE === 'true' || !navigator.onLine;
-  }
-  return process.env.IS_OFFLINE === 'true';
-};
+import { createBrowserClient } from '@/utils/supabase/client';
+import { isOfflineMode, offlineLogin } from './offline';
 
 // Client-side Supabase instance for auth (only if not offline)
-const supabase = !isOffline()
-  ? createSupabaseClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || ''
-    )
-  : null;
-
-// User data for offline mode
-const OFFLINE_USER = {
-  id: 'offline-user-123',
-  email: 'test@worksight.app',
-  name: 'Test User',
-  role: 'user',
-  accessToken: 'offline-access-token-123',
-};
-
-// Generate mock access token
-const generateMockToken = () => {
-  return `mock-token-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-};
+const supabase = !isOfflineMode() ? createBrowserClient() : null;
 
 // Client-side authentication
 export async function signIn({ email, password }: { email: string; password: string }) {
-  // Check for offline credentials first
-  if (email === 'test@worksight.app' && password === 'testuser') {
-    const user = {
-      ...OFFLINE_USER,
-      accessToken: generateMockToken(),
-      lastLogin: new Date().toISOString(),
-    };
-
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('user', JSON.stringify(user));
-      localStorage.setItem('accessToken', user.accessToken);
+  // Try offline authentication first if in offline mode
+  if (isOfflineMode()) {
+    try {
+      const result = await offlineLogin(email, password);
+      if (result.user) {
+        return { user: result.user, error: null, accessToken: 'offline-token' };
+      } else {
+        return {
+          user: null,
+          error: { message: result.error || 'Login failed' },
+          accessToken: null,
+        };
+      }
+    } catch {
+      return { user: null, error: { message: 'Offline login failed' }, accessToken: null };
     }
-
-    return { user, error: null, accessToken: user.accessToken };
-  }
-
-  // Legacy test credentials
-  if (
-    typeof window !== 'undefined' &&
-    ((email === 'test' && password === 'testuser') || (email === 'testuser' && password === 'test'))
-  ) {
-    const user = {
-      ...OFFLINE_USER,
-      email: 'testuser@worksight.app',
-      accessToken: generateMockToken(),
-    };
-    localStorage.setItem('user', JSON.stringify(user));
-    localStorage.setItem('accessToken', user.accessToken);
-    return { user, error: null, accessToken: user.accessToken };
-  }
-
-  // If offline mode, reject other credentials
-  if (isOffline()) {
-    return {
-      user: null,
-      error: { message: 'Invalid credentials. In offline mode, use test@worksight.app / testuser' },
-      accessToken: null,
-    };
   }
 
   // Otherwise, use Supabase if available
@@ -80,18 +32,12 @@ export async function signIn({ email, password }: { email: string; password: str
       if (data?.user && data?.session) {
         const user = {
           id: data.user.id,
-          email: data.user.email,
-          name: data.user.user_metadata?.name || data.user.email,
+          email: data.user.email || '',
+          name: data.user.user_metadata?.name || data.user.email || 'Unknown',
           role: data.user.user_metadata?.role || 'user',
-          accessToken: data.session.access_token,
         };
 
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('user', JSON.stringify(user));
-          localStorage.setItem('accessToken', user.accessToken);
-        }
-
-        return { user, error: null, accessToken: user.accessToken };
+        return { user, error: null, accessToken: data.session.access_token };
       }
       return { user: null, error, accessToken: null };
     } catch (err) {
@@ -108,7 +54,7 @@ export async function signIn({ email, password }: { email: string; password: str
 
 // OAuth sign-in
 export async function signInWithOAuth(provider: 'google' | 'github' | 'discord' | 'facebook') {
-  if (isOffline()) {
+  if (isOfflineMode()) {
     return {
       error: { message: 'OAuth not available in offline mode' },
     };
@@ -142,7 +88,7 @@ export async function getCurrentUser() {
   }
 
   // Check Supabase session if not offline
-  if (!isOffline() && supabase) {
+  if (!isOfflineMode() && supabase) {
     try {
       const {
         data: { session },
@@ -150,16 +96,15 @@ export async function getCurrentUser() {
       if (session?.user) {
         const user = {
           id: session.user.id,
-          email: session.user.email,
-          name: session.user.user_metadata?.name || session.user.email,
+          email: session.user.email || '',
+          name: session.user.user_metadata?.name || session.user.email || 'Unknown',
           role: session.user.user_metadata?.role || 'user',
-          accessToken: session.access_token,
         };
 
         localStorage.setItem('user', JSON.stringify(user));
-        localStorage.setItem('accessToken', user.accessToken);
+        localStorage.setItem('accessToken', session.access_token);
 
-        return user;
+        return { ...user, accessToken: session.access_token };
       }
     } catch (err) {
       console.error('Error getting session:', err);
@@ -176,7 +121,7 @@ export async function signOut() {
     localStorage.removeItem('accessToken');
   }
 
-  if (!isOffline() && supabase) {
+  if (!isOfflineMode() && supabase) {
     await supabase.auth.signOut();
   }
 }

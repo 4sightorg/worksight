@@ -12,6 +12,9 @@ export {
   signInWithOAuth,
   signOut,
   signUp,
-  validateOAuthUser,
+  validateOAuthUser
 } from './client';
+export { isOfflineMode, offlineLogin, setOfflineMode } from './offline';
 export { AuthProvider, useAuth } from './provider';
+export type { User } from './types';
+

@@ -8,9 +8,10 @@ import { ReactNode, useEffect } from 'react';
 interface ProtectedRouteProps {
   children: ReactNode;
   fallback?: ReactNode;
+  requiredRole?: string[];
 }
 
-export function ProtectedRoute({ children, fallback }: ProtectedRouteProps) {
+export function ProtectedRoute({ children, fallback, requiredRole }: ProtectedRouteProps) {
   const { user, isLoading } = useAuth();
   const router = useRouter();
 
@@ -18,7 +19,11 @@ export function ProtectedRoute({ children, fallback }: ProtectedRouteProps) {
     if (!isLoading && !user) {
       router.push('/login');
     }
-  }, [user, isLoading, router]);
+
+    if (user && requiredRole && user.role && !requiredRole.includes(user.role)) {
+      router.push('/dashboard');
+    }
+  }, [user, isLoading, router, requiredRole]);
 
   // Show loading spinner while checking auth state
   if (isLoading) {
@@ -28,6 +33,10 @@ export function ProtectedRoute({ children, fallback }: ProtectedRouteProps) {
   // Show fallback while redirecting to login
   if (!user) {
     return fallback || <LoadingState fullScreen text="Redirecting to login..." />;
+  }
+
+  if (requiredRole && user.role && !requiredRole.includes(user.role)) {
+    return null;
   }
 
   return <>{children}</>;

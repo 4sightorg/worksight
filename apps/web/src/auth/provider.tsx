@@ -1,186 +1,129 @@
 'use client';
 
-import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import {
-  signIn as authSignIn,
-  signOut as authSignOut,
-  signUp as authSignUp,
-  extendSession,
-  getStoredSession,
-  isSessionExpiringSoon,
-} from './client';
-import { AUTH_CONFIG } from './config';
-import { AuthState, User } from './types';
-import { storage } from './utils';
+import { createContext, useContext, useEffect, useState } from 'react';
+import { isOfflineMode, offlineLogin } from './offline';
+import { User } from './types';
 
-interface AuthContextType extends AuthState {
+interface AuthContextType {
+  user: User | null;
+  login: (email: string, password: string) => Promise<{ user: User | null; error: string | null }>;
+  signup: (
+    userData: any,
+    saveLogin?: boolean
+  ) => Promise<{ user: User | null; error: string | null }>;
+  signUp: (
+    userData: any,
+    saveLogin?: boolean
+  ) => Promise<{ user: User | null; error: string | null }>;
+  logout: () => Promise<void>;
+  loading: boolean;
+  isLoading: boolean;
   setUser: (user: User | null) => void;
   setAccessToken: (token: string | null) => void;
-  setSaveLogin: (saveLogin: boolean) => void;
-  signIn: (credentials: { email: string; password: string }, saveLogin?: boolean) => Promise<void>;
-  signUp: (
-    userData: { email: string; username: string; password: string; name: string },
-    saveLogin?: boolean
-  ) => Promise<void>;
-  logout: () => Promise<void>;
-  extendCurrentSession: () => boolean;
+  setSaveLogin: (save: boolean) => void;
+  extendCurrentSession: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [saveLogin, setSaveLogin] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
 
-  // Session expiration warning timer
   useEffect(() => {
-    if (!user) return;
-
-    const checkExpiration = () => {
-      const storedSession = getStoredSession();
-      if (!storedSession) {
-        // Session expired, logout
-        logout();
-        return;
-      }
-
-      // Warn if session is expiring soon
-      if (isSessionExpiringSoon()) {
-        console.warn('Session will expire soon');
-        // You could show a toast notification here
-      }
-    };
-
-    // Check every minute
-    const interval = setInterval(checkExpiration, 60 * 1000);
-    return () => clearInterval(interval);
-  }, [user]);
-
-  // Restore auth state from localStorage on mount
-  useEffect(() => {
-    const restoreSession = () => {
+    // Check for saved user session
+    const savedUser = localStorage.getItem('user_session');
+    if (savedUser) {
       try {
-        const storedSession = getStoredSession();
-        if (storedSession) {
-          setUser(storedSession.user);
-          setAccessToken(storedSession.accessToken);
-          setSaveLogin(storedSession.saveLogin);
-        }
+        setUser(JSON.parse(savedUser));
       } catch (error) {
-        console.warn('Failed to restore session:', error);
-      } finally {
-        setIsLoading(false);
+        console.error('Failed to parse saved user:', error);
+        localStorage.removeItem('user_session');
       }
-    };
-
-    restoreSession();
+    }
+    setLoading(false);
   }, []);
 
-  const handleSetUser = (user: User | null) => {
-    setUser(user);
-    if (!user) {
-      // Clear session when user is set to null
-      storage.clear();
-      setAccessToken(null);
-      setSaveLogin(false);
-    }
-  };
+  const login = async (
+    email: string,
+    password: string
+  ): Promise<{ user: User | null; error: string | null }> => {
+    setLoading(true);
 
-  const handleSetAccessToken = (token: string | null) => {
-    setAccessToken(token);
-    if (token) {
-      storage.set(AUTH_CONFIG.STORAGE_KEYS.ACCESS_TOKEN, token);
-    } else {
-      storage.remove(AUTH_CONFIG.STORAGE_KEYS.ACCESS_TOKEN);
-    }
-  };
-
-  const handleSetSaveLogin = (saveLogin: boolean) => {
-    setSaveLogin(saveLogin);
-    storage.set(AUTH_CONFIG.STORAGE_KEYS.SAVE_LOGIN, saveLogin.toString());
-  };
-
-  const handleSignIn = async (
-    credentials: { email: string; password: string },
-    saveLogin: boolean = false
-  ) => {
-    const result = await authSignIn(credentials, saveLogin);
-    if (result.user) {
-      setUser(result.user);
-      setAccessToken(result.accessToken);
-      setSaveLogin(saveLogin);
-    } else {
-      throw new Error(result.error?.message || 'Login failed');
-    }
-  };
-
-  const handleSignUp = async (
-    userData: { email: string; username: string; password: string; name: string },
-    saveLogin: boolean = false
-  ) => {
-    const result = await authSignUp(userData, saveLogin);
-    if (result.user) {
-      setUser(result.user);
-      setAccessToken(result.accessToken);
-      setSaveLogin(saveLogin);
-    } else {
-      throw new Error(result.error?.message || 'Signup failed');
-    }
-  };
-
-  const logout = async () => {
     try {
-      await authSignOut();
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
-      setUser(null);
-      setAccessToken(null);
-      setSaveLogin(false);
-    }
-  };
-
-  const extendCurrentSession = (): boolean => {
-    const success = extendSession();
-    if (success) {
-      // Update the timestamp in our local state by getting fresh session data
-      const refreshedSession = getStoredSession();
-      if (refreshedSession) {
-        setUser(refreshedSession.user);
-        setAccessToken(refreshedSession.accessToken);
-        setSaveLogin(refreshedSession.saveLogin);
+      if (isOfflineMode()) {
+        const result = await offlineLogin(email, password);
+        if (result.user) {
+          setUser(result.user);
+          localStorage.setItem('user_session', JSON.stringify(result.user));
+        }
+        return result;
       }
+
+      // Online login logic would go here
+      // For now, fall back to offline login
+      const result = await offlineLogin(email, password);
+      if (result.user) {
+        setUser(result.user);
+        localStorage.setItem('user_session', JSON.stringify(result.user));
+      }
+      return result;
+    } catch (error) {
+      console.error('Login error:', error);
+      return { user: null, error: 'Login failed' };
+    } finally {
+      setLoading(false);
     }
-    return success;
   };
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        accessToken,
-        saveLogin,
-        isLoading,
-        setUser: handleSetUser,
-        setAccessToken: handleSetAccessToken,
-        setSaveLogin: handleSetSaveLogin,
-        signIn: handleSignIn,
-        signUp: handleSignUp,
-        logout,
-        extendCurrentSession,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  const signup = async (
+    userData: any,
+    saveLogin: boolean = false
+  ): Promise<{ user: User | null; error: string | null }> => {
+    // Signup not implemented for offline mode
+    return { user: null, error: 'Signup not available in offline mode' };
+  };
+
+  const logout = async (): Promise<void> => {
+    setUser(null);
+    setAccessToken(null);
+    localStorage.removeItem('user_session');
+
+    if (!isOfflineMode()) {
+      // Online logout logic would go here
+    }
+  };
+
+  const extendCurrentSession = () => {
+    // Update session timestamp in localStorage
+    if (user) {
+      localStorage.setItem('user_session', JSON.stringify(user));
+    }
+  };
+
+  const value: AuthContextType = {
+    user,
+    login,
+    signup,
+    signUp: signup, // alias for signup
+    logout,
+    loading,
+    isLoading: loading, // alias for loading
+    setUser,
+    setAccessToken,
+    setSaveLogin,
+    extendCurrentSession,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 }

@@ -77,11 +77,9 @@ export function SessionTimer({ variant = 'header' }: SessionTimerProps) {
   }, [user, logout, mounted]);
 
   const handleExtendSession = () => {
-    const success = extendCurrentSession();
-    if (success) {
-      setShowWarning(false);
-      setIsExpiringSoon(false);
-    }
+    extendCurrentSession();
+    setShowWarning(false);
+    setIsExpiringSoon(false);
   };
 
   if (!user || !mounted) return null;
