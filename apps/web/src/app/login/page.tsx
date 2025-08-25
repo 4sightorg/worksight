@@ -1,4 +1,5 @@
 import { LoginForm } from '@/components/auth';
+import { OfflineModeToggle } from '@/components/dev/offline-toggle';
 import { Branding } from '@/components/layout';
 
 // Force dynamic rendering to avoid build-time Supabase client creation
@@ -10,6 +11,7 @@ export default function LoginPage() {
       <div className="flex w-full max-w-sm flex-col gap-6">
         <Branding />
         <LoginForm />
+        <OfflineModeToggle />
       </div>
     </div>
   );
