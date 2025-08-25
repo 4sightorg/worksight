@@ -12,9 +12,8 @@ export default defineConfig({
   sitemap: {
     hostname,
   },
-
-  // No 'base' property is needed for Vercel deployments.
-
+  base: env.VITE_BASE || '/',
+  
   themeConfig: {
     logo: '/logo.svg',
     siteTitle: 'WorkSight',

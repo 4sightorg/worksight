@@ -21,6 +21,16 @@ Ensure you have the following installed on your system:
 
 ### Step-by-Step Installation
 
+#### Docker Installation
+
+TBA
+
+#### Docker Compose Installation
+
+TBA
+
+#### Native Installation
+
 1. **Clone the Repository**
 
    ```bash
