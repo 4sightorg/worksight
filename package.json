@@ -8,7 +8,9 @@
     "packages/*"
   ],
   "scripts": {
+    "analyze:web": "ANALYZE=true turbo build --filter=@worksight/web",
     "build": "turbo build",
+    "build:analyze": "pnpm run analyze:web",
     "build:web": "turbo build --filter=@worksight/web",
     "build:docs": "turbo build --filter=@worksight/docs",
     "dev": "turbo dev",
