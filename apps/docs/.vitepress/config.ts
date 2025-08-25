@@ -12,32 +12,14 @@ export default defineConfig({
   sitemap: {
     hostname,
   },
-  base: '/docs/',
-  themeConfig: {
-    logo: '/home/logo.png',
-    siteTitle: 'WorkSight',
-    nav: [
-      { text: 'Guide', link: '/guide/getting-started' },
-      { text: 'API', link: '/api/overview' },
-    ],
-  },
-  ignoreDeadLinks: true,
-
-  vite: {
-    resolve: {
-      alias: [
-        {
-          find: /^.*VPSwitchAppearance\.vue$/,
-          replacement: fileURLToPath(
-            new URL('./theme/components/CustomSwitchAppearance.vue', import.meta.url)
-          ),
-        },
-      ],
-    },
-  },
-
+  
+  // TAILORED FOR GITHUB PAGES
+  // The 'base' path must match your repository name, and start/end with a slash.
+  base: '/worksight/',
+  
   themeConfig: {
     logo: '/logo.svg',
+    siteTitle: 'WorkSight',
 
     nav: [
       { text: 'Guide', link: '/guide/getting-started' },
@@ -94,6 +76,20 @@ export default defineConfig({
     footer: {
       message: 'Released under the MIT License.',
       copyright: 'Copyright © 2024-present 4Sight Organization',
+    },
+  },
+  ignoreDeadLinks: true,
+
+  vite: {
+    resolve: {
+      alias: [
+        {
+          find: /^.*VPSwitchAppearance\.vue$/,
+          replacement: fileURLToPath(
+            new URL('./theme/components/CustomSwitchAppearance.vue', import.meta.url)
+          ),
+        },
+      ],
     },
   },
 
