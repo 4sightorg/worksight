@@ -1,6 +1,7 @@
 # Task Management
 
-WorkSight provides comprehensive task management features integrated with wellness tracking.
+WorkSight provides comprehensive task management features integrated with
+wellness tracking.
 
 ## Overview
 
@@ -46,10 +47,10 @@ Visual workflow management:
 
 Detailed task information:
 
-| Title | Status | Priority | Due Date | Points | Actions |
-|-------|--------|----------|----------|---------|---------|
-| Task A | Pending | High | 2025-02-01 | 5 | Edit/Delete |
-| Task B | In Progress | Medium | 2025-02-03 | 3 | Edit/Delete |
+| Title  | Status      | Priority | Due Date   | Points | Actions     |
+| ------ | ----------- | -------- | ---------- | ------ | ----------- |
+| Task A | Pending     | High     | 2025-02-01 | 5      | Edit/Delete |
+| Task B | In Progress | Medium   | 2025-02-03 | 3      | Edit/Delete |
 
 ## Creating Tasks
 
@@ -69,14 +70,14 @@ Detailed task information:
 
 ```typescript
 const newTask = await tasksApi.create({
-  title: "Implement user authentication",
-  description: "Add login/logout functionality",
-  status: "pending",
-  priority: "high",
-  due_date: "2025-02-15",
+  title: 'Implement user authentication',
+  description: 'Add login/logout functionality',
+  status: 'pending',
+  priority: 'high',
+  due_date: '2025-02-15',
   story_points: 8,
   assigned_to: userId,
-  created_by: currentUserId
+  created_by: currentUserId,
 });
 ```
 
@@ -178,7 +179,7 @@ export const taskConfig = {
   storyPoints: [1, 2, 3, 5, 8, 13, 21],
   priorities: ['low', 'medium', 'high'],
   statuses: ['pending', 'in-progress', 'completed'],
-  autoArchiveDays: 30
+  autoArchiveDays: 30,
 };
 ```
 

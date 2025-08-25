@@ -1,6 +1,7 @@
 # Admin Dashboard
 
-The admin dashboard provides comprehensive system management and analytics capabilities.
+The admin dashboard provides comprehensive system management and analytics
+capabilities.
 
 ## Access Requirements
 
@@ -101,11 +102,11 @@ Available roles:
 
 ### Department Breakdown
 
-| Department | Avg Score | Risk Level | Trend |
-|------------|-----------|------------|-------|
-| Engineering | 6.2/10 | Moderate | ↗️ +5% |
-| Sales | 4.1/10 | Low | ↘️ -2% |
-| Marketing | 7.8/10 | High | ↗️ +12% |
+| Department  | Avg Score | Risk Level | Trend   |
+| ----------- | --------- | ---------- | ------- |
+| Engineering | 6.2/10    | Moderate   | ↗️ +5%  |
+| Sales       | 4.1/10    | Low        | ↘️ -2%  |
+| Marketing   | 7.8/10    | High       | ↗️ +12% |
 
 ### Early Warning System
 
@@ -127,22 +128,22 @@ export const adminConfig = {
   survey: {
     defaultFrequency: 'weekly',
     reminderEnabled: true,
-    anonymousResponses: true
+    anonymousResponses: true,
   },
-  
+
   // Security settings
   security: {
     sessionTimeout: 3600000, // 1 hour
     passwordPolicy: 'strong',
-    mfaRequired: false
+    mfaRequired: false,
   },
-  
+
   // System settings
   system: {
     offlineMode: true,
     dataRetention: 2555, // days
-    backupFrequency: 'daily'
-  }
+    backupFrequency: 'daily',
+  },
 };
 ```
 

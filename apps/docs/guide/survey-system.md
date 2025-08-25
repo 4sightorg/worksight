@@ -1,6 +1,7 @@
 # Survey System
 
-WorkSight's survey system is designed to track employee wellness and identify burnout risk factors.
+WorkSight's survey system is designed to track employee wellness and identify
+burnout risk factors.
 
 ## Overview
 
@@ -30,7 +31,7 @@ Each response is weighted and contributes to:
 - **Overall burnout score** (0-100 scale)
 - **Risk level classification**:
   - Low Risk (0-25%)
-  - Moderate Risk (26-50%)  
+  - Moderate Risk (26-50%)
   - High Risk (51-75%)
   - Severe Risk (76-100%)
 

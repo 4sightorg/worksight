@@ -1,6 +1,7 @@
 # API Overview
 
-WorkSight provides a comprehensive REST API for integrating with external systems and building custom applications.
+WorkSight provides a comprehensive REST API for integrating with external
+systems and building custom applications.
 
 ## Base URL
 
@@ -31,12 +32,12 @@ curl -H "X-API-Key: your_api_key_here" \
 
 API requests are rate-limited based on your role:
 
-| Role | Requests/Hour | Burst Limit |
-|------|---------------|-------------|
-| Admin | 10,000 | 500 |
-| Manager | 5,000 | 250 |
-| Employee | 1,000 | 100 |
-| Guest | 100 | 20 |
+| Role     | Requests/Hour | Burst Limit |
+| -------- | ------------- | ----------- |
+| Admin    | 10,000        | 500         |
+| Manager  | 5,000         | 250         |
+| Employee | 1,000         | 100         |
+| Guest    | 100           | 20          |
 
 ## Response Format
 

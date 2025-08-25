@@ -4,7 +4,9 @@ Welcome to WorkSight! This guide will help you get up and running quickly.
 
 ## What is WorkSight?
 
-WorkSight is a comprehensive wellness and task management platform designed to help organizations monitor employee well-being while managing productivity effectively.
+WorkSight is a comprehensive wellness and task management platform designed to
+help organizations monitor employee well-being while managing productivity
+effectively.
 
 ## Quick Start
 
@@ -50,7 +52,8 @@ pnpm run dev
 
 ### First Login
 
-WorkSight supports both online and offline modes. For testing, you can use these credentials:
+WorkSight supports both online and offline modes. For testing, you can use these
+credentials:
 
 **Executives:**
 
