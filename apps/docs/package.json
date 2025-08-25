@@ -7,7 +7,8 @@
     "dev": "vitepress dev",
     "build": "vitepress build",
     "preview": "vitepress preview",
-    "type-check": "echo 'Type checking skipped for docs - VitePress handles this during build'"
+    "type-check": "echo 'Type checking skipped for docs - VitePress handles this during build'",
+    "clean": "rm -r .next dist .turbo"
   },
   "devDependencies": {
     "vitepress": "^1.0.0-rc.44",
