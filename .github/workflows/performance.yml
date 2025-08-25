@@ -43,7 +43,7 @@ jobs:
       - name: Start application
         run: |
           cd apps/web
-          pnpm start &
+          pnpm start -p 3001 &
           echo $! > server.pid
 
       - name: Wait for application
@@ -55,6 +55,7 @@ jobs:
           configPath: './lighthouserc.js'
           uploadArtifacts: true
           temporaryPublicStorage: true
+          urls: 'http://localhost:3001'
 
       - name: Stop application
         run: |
