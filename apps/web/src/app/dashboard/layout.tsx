@@ -91,13 +91,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   // Get the burnout score with fallback handling
   const getBurnoutScore = () => {
     if (!surveyData) return null;
-
-    // Try different possible property names
+    const data = surveyData as any;
     return (
-      surveyData.overallScore ||
-      surveyData.totalScore ||
-      surveyData.score ||
-      surveyData.burnoutScore ||
+      data?.overallScore ??
+      data?.totalScore ??
+      data?.score ??
+      data?.burnoutScore ??
       null
     );
   };
