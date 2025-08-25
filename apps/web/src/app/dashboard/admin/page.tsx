@@ -161,7 +161,7 @@ export default function AdminPage() {
                         <TableCell>{employee.name}</TableCell>
                         <TableCell>{employee.email}</TableCell>
                         <TableCell>
-                          <Badge variant={getRoleBadgeVariant(employee)}>
+                          <Badge>
                             {getRoleDisplay(employee)}
                           </Badge>
                         </TableCell>

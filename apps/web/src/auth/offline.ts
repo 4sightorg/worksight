@@ -26,12 +26,18 @@ export const setOfflineMode = (offline: boolean): void => {
 
 // Map employee to user object
 const mapEmployeeToUser = (employeeId: string, employee: unknown): User => {
+  const emp = employee as {
+    email: string;
+    name: string;
+    manager_id: string;
+    department: string;
+  };
   return {
     id: employeeId,
-    email: employee.email,
-    name: employee.name,
-    role: employee.manager_id === '' ? 'exec' : 'employee',
-    department: employee.department,
+    email: emp.email,
+    name: emp.name,
+    role: emp.manager_id === '' ? 'exec' : 'employee',
+    department: emp.department,
   } as User;
 };
 
