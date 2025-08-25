@@ -1,7 +1,8 @@
 {
   "version": 2,
-  "name": "worksight",
-  "alias": ["worksight.vercel.app"],
+  "alias": [
+    "worksight.vercel.app"
+  ],
   "buildCommand": "cd ../.. && pnpm build --filter=@worksight/web",
   "outputDirectory": "apps/web/.next",
   "installCommand": "pnpm install",
@@ -9,19 +10,14 @@
   "env": {
     "NEXT_PUBLIC_APP_NAME": "WorkSight",
     "NEXT_PUBLIC_APP_DESCRIPTION": "Employee Well-being Analytics Platform",
-    "NEXT_PUBLIC_SUPABASE_URL": "@next_public_supabase_url",
-    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@next_public_supabase_anon_key"
+    "NEXT_PUBLIC_SUPABASE_URL": "https://ontaynsmofmfvzypfhra.supabase.co",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9udGF5bnNtb2ZtZnZ6eXBmaHJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQxNTE4NDksImV4cCI6MjA2OTcyNzg0OX0.5x1_4JpVZPtesadh0TI6-eVArLCv-Pnukju1VDNIj14"
   },
   "build": {
     "env": {
       "NEXT_TELEMETRY_DISABLED": "1",
-      "NEXT_PUBLIC_SUPABASE_URL": "@next_public_supabase_url",
-      "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@next_public_supabase_anon_key"
-    }
-  },
-  "functions": {
-    "apps/web/src/app/api/**/*.ts": {
-      "maxDuration": 30
+      "NEXT_PUBLIC_SUPABASE_URL": "https://ontaynsmofmfvzypfhra.supabase.co",
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9udGF5bnNtb2ZtZnZ6eXBmaHJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQxNTE4NDksImV4cCI6MjA2OTcyNzg0OX0.5x1_4JpVZPtesadh0TI6-eVArLCv-Pnukju1VDNIj14"
     }
   },
   "headers": [
