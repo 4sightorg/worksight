@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "installCommand": "pnpm install --filter=web...",
+  "buildCommand": "pnpm build --filter=web",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "env": {
+    "NEXT_PUBLIC_APP_NAME": "WorkSight",
+    "NEXT_PUBLIC_APP_DESCRIPTION": "Employee Well-being Analytics Platform",
+    "NEXT_PUBLIC_SUPABASE_URL": "https://ontaynsmofmfvzypfhra.supabase.co",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9udGF5bnNtb2ZtZnZ6eXBmaHJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQxNTE4NDksImV4cCI6MjA2OTcyNzg0OX0.5x1_4JpVZPtesadh0TI6-eVArLCv-Pnukju1VDNIj14",
+    "NEXT_PUBLIC_APP_URL": "https://worksight.vercel.app"
+  },
+  "build": {
+    "env": {
+      "NEXT_TELEMETRY_DISABLED": "1"
+    }
+  }
+}

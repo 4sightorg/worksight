@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "installCommand": "pnpm install --filter=docs",
+  "buildCommand": "pnpm build --filter=docs",
+  "outputDirectory": ".vitepress/dist",
+  "framework": "vitepress",
+  "build": {
+    "env": {}
+  }
+}
