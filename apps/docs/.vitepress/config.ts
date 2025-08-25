@@ -13,6 +13,14 @@ export default defineConfig({
     hostname,
   },
   base: '/docs/',
+  themeConfig: {
+    logo: '/home/logo.png',
+    siteTitle: 'WorkSight',
+    nav: [
+      { text: 'Guide', link: '/guide/getting-started' },
+      { text: 'API', link: '/api/overview' },
+    ],
+  },
   ignoreDeadLinks: true,
 
   vite: {
