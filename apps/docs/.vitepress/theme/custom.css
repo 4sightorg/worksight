@@ -1,0 +1,63 @@
+/* Custom styles for WorkSight documentation */
+
+/* Hero image customization with enhanced glow */
+.VPHero .VPImage {
+  max-width: none !important;
+  width: 600px !important;
+  height: auto !important;
+}
+
+.VPHero .VPImage img {
+  filter: drop-shadow(0 0 1rem rgba(99, 102, 241, 0.6))
+    drop-shadow(0 0 2rem rgba(99, 102, 241, 0.4)) drop-shadow(0 0 4rem rgba(99, 102, 241, 0.3));
+  transition: all 0.3s ease;
+  border-radius: 12px;
+}
+
+.VPHero .VPImage img:hover {
+  filter: drop-shadow(0 0 1.5rem rgba(99, 102, 241, 0.8))
+    drop-shadow(0 0 3rem rgba(99, 102, 241, 0.6)) drop-shadow(0 0 6rem rgba(99, 102, 241, 0.4));
+  transform: scale(1.03);
+}
+
+/* Dark mode adjustments with enhanced glow */
+.dark .VPHero .VPImage img {
+  filter: drop-shadow(0 0 1rem rgba(139, 92, 246, 0.6))
+    drop-shadow(0 0 2rem rgba(139, 92, 246, 0.4)) drop-shadow(0 0 4rem rgba(139, 92, 246, 0.3));
+}
+
+.dark .VPHero .VPImage img:hover {
+  filter: drop-shadow(0 0 1.5rem rgba(139, 92, 246, 0.8))
+    drop-shadow(0 0 3rem rgba(139, 92, 246, 0.6)) drop-shadow(0 0 6rem rgba(139, 92, 246, 0.4));
+}
+
+/* Additional selectors for different VitePress versions */
+.vp-hero .vp-image img,
+[class*='hero'] [class*='image'] img,
+.home-hero .hero-image img {
+  filter: drop-shadow(0 0 1rem rgba(99, 102, 241, 0.6))
+    drop-shadow(0 0 2rem rgba(99, 102, 241, 0.4)) drop-shadow(0 0 4rem rgba(99, 102, 241, 0.3)) !important;
+  transition: all 0.3s ease !important;
+  border-radius: 12px !important;
+}
+
+.vp-hero .vp-image img:hover,
+[class*='hero'] [class*='image'] img:hover,
+.home-hero .hero-image img:hover {
+  filter: drop-shadow(0 0 1.5rem rgba(99, 102, 241, 0.8))
+    drop-shadow(0 0 3rem rgba(99, 102, 241, 0.6)) drop-shadow(0 0 6rem rgba(99, 102, 241, 0.4)) !important;
+  transform: scale(1.03) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .VPHero .VPImage {
+    width: 400px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .VPHero .VPImage {
+    width: 300px !important;
+  }
+}

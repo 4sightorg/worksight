@@ -1,16 +1,37 @@
-import { defineConfig } from 'vitepress';
+import { fileURLToPath } from 'url';
+import { defineConfig, loadEnv } from 'vitepress';
+
+const env = loadEnv('', process.cwd());
+const hostname = env.VITE_HOSTNAME || 'http://localhost:4173';
 
 export default defineConfig({
-  title: 'WorkSight Documentation',
-  description: 'Employee Burnout Assessment Tool - Comprehensive Documentation',
+  outDir: 'dist',
+  cleanUrls: true,
+  title: 'WorkSight',
+  description: 'Check your tasks, manage your well being.',
+  sitemap: {
+    hostname,
+  },
   base: '/docs/',
   ignoreDeadLinks: true,
+
+  vite: {
+    resolve: {
+      alias: [
+        {
+          find: /^.*VPSwitchAppearance\.vue$/,
+          replacement: fileURLToPath(
+            new URL('./theme/components/CustomSwitchAppearance.vue', import.meta.url)
+          ),
+        },
+      ],
+    },
+  },
 
   themeConfig: {
     logo: '/logo.svg',
 
     nav: [
-      { text: 'Home', link: '/' },
       { text: 'Guide', link: '/guide/getting-started' },
       { text: 'API', link: '/api/overview' },
       { text: 'Legal', link: '/legal/privacy-policy' },
