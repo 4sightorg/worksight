@@ -56,7 +56,7 @@ jobs:
         run: pnpm add -g vercel
 
       - name: Deploy to Vercel
-        run: vercel --prod --token=${{ secrets.VERCEL_TOKEN }} --cwd=apps/web
+        run: vercel --prod --yes --token=${{ secrets.VERCEL_TOKEN }} --cwd=apps/web
 
   # Job 2: Deploy Docs to GitHub Pages
   deploy-docs:
