@@ -1,0 +1,34 @@
+# Dependencies
+
+node_modules/
+pnpm-lock.yaml
+
+# Build outputs
+
+.next/
+dist/
+out/
+
+# Coverage reports
+
+coverage/
+.nyc_output/
+
+# Test files (if you have CSS in test files)
+
+**/*.test.css
+**/*.spec.css
+
+# Generated files
+
+*.min.css
+
+# IDE files
+
+.vscode/
+.idea/
+
+# OS files
+
+.DS_Store
+Thumbs.db

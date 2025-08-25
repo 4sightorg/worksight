@@ -1,0 +1,37 @@
+[build]
+  base = "apps/web"
+  command = "cd ../.. && pnpm build --filter=@worksight/web"
+  publish = "apps/web/.next"
+
+[build.environment]
+  NODE_VERSION = "18"
+  PNPM_VERSION = "8"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    cache-control = "no-cache"
+
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    cache-control = "public, max-age=31536000, immutable"
+
+# Security redirects
+[[redirects]]
+  from = "/admin/*"
+  to = "/login"
+  status = 302
+  conditions = {Role = ["!admin"]}
+
+[functions]
+  directory = "apps/web/netlify/functions"
+  node_bundler = "esbuild"
