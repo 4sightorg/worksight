@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useSurveyResultsStore } from '@/store/survey-results-store';
 import { AlertTriangle, CheckCircle, Heart, TrendingUp } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
@@ -34,6 +35,10 @@ function SurveyResultsContent() {
   const searchParams = useSearchParams();
   const [result, setResult] = useState<DetailedBurnoutResult | null>(null);
   const [responses, setResponses] = useState<SurveyResponse[]>([]);
+
+  // Survey results store
+  const { saveResults, setCurrentResults, setCurrentResponses, getLatestResults } =
+    useSurveyResultsStore();
 
   // Question titles mapping
   const questionTitles: Record<string, string> = {
@@ -349,9 +354,18 @@ function SurveyResultsContent() {
     const scoresParam = searchParams.get('scores');
     const responsesParam = searchParams.get('responses');
 
+    // If no URL parameters, try to load from store
     if (!scoresParam) {
-      router.push('/survey');
-      return;
+      const storedResults = getLatestResults();
+      if (storedResults) {
+        setResult(storedResults.results);
+        setResponses(storedResults.responses);
+        return;
+      } else {
+        // No stored results either, redirect to survey
+        router.push('/survey');
+        return;
+      }
     }
 
     try {
@@ -417,7 +431,7 @@ function SurveyResultsContent() {
         ];
       }
 
-      setResult({
+      const finalResult = {
         overallScore: scores.overall,
         overallLevel,
         workload: workloadResult,
@@ -425,12 +439,20 @@ function SurveyResultsContent() {
         support: supportResult,
         engagement: engagementResult,
         recommendations,
-      });
+      };
+
+      setResult(finalResult);
+
+      // Save to store for dashboard access
+      const finalResponses = responsesParam ? JSON.parse(decodeURIComponent(responsesParam)) : [];
+      saveResults(finalResult, finalResponses);
+      setCurrentResults(finalResult);
+      setCurrentResponses(finalResponses);
     } catch (error) {
       console.error('Failed to parse survey results:', error);
       router.push('/survey');
     }
-  }, [searchParams, router]);
+  }, [searchParams, router, saveResults, setCurrentResults, setCurrentResponses, getLatestResults]);
 
   // Show results immediately - no celebration screen
   if (!result) {
