@@ -24,7 +24,6 @@ env:
 
 jobs:
   # Job 1: Deploy Web App to Vercel
-  # Job 1: Deploy Web App to Vercel
   deploy-web:
     name: Deploy Web to Vercel
     runs-on: ubuntu-latest
