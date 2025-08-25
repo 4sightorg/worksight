@@ -84,7 +84,7 @@ pnpm run format:check
 const OptimizedComponent = React.memo(Component);
 
 // Callback optimization
-const handleUpdate = useCallback((id: string, data: any) => {
+const handleUpdate = useCallback((id: string, data: unknown) => {
   // Update logic
 }, []);
 
