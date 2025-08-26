@@ -1,5 +1,10 @@
 name: Build & Publish Docker Images
 
+permissions:
+  pull-requests: write
+  contents: read
+  packages: write
+
 on:
   workflow_dispatch:
   push:
