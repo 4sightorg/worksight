@@ -14,6 +14,7 @@ FROM deps AS build
 COPY . .
 ENV NEXT_PUBLIC_SUPABASE_URL="http://localhost:54321"
 ENV NEXT_PUBLIC_SUPABASE_ANON_KEY="dummy_anon_key"
+ENV NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="dummy_key"
 ENV NEXT_PUBLIC_IS_OFFLINE=false
 RUN pnpm --filter=@worksight/web build
 
