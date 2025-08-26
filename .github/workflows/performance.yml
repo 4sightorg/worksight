@@ -15,6 +15,7 @@ env:
   NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
   NEXT_PUBLIC_IS_OFFLINE: ${{ vars.NEXT_PUBLIC_IS_OFFLINE || 'false' }}
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   lighthouse:
@@ -43,25 +44,20 @@ jobs:
       - name: Start application
         run: |
           cd apps/web
-          pnpm start -p 3001 &
+          pnpm start &
           echo $! > server.pid
 
-      - name: Wait for application
+      - name: Wait for server ready
         run: sleep 15
 
-      - name: Run Lighthouse CI (no auto artifact upload)
+      - name: Run Lighthouse CI
         uses: treosh/lighthouse-ci-action@v10
         with:
           configPath: './lighthouserc.js'
-          uploadArtifacts: false
+          uploadArtifacts: true
           temporaryPublicStorage: true
-          urls: 'http://localhost:3001'
-
-      - name: Upload Lighthouse reports
-        uses: actions/upload-artifact@v4
-        with:
-          name: lighthouse-report
-          path: ./lighthouseci_reports/
+          urls: 'http://localhost:3000'
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Stop application
         run: |
