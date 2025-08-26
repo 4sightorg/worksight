@@ -13,7 +13,7 @@ export default defineConfig({
     hostname,
   },
   base: env.VITE_BASE || '/',
-  
+
   themeConfig: {
     logo: '/logo.svg',
     siteTitle: 'WorkSight',
