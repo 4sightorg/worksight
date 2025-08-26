@@ -43,19 +43,17 @@ jobs:
       - name: Start application
         run: |
           cd apps/web
-          pnpm start -p 3001 &
+          pnpm start &
           echo $! > server.pid
 
-      - name: Wait for application
+      - name: Wait for server ready
         run: sleep 15
 
       - name: Run Lighthouse CI
-        uses: treosh/lighthouse-ci-action@v10
-        with:
-          configPath: './lighthouserc.js'
-          uploadArtifacts: true
-          temporaryPublicStorage: true
-          urls: 'http://localhost:3001'
+        run: |
+          npx lhci autorun --upload.target=temporary-public-storage
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # reuse built-in token
 
       - name: Stop application
         run: |

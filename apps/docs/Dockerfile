@@ -1,35 +1,29 @@
-# syntax=docker/dockerfile:1
-FROM node:20-alpine AS base
+# ---- Build stage ----
+FROM node:20-alpine AS builder
 WORKDIR /app
-RUN corepack enable
 
-# ---- Dependencies ----
-FROM base AS deps
-COPY pnpm-lock.yaml package.json ./
+RUN npm install -g pnpm
+
+# Copy root manifests (required for monorepo install)
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
 COPY apps/docs/package.json apps/docs/
-RUN pnpm install --frozen-lockfile --filter docs...
 
-# ---- Lint & Test ----
-FROM deps AS lint-test
+RUN pnpm install --frozen-lockfile --filter=@worksight/docs
+
+# Copy the rest of the project
 COPY . .
-RUN pnpm lint --filter docs && pnpm test --filter docs
 
-# ---- Build ----
-FROM deps AS build
-COPY . .
-RUN pnpm build --filter docs
+# Build VitePress site
+RUN pnpm --filter=@worksight/docs build
 
-# ---- Runtime ----
-FROM node:20-alpine AS runner
-WORKDIR /app
+# ---- Runtime stage ----
+FROM nginx:alpine
 
-ENV NODE_ENV=production
-ENV PORT=3001
+# Clean default nginx content
+RUN rm -rf /usr/share/nginx/html/*
 
-COPY --from=build /app/apps/docs/.next ./.next
-COPY --from=build /app/apps/docs/public ./public
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/apps/docs/package.json ./
+# Copy build output
+COPY --from=builder /app/apps/docs/.vitepress/dist /usr/share/nginx/html
 
-EXPOSE 3001
-CMD ["pnpm", "start", "--filter", "docs"]
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
