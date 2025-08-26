@@ -34,9 +34,13 @@ jobs:
             web:
               - 'apps/web/**'
 
+      - name: Debug paths filter
+        run: |
+          echo "docs changed: ${{ steps.filter.outputs.docs }}"
+          echo "web changed: ${{ steps.filter.outputs.web }}"
+
   build:
     needs: changes
-    if: needs.changes.outputs.docs == 'true' || needs.changes.outputs.web == 'true'
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -63,14 +67,13 @@ jobs:
         run: pnpm --filter @worksight/${{ matrix.app }} lint
 
       - name: Build Docker image
-        if: needs.changes.outputs[matrix.app] == 'true'
         run: |
           docker build \
             -t ghcr.io/${{ github.repository }}/${{ matrix.app }}:latest \
             -f apps/${{ matrix.app }}/Dockerfile .
 
       - name: Log in to GHCR
-        if: github.event_name != 'pull_request' && needs.changes.outputs[matrix.app] == 'true'
+        if: github.event_name != 'pull_request'
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -78,5 +81,5 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push Docker image
-        if: github.event_name != 'pull_request' && needs.changes.outputs[matrix.app] == 'true'
+        if: github.event_name != 'pull_request'
         run: docker push ghcr.io/${{ github.repository }}/${{ matrix.app }}:latest
