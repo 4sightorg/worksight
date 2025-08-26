@@ -56,7 +56,7 @@ jobs:
           uploadArtifacts: true
           temporaryPublicStorage: true
           urls: 'http://localhost:3001'
-          artifactName: 'lighthouse-results' # <- safe name for GitHub artifacts
+          artifactName: 'lighthouse_results'
 
       - name: Stop application
         run: |
