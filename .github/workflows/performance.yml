@@ -15,7 +15,6 @@ env:
   NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
   NEXT_PUBLIC_IS_OFFLINE: ${{ vars.NEXT_PUBLIC_IS_OFFLINE || 'false' }}
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   lighthouse:
@@ -51,13 +50,10 @@ jobs:
         run: sleep 15
 
       - name: Run Lighthouse CI
-        uses: treosh/lighthouse-ci-action@v10
-        with:
-          configPath: './lighthouserc.js'
-          uploadArtifacts: true
-          temporaryPublicStorage: true
-          urls: 'http://localhost:3000'
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npx lhci autorun --upload.target=temporary-public-storage
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # reuse built-in token
 
       - name: Stop application
         run: |
