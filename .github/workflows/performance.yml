@@ -49,14 +49,19 @@ jobs:
       - name: Wait for application
         run: sleep 15
 
-      - name: Run Lighthouse CI
+      - name: Run Lighthouse CI (no auto artifact upload)
         uses: treosh/lighthouse-ci-action@v10
         with:
           configPath: './lighthouserc.js'
-          uploadArtifacts: true
+          uploadArtifacts: false
           temporaryPublicStorage: true
           urls: 'http://localhost:3001'
-          artifactName: 'lighthouse_results'
+
+      - name: Upload Lighthouse reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-report
+          path: ./lighthouseci_reports/
 
       - name: Stop application
         run: |
