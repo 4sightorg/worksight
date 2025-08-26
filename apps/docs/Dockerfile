@@ -8,7 +8,7 @@ RUN npm install -g pnpm
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
 COPY apps/docs/package.json apps/docs/
 
-RUN pnpm install --frozen-lockfile --filter=@worksight/docs...
+RUN pnpm install --frozen-lockfile --filter=@worksight/docs
 
 # Copy the rest of the project
 COPY . .

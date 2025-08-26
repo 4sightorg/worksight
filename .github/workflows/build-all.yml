@@ -52,7 +52,7 @@ jobs:
 
       # Only lint outside docker
       - name: Install deps for lint
-        run: pnpm install
+        run: pnpm install --prefer-offline
 
       - name: Lint
         run: pnpm --filter @worksight/${{ matrix.app }} lint

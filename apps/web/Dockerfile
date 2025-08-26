@@ -7,7 +7,7 @@ RUN corepack enable
 FROM base AS deps
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
 COPY apps/web/package.json apps/web/
-RUN pnpm install --frozen-lockfile --filter=@worksight/web...
+RUN pnpm install --frozen-lockfile --filter=@worksight/web
 
 # ---- Build ----
 FROM deps AS build
