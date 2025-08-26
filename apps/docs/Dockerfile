@@ -1,35 +1,30 @@
-# syntax=docker/dockerfile:1
-FROM node:20-alpine AS base
-WORKDIR /app
-RUN corepack enable
-
-# ---- Dependencies ----
-FROM base AS deps
-COPY pnpm-lock.yaml package.json ./
-COPY apps/docs/package.json apps/docs/
-RUN pnpm install --frozen-lockfile --filter docs...
-
-# ---- Lint & Test ----
-FROM deps AS lint-test
-COPY . .
-RUN pnpm lint --filter docs && pnpm test --filter docs
-
-# ---- Build ----
-FROM deps AS build
-COPY . .
-RUN pnpm build --filter docs
-
-# ---- Runtime ----
-FROM node:20-alpine AS runner
+# Stage 1: Build VitePress site
+FROM node:20-alpine AS builder
 WORKDIR /app
 
-ENV NODE_ENV=production
-ENV PORT=3001
+# Install pnpm globally
+RUN npm install -g pnpm
 
-COPY --from=build /app/apps/docs/.next ./.next
-COPY --from=build /app/apps/docs/public ./public
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/apps/docs/package.json ./
+# Copy only manifests first (better caching)
+COPY apps/docs/package.json ./
 
-EXPOSE 3001
-CMD ["pnpm", "start", "--filter", "docs"]
+# Install deps with pnpm
+RUN pnpm install --no-frozen-lockfile
+
+# Copy the rest of the project
+COPY . .
+
+# Build VitePress site
+RUN pnpm run build
+
+# Stage 2: Serve with nginx
+FROM nginx:alpine
+
+# Clean default nginx content
+RUN rm -rf /usr/share/nginx/html/*
+
+# Copy build output from builder
+COPY --from=builder /app/.vitepress/dist /usr/share/nginx/html
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile:1
 # ---- Base ----
 FROM node:20-alpine AS base
 WORKDIR /app
@@ -6,32 +5,24 @@ RUN corepack enable
 
 # ---- Dependencies ----
 FROM base AS deps
-COPY pnpm-lock.yaml package.json ./
+COPY pnpm-lock.yaml package.json pnpm-workspace.yaml turbo.json ./
 COPY apps/web/package.json apps/web/
+COPY apps/docs/package.json apps/docs/ # allow monorepo deps resolution
 RUN pnpm install --frozen-lockfile --filter=@worksight/web...
-
-# ---- Lint & Test ----
-FROM deps AS lint-test
-COPY . .
-RUN pnpm lint --filter=@worksight/web && pnpm test --filter=@worksight/web
 
 # ---- Build ----
 FROM deps AS build
 COPY . .
-RUN pnpm build --filter=@worksight/web
+RUN pnpm --filter=@worksight/web build
 
 # ---- Runtime ----
-FROM node:20-alpine AS runner
+FROM base AS runtime
 WORKDIR /app
-
 ENV NODE_ENV=production
-ENV PORT=3000
-
-# Copy built app
-COPY --from=build /app/apps/web/.next ./.next
-COPY --from=build /app/apps/web/public ./public
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/apps/web/package.json ./
+COPY --from=build /app/apps/web/.next /app/apps/web/.next
+COPY --from=build /app/apps/web/public /app/apps/web/public
+COPY --from=build /app/node_modules /app/node_modules
+COPY apps/web/package.json apps/web/
 
 EXPOSE 3000
-CMD ["pnpm", "start", "--filter", "web"]
+CMD ["pnpm", "--filter=@worksight/web", "start"]

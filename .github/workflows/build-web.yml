@@ -54,7 +54,7 @@ jobs:
         run: pnpm --filter apps/web test --if-present
 
       - name: Build Docker image
-        run: docker build -t ghcr.io/${{ github.repository }}/web:latest ./apps/web
+        run: docker build -t ghcr.io/${{ github.repository }}/web:latest -f apps/web/Dockerfile .
 
       - name: Log in to GHCR
         uses: docker/login-action@v3
