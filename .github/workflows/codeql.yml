@@ -39,10 +39,18 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Cache pnpm store
+        uses: actions/cache@v3
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+            
       - name: Install dependencies
         run: |
           corepack enable
-          pnpm install --frozen-lockfile
+          pnpm install --frozen-lockfile --store ~/.pnpm-store --prefer-offline
 
       - name: Build Next.js
         run: pnpm --filter web build

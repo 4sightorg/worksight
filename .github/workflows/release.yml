@@ -33,8 +33,16 @@ jobs:
         with:
           version: ${{ env.PNPM_VERSION }}
 
+      - name: Cache pnpm store
+        uses: actions/cache@v3
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+            
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --store ~/.pnpm-store --prefer-offline
 
       - name: Lint ${{ matrix.app }}
         run: pnpm --filter @worksight/${{ matrix.app }} lint
