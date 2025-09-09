@@ -12,6 +12,8 @@ export default defineConfig({
   sitemap: {
     hostname,
   },
+  srcDir: 'website',
+  assetsDir: 'assets',
   base: env.VITE_BASE || '/',
 
   themeConfig: {
@@ -20,7 +22,7 @@ export default defineConfig({
 
     nav: [
       { text: 'Guide', link: '/guide/getting-started' },
-      { text: 'API', link: '/api/overview' },
+      { text: 'Dev', link: '/dev/overview' },
       { text: 'Legal', link: '/legal/privacy-policy' },
     ],
 
@@ -38,21 +40,10 @@ export default defineConfig({
         {
           text: 'Features',
           items: [
-            { text: 'Survey System', link: '/guide/survey-system' },
-            { text: 'Burnout Assessment', link: '/guide/burnout-assessment' },
-            { text: 'Admin Dashboard', link: '/guide/admin-dashboard' },
-            { text: 'Reporting', link: '/guide/reporting' },
-          ],
-        },
-      ],
-      '/api/': [
-        {
-          text: 'API Reference',
-          items: [
-            { text: 'Overview', link: '/api/overview' },
-            { text: 'Authentication', link: '/api/authentication' },
-            { text: 'Survey Endpoints', link: '/api/survey-endpoints' },
-            { text: 'User Management', link: '/api/user-management' },
+            { text: 'Survey System', link: '/features/survey-system' },
+            { text: 'Burnout Assessment', link: '/features/burnout-assessment' },
+            { text: 'Admin Dashboard', link: '/features/admin-dashboard' },
+            { text: 'Reporting', link: '/features/reporting' },
           ],
         },
       ],
@@ -66,6 +57,35 @@ export default defineConfig({
           ],
         },
       ],
+      '/dev':[
+        {
+          text: 'Dev Documentation',
+          link: "/dev/overview",
+          items: [
+            { text: 'Features', link: '/dev/features' },
+            { text: 'Steps', link: '/dev/steps' },
+            {
+              text: "Tech Stack",
+              items:[
+                { text: 'Jest', link: '/dev/jest' },
+                { text: 'JSDoc', link: '/dev/jsdoc' },
+                { text: 'NextJS', link: '/dev/nextjs' },
+                { text: 'VitePress', link: '/dev/vitepress' },
+                { text: 'Zustand', link: '/dev/zustand' },
+              ]
+            },
+            {
+              text: 'API Reference',
+              items: [
+                { text: 'Overview', link: '/dev/api/overview' },
+                { text: 'Authentication', link: '/dev/api/authentication' },
+                { text: 'Survey Endpoints', link: '/dev/api/survey-endpoints' },
+                { text: 'User Management', link: '/dev/api/user-management' },
+              ],
+            },
+          ]
+        }
+      ]
     },
 
     socialLinks: [{ icon: 'github', link: 'https://github.com/4sightorg/worksight' }],

@@ -57,7 +57,7 @@ credentials:
 
 **Executives:**
 
-- Email: `sjc.71415@gmail.com`
+- Email: `test@worksight.app`
 - Password: `testuser`
 
 **Employees:**
