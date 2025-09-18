@@ -196,7 +196,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           <Card className="mb-4">
             <CardHeader>
               <p
-                className={`text-muted-foreground text-center text-7xl font-bold ${currentBurnout.color}`}
+                className={`text-muted-foreground text-center text-xl font-bold ${currentBurnout.color}`}
               >
                 {burnoutScore !== null
                   ? `${burnoutScore}%`
