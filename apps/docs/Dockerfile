@@ -5,16 +5,16 @@ WORKDIR /app
 RUN npm install
 
 # Copy root manifests (required for monorepo install)
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
+COPY package.json turbo.json ./
 COPY apps/docs/package.json apps/docs/
 
-RUN pnpm install --frozen-lockfile --filter=@worksight/docs
+RUN npm install  --filter=apps/docs
 
 # Copy the rest of the project
 COPY . .
 
 # Build VitePress site
-RUN pnpm --filter=@worksight/docs build
+RUN pnpm --filter=apps/docs build
 
 # ---- Runtime stage ----
 FROM nginx:alpine

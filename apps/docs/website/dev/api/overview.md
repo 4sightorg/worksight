@@ -404,11 +404,11 @@ curl -X POST https://api.worksight.com/v1/webhooks \
 #### JavaScript/TypeScript
 
 ```bash
-npm install @worksight/api-client
+npm install apps/api-client
 ```
 
 ```javascript
-import { WorkSightAPI } from '@worksight/api-client';
+import { WorkSightAPI } from 'apps/api-client';
 
 const api = new WorkSightAPI({
   apiKey: 'your-api-key',

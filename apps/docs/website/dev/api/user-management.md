@@ -778,7 +778,7 @@ const users = await worksight.users.getBulk(['user_1', 'user_2', 'user_3']);
 ### JavaScript/TypeScript
 
 ```typescript
-import { WorkSight } from '@worksight/sdk';
+import { WorkSight } from 'apps/sdk';
 
 const worksight = new WorkSight({
   apiKey: process.env.WORKSIGHT_API_KEY,
