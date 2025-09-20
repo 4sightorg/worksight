@@ -91,7 +91,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   // Get the burnout score with fallback handling
   const getBurnoutScore = () => {
     if (!surveyData) return null;
-    const data = surveyData as any;
+    const data = surveyData as typeof T;
     return data?.overallScore ?? data?.totalScore ?? data?.score ?? data?.burnoutScore ?? null;
   };
 
@@ -195,13 +195,18 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <div className="px-4 pt-2">
           <Card className="mb-4">
             <CardHeader>
-              <p
-                className={`text-muted-foreground text-center text-xl font-bold ${currentBurnout.color}`}
-              >
-                {burnoutScore !== null
-                  ? `${burnoutScore}%`
-                  : 'Take a survey to see your burnout level'}
-              </p>
+              {burnoutScore !== null ?
+                <p
+                  className={`text-muted-foreground text-center text-7xl font-bold ${currentBurnout.color}`}
+                >
+                  ${burnoutScore}%
+                </p> :
+                <p
+                  className={`text-muted-foreground text-center text-xl font-bold ${currentBurnout.color}`}
+                >
+                  Take a survey to see your burnout level
+                </p>
+              }
             </CardHeader>
             <CardContent>
               <div className={`text-center text-lg font-bold ${currentBurnout.color}`}>

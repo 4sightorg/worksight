@@ -30,8 +30,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const [_accessToken, setAccessToken] = useState<string | null>(null);
-  const [_saveLogin, setSaveLogin] = useState(false);
+  const [_, setAccessToken] = useState<string | null>(null);
+  const [__, setSaveLogin] = useState(false);
 
   useEffect(() => {
     // Check for saved user session
