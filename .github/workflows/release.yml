@@ -32,10 +32,10 @@ jobs:
         run: npm ci
 
       - name: Lint ${{ matrix.app }}
-        run: npm run lint --workspace=apps/${{ matrix.app }}
+        run: npm run lint --workspace=${{ matrix.app }}
 
       - name: Build ${{ matrix.app }}
-        run: npm run build --workspace=apps/${{ matrix.app }}
+        run: npm run build --workspace=${{ matrix.app }}
 
       - name: Package ${{ matrix.app }} into ZIP
         run: |

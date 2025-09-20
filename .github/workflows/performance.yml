@@ -33,7 +33,7 @@ jobs:
         run: npm ci
 
       - name: Build web app
-        run: npm run build --workspace=apps/web
+        run: npm run build --workspace=web
 
       - name: Start application
         run: |
@@ -76,7 +76,7 @@ jobs:
         run: npm ci
 
       - name: Analyze bundle
-        run: npm run build:analyze --workspace=apps/web
+        run: npm run build:analyze --workspace=web
 
       - name: Upload bundle analysis
         uses: actions/upload-artifact@v4
