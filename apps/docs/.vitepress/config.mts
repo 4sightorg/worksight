@@ -1,23 +1,25 @@
-import { fileURLToPath } from 'url';
+
 import { defineConfig, loadEnv } from 'vitepress';
 
 const env = loadEnv('', process.cwd());
 const hostname = env.VITE_HOSTNAME || 'http://localhost:4173';
 
 export default defineConfig({
+  title: 'WorkSight',
+  description: 'See the signs. Prevent burnout. Build resilience.',
+  srcDir: 'website',
   outDir: '.vitepress/dist',
   cleanUrls: true,
-  title: 'WorkSight',
-  description: 'Check your tasks, manage your well being.',
+  head: [
+    ['link', { rel: 'icon', href: 'assets/logo.png' }],
+  ],
   sitemap: {
     hostname,
   },
-  srcDir: 'website',
-  assetsDir: 'assets',
   base: env.VITE_BASE || '/',
 
   themeConfig: {
-    logo: '/logo.svg',
+    logo: 'assets/logo.png',
     siteTitle: 'WorkSight',
 
     nav: [
@@ -57,7 +59,7 @@ export default defineConfig({
           ],
         },
       ],
-      '/dev':[
+      '/dev': [
         {
           text: 'Dev Documentation',
           link: "/dev/overview",
@@ -66,7 +68,7 @@ export default defineConfig({
             { text: 'Steps', link: '/dev/steps' },
             {
               text: "Tech Stack",
-              items:[
+              items: [
                 { text: 'Jest', link: '/dev/jest' },
                 { text: 'JSDoc', link: '/dev/jsdoc' },
                 { text: 'NextJS', link: '/dev/nextjs' },
@@ -87,31 +89,15 @@ export default defineConfig({
         }
       ]
     },
+    search: {
+      provider: 'local'
+    },
 
     socialLinks: [{ icon: 'github', link: 'https://github.com/4sightorg/worksight' }],
 
     footer: {
       message: 'Released under the MIT License.',
-      copyright: 'Copyright © 2024-present 4Sight Organization',
+      copyright: 'Copyright © 2024-present 4Sight',
     },
   },
-  ignoreDeadLinks: true,
-
-  vite: {
-    resolve: {
-      alias: [
-        {
-          find: /^.*VPSwitchAppearance\.vue$/,
-          replacement: fileURLToPath(
-            new URL('./theme/components/CustomSwitchAppearance.vue', import.meta.url)
-          ),
-        },
-      ],
-    },
-  },
-
-  head: [
-    ['link', { rel: 'icon', href: '/favicon.ico' }],
-    ['meta', { name: 'theme-color', content: '#646cff' }],
-  ],
 });
