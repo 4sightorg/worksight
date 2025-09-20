@@ -22,7 +22,13 @@ import { useEffect, useState } from 'react';
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }
+type SurveyDataSchema = {
+  overallScore: number;
+  totalScore: number;
+  score: number;
+  burnoutScore: number;
 
+};
 const sidebarItems = [
   {
     name: 'Overview',
@@ -91,7 +97,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   // Get the burnout score with fallback handling
   const getBurnoutScore = () => {
     if (!surveyData) return null;
-    const data = surveyData;
+    const data = surveyData as SurveyDataSchema;
     return data?.overallScore ?? data?.totalScore ?? data?.score ?? data?.burnoutScore ?? null;
   };
 
