@@ -836,10 +836,3 @@ worksight.users.update_status(
     reason='Employee left the company'
 )
 ```
-
-## Next Steps
-
-- [Survey Endpoints](./survey-endpoints.md) - Manage surveys and assessments
-- [Reports API](./reports.md) - Generate and access reports
-- [Webhooks](./webhooks.md) - Real-time event notifications
-- [Organizations](./organizations.md) - Manage organizational settings

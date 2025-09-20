@@ -192,15 +192,7 @@ pnpm install
 
 If you encounter issues:
 
-1. Check the [troubleshooting section](../api/overview.md)
+1. Check the [troubleshooting section]
 2. Search existing
    [GitHub issues](https://github.com/4sightorg/worksight/issues)
 3. Create a new issue with detailed information
-
-## Next Steps
-
-After installation:
-
-1. [Configure your application](./configuration.md)
-2. Explore the [Survey System](./survey-system.md)
-3. Set up [Admin Dashboard](./admin-dashboard.md)

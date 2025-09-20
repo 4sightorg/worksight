@@ -353,9 +353,3 @@ pnpm email:test
 # Run health checks
 pnpm health:check
 ```
-
-## Next Steps
-
-- Set up [Survey System](./survey-system.md)
-- Configure [Admin Dashboard](./admin-dashboard.md)
-- Explore [API Documentation](../api/overview.md)
