@@ -9,25 +9,29 @@ WorkSight in different environments.
 
 Ensure you have the following installed on your system:
 
-- **Node.js**: Version 18.0.0 or higher
+- **Node.js**: Version 20.0.0 or higher
 - **pnpm**: Version 8.0.0 or higher (recommended package manager)
 - **Git**: For version control
 
 ### System Requirements
 
 - **Operating System**: Windows 10+, macOS 10.15+, or Linux
-- **Memory**: 4GB RAM minimum (8GB recommended)
-- **Storage**: 2GB free disk space
+- **Memory**: 502MB RAM minimum (1GB recommended)
+- **Storage**: 256MB  free disk space
 
 ### Step-by-Step Installation
 
 #### Docker Installation
 
-TBA
+```bash
+docker run -rm -it ghcr.io:4sight/worksight/web:latest
+```
 
 #### Docker Compose Installation
 
-TBA
+```bash
+docker compose up -d
+```
 
 #### Native Installation
 

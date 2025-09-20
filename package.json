@@ -2,15 +2,14 @@
   "name": "worksight-monorepo",
   "private": true,
   "version": "1.0.0",
-  "description": "WorkSight - Employee Burnout Assessment Tool Monorepo",
+  "description": "WorkSight",
   "workspaces": [
-    "apps/*",
-    "packages/*"
+    "apps/*"
   ],
   "scripts": {
     "analyze:web": "ANALYZE=true turbo build --filter=@worksight/web",
     "build": "turbo build",
-    "build:analyze": "pnpm run analyze:web",
+    "build:analyze": "npm run analyze:web",
     "build:web": "turbo build --filter=@worksight/web",
     "build:docs": "turbo build --filter=@worksight/docs",
     "dev": "turbo dev",
@@ -29,16 +28,14 @@
     "release": "turbo build && changeset publish"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.27.1",
-    "@types/node": "^20.11.17",
-    "next": "15.4.6",
-    "prettier": "^3.2.5",
+    "@changesets/cli": "^2.29.7",
+    "@types/node": "^24.5.2",
+    "next": "15.5.3",
+    "prettier": "^3.6.2",
     "turbo": "^2.5.6",
-    "typescript": "^5.3.3"
+    "typescript": "^5.9.2"
   },
-  "packageManager": "pnpm@8.15.1",
-  "engines": {
-    "node": ">=18.0.0",
-    "pnpm": ">=8.0.0"
+  "dependencies": {
+    "jsonwebtoken": "^9.0.2"
   }
 }

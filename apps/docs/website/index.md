@@ -5,8 +5,7 @@ hero:
   text: 'Wellness Task Management'
   tagline: 'Check your tasks, manage your well-being'
   image:
-    dark: /home/worksight-dark.png
-    light: /home/worksight-light.png
+    src: assets/logo.png
     alt: WorkSight Logo
   actions:
     - theme: brand
