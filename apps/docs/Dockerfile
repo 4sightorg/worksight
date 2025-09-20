@@ -2,7 +2,7 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-RUN npm install -g pnpm
+RUN npm install
 
 # Copy root manifests (required for monorepo install)
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./

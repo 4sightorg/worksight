@@ -11,7 +11,6 @@ on:
 
 env:
   NODE_VERSION: '20'
-  PNPM_VERSION: '8'
 
 jobs:
   build-apps:
@@ -27,28 +26,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
-      - name: Cache pnpm store
-        uses: actions/cache@v3
-        with:
-          path: ~/.pnpm-store
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-
-            
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile --store ~/.pnpm-store --prefer-offline
+        run: npm ci
 
       - name: Lint ${{ matrix.app }}
-        run: pnpm --filter @worksight/${{ matrix.app }} lint
+        run: npm run lint --workspace=@worksight/${{ matrix.app }}
 
       - name: Build ${{ matrix.app }}
-        run: pnpm build --filter=@worksight/${{ matrix.app }}
+        run: npm run build --workspace=@worksight/${{ matrix.app }}
 
       - name: Package ${{ matrix.app }} into ZIP
         run: |
