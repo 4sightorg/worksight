@@ -7,7 +7,7 @@ RUN corepack enable
 FROM base AS deps
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
 COPY apps/web/package.json apps/web/
-RUN pnpm install --frozen-lockfile --filter=@worksight/web
+RUN pnpm install --frozen-lockfile --filter=apps/web
 
 # ---- Build ----
 FROM deps AS build
@@ -16,7 +16,7 @@ ENV NEXT_PUBLIC_SUPABASE_URL="http://localhost:54321"
 ENV NEXT_PUBLIC_SUPABASE_ANON_KEY="dummy_anon_key"
 ENV NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="dummy_key"
 ENV NEXT_PUBLIC_IS_OFFLINE=false
-RUN pnpm --filter=@worksight/web build
+RUN pnpm --filter=apps/web build
 
 # ---- Runtime ----
 FROM base AS runtime
@@ -29,4 +29,4 @@ COPY --from=build /app/node_modules /app/node_modules
 COPY apps/web/package.json apps/web/
 
 EXPOSE 3000
-CMD ["pnpm", "--filter=@worksight/web", "start"]
+CMD ["pnpm", "--filter=apps/web", "start"]

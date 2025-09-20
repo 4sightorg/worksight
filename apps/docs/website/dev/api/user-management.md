@@ -778,7 +778,7 @@ const users = await worksight.users.getBulk(['user_1', 'user_2', 'user_3']);
 ### JavaScript/TypeScript
 
 ```typescript
-import { WorkSight } from '@worksight/sdk';
+import { WorkSight } from 'apps/sdk';
 
 const worksight = new WorkSight({
   apiKey: process.env.WORKSIGHT_API_KEY,
@@ -836,10 +836,3 @@ worksight.users.update_status(
     reason='Employee left the company'
 )
 ```
-
-## Next Steps
-
-- [Survey Endpoints](./survey-endpoints.md) - Manage surveys and assessments
-- [Reports API](./reports.md) - Generate and access reports
-- [Webhooks](./webhooks.md) - Real-time event notifications
-- [Organizations](./organizations.md) - Manage organizational settings

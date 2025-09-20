@@ -672,9 +672,3 @@ interface CacheConfig {
 - Check permissions and access rights
 - Verify storage capacity
 - Review security settings
-
-## Next Steps
-
-- Explore [API Documentation](../api/overview.md) for custom integrations
-- Learn about [Admin Dashboard](./admin-dashboard.md) for report management
-- Check [Privacy Policy](../legal/privacy-policy.md) for compliance guidelines

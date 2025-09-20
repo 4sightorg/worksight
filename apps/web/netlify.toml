@@ -1,6 +1,6 @@
 [build]
   base = "apps/web"
-  command = "cd ../.. && pnpm build --filter=@worksight/web"
+  command = "cd ../.. && pnpm build --filter=apps/web"
   publish = "apps/web/.next"
 
 [build.environment]

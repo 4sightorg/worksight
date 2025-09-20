@@ -112,7 +112,7 @@ npm install --save-dev vitepress
   npm run docs:dev
   ```
 
-  Visit [http://localhost:5173](http://localhost:5173) (or as shown in terminal).
+  Visit localhost:5173 (or as shown in terminal).
 
 - Rebuild static site:
 

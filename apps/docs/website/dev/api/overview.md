@@ -404,11 +404,11 @@ curl -X POST https://api.worksight.com/v1/webhooks \
 #### JavaScript/TypeScript
 
 ```bash
-npm install @worksight/api-client
+npm install apps/api-client
 ```
 
 ```javascript
-import { WorkSightAPI } from '@worksight/api-client';
+import { WorkSightAPI } from 'apps/api-client';
 
 const api = new WorkSightAPI({
   apiKey: 'your-api-key',
@@ -554,10 +554,3 @@ The staging environment includes sample data for testing:
 - **Uptime**: 99.9% guaranteed
 - **Response Time**: < 200ms average
 - **Support Response**: < 24 hours for standard plans, < 4 hours for enterprise
-
-## Next Steps
-
-- [Authentication Guide](./authentication.md) - Detailed authentication setup
-- [Survey Endpoints](./survey-endpoints.md) - Survey management API
-- [User Management](./user-management.md) - User administration API
-- [Webhooks Guide](./webhooks.md) - Real-time event notifications

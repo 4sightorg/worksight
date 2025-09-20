@@ -98,11 +98,11 @@ All API responses follow this structure:
 ### JavaScript/TypeScript
 
 ```bash
-npm install @worksight/api-client
+npm install apps/api-client
 ```
 
 ```typescript
-import { WorkSightAPI } from '@worksight/api-client';
+import { WorkSightAPI } from 'apps/api-client';
 
 const api = new WorkSightAPI({
   baseURL: 'https://api.worksight.com',

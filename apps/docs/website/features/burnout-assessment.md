@@ -386,9 +386,3 @@ GET /api/assessments/scores/{employeeId}
 - **Trend Improvement**: Reducing average burnout scores
 - **Early Detection**: Identifying risks before they become critical
 - **Intervention Effectiveness**: Positive outcomes from support measures
-
-## Next Steps
-
-- Learn about [Admin Dashboard](./admin-dashboard.md) for managing assessments
-- Explore [Reporting Features](./reporting.md) for analyzing results
-- Check [API Documentation](../api/overview.md) for integration options
