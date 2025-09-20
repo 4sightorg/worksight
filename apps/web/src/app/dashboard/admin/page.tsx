@@ -63,11 +63,6 @@ export default function AdminPage() {
     return emp.role || 'Employee';
   };
 
-  const getRoleBadgeVariant = (emp: Employee) => {
-    if (emp.manager_id === '') return 'default';
-    return 'secondary';
-  };
-
   return (
     <ProtectedRoute>
       <ClientOnly>
