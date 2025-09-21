@@ -12,21 +12,23 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute({ children, fallback, requiredRole }: ProtectedRouteProps) {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, initialized } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && !user) {
+    // Only redirect if we've finished initializing and there's no user
+    if (initialized && !isLoading && !user) {
       router.push('/login');
     }
 
+    // Handle role-based redirects
     if (user && requiredRole && user.role && !requiredRole.includes(user.role)) {
       router.push('/dashboard');
     }
-  }, [user, isLoading, router, requiredRole]);
+  }, [user, isLoading, initialized, router, requiredRole]);
 
-  // Show loading spinner while checking auth state
-  if (isLoading) {
+  // Show loading spinner while checking auth state or initializing
+  if (!initialized || isLoading) {
     return <LoadingState fullScreen text="Checking authentication..." />;
   }
 

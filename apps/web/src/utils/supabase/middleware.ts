@@ -2,6 +2,11 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
 export async function updateSession(request: NextRequest) {
+  // Allow all requests when forced offline mode is enabled
+  const isForcedOffline = process.env.NEXT_PUBLIC_IS_OFFLINE === 'true';
+  if (isForcedOffline) {
+    return NextResponse.next({ request });
+  }
   // Check if Supabase environment variables are available
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -44,8 +49,11 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Also allow through when a client-set cookie indicates offline session
+  const hasOfflineSession = request.cookies.get('ws_offline_session')?.value === '1';
   if (
     !user &&
+    !hasOfflineSession &&
     !request.nextUrl.pathname.startsWith('/login') &&
     !request.nextUrl.pathname.startsWith('/auth') &&
     !request.nextUrl.pathname.startsWith('/error')

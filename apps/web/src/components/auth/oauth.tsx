@@ -345,7 +345,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
               bottom_url="#"
               bottom_label={`Forgot password?`}
             ></Field>
-            <div className="mb-4 flex items-center space-x-2">
+            <div className="flex items-center space-x-2">
               <Checkbox
                 id="save-login"
                 checked={saveLogin}
@@ -353,7 +353,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                 disabled={loading}
               />
               <Label htmlFor="save-login" className="cursor-pointer text-sm font-normal">
-                Keep me logged in for 30 days
+                Remember me
               </Label>
             </div>
 
@@ -427,8 +427,14 @@ export function SignupForm({ className, ...props }: React.ComponentProps<'div'>)
   const handleOAuthSignIn = useOAuthHandler('Signup', setError, setIsLoading);
 
   // If forced offline or user selected offline mode, redirect to login
+  useEffect(() => {
+    if (IS_FORCED_OFFLINE || mode === 'offline') {
+      router.push('/login');
+    }
+  }, [mode, router]);
+
+  // Early return if we should redirect
   if (IS_FORCED_OFFLINE || mode === 'offline') {
-    router.push('/login');
     return null;
   }
 

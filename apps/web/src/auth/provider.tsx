@@ -3,6 +3,8 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { isOfflineMode, offlineLogin } from './offline';
 import { User } from './types';
+import { AUTH_CONFIG } from './identity';
+import { storage, isSessionExpired } from './utils';
 
 interface AuthContextType {
   user: User | null;
@@ -18,6 +20,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
   loading: boolean;
   isLoading: boolean;
+  initialized: boolean;
   setUser: (user: User | null) => void;
   setAccessToken: (token: string | null) => void;
   setSaveLogin: (save: boolean) => void;
@@ -29,22 +32,75 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [initialized, setInitialized] = useState(false);
 
-  const [_, setAccessToken] = useState<string | null>(null);
-  const [__, setSaveLogin] = useState(false);
+  const [_, setAccessTokenState] = useState<string | null>(null);
+  const [saveLogin, setSaveLoginState] = useState(false);
 
-  useEffect(() => {
-    // Check for saved user session
-    const savedUser = localStorage.getItem('user_session');
-    if (savedUser) {
-      try {
-        setUser(JSON.parse(savedUser));
-      } catch (error) {
-        console.error('Failed to parse saved user:', error);
-        localStorage.removeItem('user_session');
+  // Wrap setters to handle side-effects
+  const setAccessToken = (token: string | null) => {
+    setAccessTokenState(token);
+    // For offline mode, set a cookie so middleware (if enabled) can allow access
+    if (typeof document !== 'undefined') {
+      if (token && isOfflineMode()) {
+        document.cookie = `ws_offline_session=1; path=/`;
+      } else {
+        document.cookie = 'ws_offline_session=; Max-Age=0; path=/';
       }
     }
-    setLoading(false);
+  };
+
+  const setSaveLogin = (save: boolean) => {
+    setSaveLoginState(save);
+    try {
+      storage.set(AUTH_CONFIG.STORAGE_KEYS.SAVE_LOGIN, save.toString());
+    } catch {
+      // no-op
+    }
+  };
+
+  useEffect(() => {
+    // Check for saved session using unified auth storage without importing Supabase client
+    const initializeAuth = () => {
+      try {
+        const userStr = storage.get(AUTH_CONFIG.STORAGE_KEYS.USER);
+        const accessToken = storage.get(AUTH_CONFIG.STORAGE_KEYS.ACCESS_TOKEN);
+        const saveLoginStr = storage.get(AUTH_CONFIG.STORAGE_KEYS.SAVE_LOGIN);
+        const timestampStr = storage.get(AUTH_CONFIG.STORAGE_KEYS.LOGIN_TIMESTAMP);
+
+        if (userStr && accessToken && timestampStr) {
+          const user = JSON.parse(userStr) as User;
+          const saveLogin = saveLoginStr === 'true';
+          const timestamp = parseInt(timestampStr, 10);
+
+          if (!isSessionExpired(timestamp, saveLogin)) {
+            setUser(user);
+            setAccessToken(accessToken);
+          } else {
+            // Expired session; clear
+            storage.clear();
+          }
+        } else {
+          // Backward compatibility: legacy key fallback
+          const savedUser = typeof window !== 'undefined' ? localStorage.getItem('user_session') : null;
+          if (savedUser) {
+            const parsedUser = JSON.parse(savedUser);
+            setUser(parsedUser);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to restore saved session:', error);
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('user_session');
+        }
+        storage.clear();
+      } finally {
+        setLoading(false);
+        setInitialized(true);
+      }
+    };
+
+    initializeAuth();
   }, []);
 
   const login = async (
@@ -58,7 +114,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const result = await offlineLogin(email, password);
         if (result.user) {
           setUser(result.user);
-          localStorage.setItem('user_session', JSON.stringify(result.user));
+          if (saveLogin) {
+            localStorage.setItem('user_session', JSON.stringify(result.user));
+          }
+          // Flag offline session for middleware via cookie
+          if (typeof document !== 'undefined') {
+            document.cookie = `ws_offline_session=1; path=/`;
+          }
         }
         return result;
       }
@@ -68,7 +130,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const result = await offlineLogin(email, password);
       if (result.user) {
         setUser(result.user);
-        localStorage.setItem('user_session', JSON.stringify(result.user));
+        if (saveLogin) {
+          localStorage.setItem('user_session', JSON.stringify(result.user));
+        }
+        if (typeof document !== 'undefined') {
+          document.cookie = `ws_offline_session=1; path=/`;
+        }
       }
       return result;
     } catch (error) {
@@ -102,7 +169,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = async (): Promise<void> => {
     setUser(null);
     setAccessToken(null);
-    localStorage.removeItem('user_session');
+    // Clear both new and legacy storage keys
+    storage.clear();
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('user_session');
+    }
+    // Clear offline session cookie
+    if (typeof document !== 'undefined') {
+      document.cookie = 'ws_offline_session=; Max-Age=0; path=/';
+    }
 
     if (!isOfflineMode()) {
       // Online logout logic would go here
@@ -110,9 +185,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const extendCurrentSession = () => {
-    // Update session timestamp in localStorage
-    if (user) {
-      localStorage.setItem('user_session', JSON.stringify(user));
+    // Bump session timestamp to prevent expiry
+    try {
+      storage.set(AUTH_CONFIG.STORAGE_KEYS.LOGIN_TIMESTAMP, Date.now().toString());
+    } catch {
+      // no-op
     }
   };
 
@@ -124,6 +201,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     logout,
     loading,
     isLoading: loading, // alias for loading
+    initialized,
     setUser,
     setAccessToken,
     setSaveLogin,
