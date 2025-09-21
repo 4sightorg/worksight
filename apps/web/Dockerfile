@@ -5,8 +5,10 @@ RUN corepack enable
 
 # ---- Dependencies ----
 FROM base AS deps
+# Copy monorepo manifests for better install cache
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
 COPY apps/web/package.json apps/web/
+# Install only web workspace dependencies
 RUN pnpm install --frozen-lockfile --filter=apps/web
 
 # ---- Build ----

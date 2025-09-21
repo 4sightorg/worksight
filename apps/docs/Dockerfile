@@ -2,13 +2,15 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-RUN npm install
+# Enable corepack for pnpm
+RUN corepack enable
 
 # Copy root manifests (required for monorepo install)
-COPY package.json turbo.json ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
 COPY apps/docs/package.json apps/docs/
 
-RUN npm install  --filter=apps/docs
+# Install with pnpm limited to docs workspace
+RUN pnpm install --frozen-lockfile --filter=apps/docs
 
 # Copy the rest of the project
 COPY . .

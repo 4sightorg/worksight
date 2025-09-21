@@ -52,13 +52,19 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: 'pnpm'
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
 
-      - name: Lint
-        run: npm run lint --workspace=${{ matrix.app }}
+      - name: Install dependencies (pnpm)
+        run: pnpm -w install --frozen-lockfile
+
+      - name: Lint (web only)
+        if: matrix.app == 'web'
+        run: pnpm --filter=apps/web lint
 
       - name: Build Docker image
         run: |
