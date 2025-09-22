@@ -165,6 +165,14 @@ export const ValidationSchemas = {
     value: z.union([z.string(), z.number()]),
   }),
 
+  offlineSurveyResponse: z.object({
+    id: z.string(),
+    user_id: z.string(),
+    responses: z.record(z.string(), z.union([z.string(), z.number()])),
+    burnout_score: z.number(),
+    created_at: z.string(),
+  }),
+
   surveyScores: z.object({
     workload: z.number().min(6).max(30),
     balance: z.number().min(5).max(25),

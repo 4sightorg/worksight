@@ -12,7 +12,7 @@ interface PageTransitionProps {
 export function PageTransition({ children }: PageTransitionProps) {
   const pathname = usePathname();
   const [isClient, setIsClient] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(true);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -21,7 +21,7 @@ export function PageTransition({ children }: PageTransitionProps) {
     // Reset animation state after transition completes
     const timer = setTimeout(() => {
       setIsAnimating(false);
-    }, 500);
+    }, 300);
 
     return () => clearTimeout(timer);
   }, [pathname]);
@@ -36,10 +36,10 @@ export function PageTransition({ children }: PageTransitionProps) {
       <div
         key={pathname}
         className={cn(
-          'min-h-screen transition-all duration-500 ease-out',
+          'min-h-screen transition-transform duration-300 ease-out',
           isAnimating
-            ? 'translate-y-5 scale-[0.98] opacity-0'
-            : 'translate-y-0 scale-100 opacity-100'
+            ? 'translate-y-1 scale-[0.999]'
+            : 'translate-y-0 scale-100'
         )}
       >
         {children}

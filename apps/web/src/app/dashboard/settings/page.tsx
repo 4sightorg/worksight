@@ -29,29 +29,42 @@ export default function SettingsPage() {
   useEffect(() => {
     if (!user) return;
 
+    const abortController = new AbortController();
+
     const loadSettings = async () => {
       try {
         const userSettings = await settingsApi.get(user.id);
-        setSettings(
-          userSettings || {
-            id: '',
-            user_id: user.id,
-            notifications_enabled: true,
-            theme: 'system',
-            survey_frequency: 'weekly',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          }
-        );
+        
+        if (!abortController.signal.aborted) {
+          setSettings(
+            userSettings || {
+              id: '',
+              user_id: user.id,
+              notifications_enabled: true,
+              theme: 'system',
+              survey_frequency: 'weekly',
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            }
+          );
+        }
       } catch (error) {
-        console.error('Failed to load settings:', error);
-        toast.error('Failed to load settings');
+        if (!abortController.signal.aborted) {
+          console.error('Failed to load settings:', error);
+          toast.error('Failed to load settings');
+        }
       } finally {
-        setLoading(false);
+        if (!abortController.signal.aborted) {
+          setLoading(false);
+        }
       }
     };
 
     loadSettings();
+    
+    return () => {
+      abortController.abort();
+    };
   }, [user]);
 
   const handleSave = async () => {

@@ -5,6 +5,7 @@ import { isOfflineMode, offlineLogin } from './offline';
 import { User } from './types';
 import { AUTH_CONFIG } from './identity';
 import { storage, isSessionExpired } from './utils';
+import { safeStorage, ValidationSchemas } from '@/lib/validation';
 
 interface AuthContextType {
   user: User | null;
@@ -69,23 +70,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const timestampStr = storage.get(AUTH_CONFIG.STORAGE_KEYS.LOGIN_TIMESTAMP);
 
         if (userStr && accessToken && timestampStr) {
-          const user = JSON.parse(userStr) as User;
+          // Safely parse user data with validation
+          const user = safeStorage.getJson(AUTH_CONFIG.STORAGE_KEYS.USER, ValidationSchemas.user);
           const saveLogin = saveLoginStr === 'true';
           const timestamp = parseInt(timestampStr, 10);
 
-          if (!isSessionExpired(timestamp, saveLogin)) {
+          if (user && !isSessionExpired(timestamp, saveLogin)) {
             setUser(user);
             setAccessToken(accessToken);
           } else {
-            // Expired session; clear
+            // Expired session or invalid user data; clear
             storage.clear();
           }
         } else {
-          // Backward compatibility: legacy key fallback
-          const savedUser = typeof window !== 'undefined' ? localStorage.getItem('user_session') : null;
-          if (savedUser) {
-            const parsedUser = JSON.parse(savedUser);
-            setUser(parsedUser);
+          // Backward compatibility: legacy key fallback with safe parsing
+          const savedUserData = safeStorage.getJson('user_session', ValidationSchemas.user);
+          if (savedUserData) {
+            setUser(savedUserData);
           }
         }
       } catch (error) {

@@ -4,6 +4,7 @@ import { useAuth } from '@/auth';
 import { AdminRoute } from '@/components/admin';
 import { SessionTimer } from '@/components/features';
 import { AppSidebar } from '@/components/main/sidebar';
+import { PageErrorBoundary, ComponentErrorBoundary, ChartErrorBoundary } from '@/components/core';
 import { Badge } from '@/components/ui/badge';
 import {
   Breadcrumb,
@@ -77,7 +78,8 @@ function AdminDashboardContent() {
       recentActivity: 45,
     };
 
-    setTimeout(() => setStats(mockStats), 500);
+    const timer = setTimeout(() => setStats(mockStats), 500);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleLogout = async () => {
@@ -323,7 +325,9 @@ function AdminDashboardContent() {
 export default function AdminDashboardPage() {
   return (
     <AdminRoute requireManager>
-      <AdminDashboardContent />
+      <PageErrorBoundary>
+        <AdminDashboardContent />
+      </PageErrorBoundary>
     </AdminRoute>
   );
 }

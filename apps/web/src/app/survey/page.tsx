@@ -3,6 +3,7 @@
 import { SurveyForm, SurveyQuestion, SurveyResponse } from '@/components/survey/form';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { PageErrorBoundary, FormErrorBoundary } from '@/components/core';
 import { AlertCircle, Clock } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -498,12 +499,16 @@ export default function SurveyPage() {
   }
 
   return (
-    <div>
-      <SurveyForm
-        questions={burnoutSurveyQuestions}
-        onComplete={handleSurveyComplete}
-        onProgress={handleProgress}
-      />
-    </div>
+    <PageErrorBoundary>
+      <div>
+        <FormErrorBoundary>
+          <SurveyForm
+            questions={burnoutSurveyQuestions}
+            onComplete={handleSurveyComplete}
+            onProgress={handleProgress}
+          />
+        </FormErrorBoundary>
+      </div>
+    </PageErrorBoundary>
   );
 }

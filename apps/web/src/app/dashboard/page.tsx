@@ -3,6 +3,7 @@
 import { useAuth } from '@/auth';
 import { ProtectedRoute } from '@/components/auth/protected-route';
 import { ClientOnly } from '@/components/core';
+import { PageErrorBoundary, ChartErrorBoundary, AsyncErrorBoundary } from '@/components/core/enhanced-error-boundary';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   ChartConfig,
@@ -11,6 +12,7 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import { safeStorage, ValidationSchemas } from '@/lib/validation';
 import { Activity, CheckSquare, Clock, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -24,14 +26,10 @@ export default function DashboardPage() {
   useEffect(() => {
     // Load latest survey results
     const loadSurveyData = () => {
-      const results = localStorage.getItem('survey_results');
-      if (results) {
-        try {
-          const data = JSON.parse(results);
-          setSurveyData(data);
-        } catch (error) {
-          console.error('Error parsing survey data:', error);
-        }
+      // Safely parse survey results from localStorage with validation
+      const data = safeStorage.getJson('survey_results', ValidationSchemas.burnoutResult);
+      if (data) {
+        setSurveyData(data);
       }
     };
 
@@ -64,21 +62,22 @@ export default function DashboardPage() {
 
   return (
     <ProtectedRoute>
-      <ClientOnly>
-        <SidebarProvider>
-          <SidebarInset>
-            <div className="flex flex-1 flex-col space-y-6 p-6">
-              {/* Header */}
-              <div className="flex items-center justify-between">
-                <div>
-                  <h1 className="text-3xl font-bold tracking-tight">
-                    Welcome back, {user?.name || user?.email}!
-                  </h1>
-                  <p className="text-muted-foreground">
-                    Here&apos;s what&apos;s happening with your work today.
-                  </p>
+      <PageErrorBoundary>
+        <ClientOnly>
+          <SidebarProvider>
+            <SidebarInset>
+              <div className="flex flex-1 flex-col space-y-6 p-6">
+                {/* Header */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h1 className="text-3xl font-bold tracking-tight">
+                      Welcome back, {user?.name || user?.email}!
+                    </h1>
+                    <p className="text-muted-foreground">
+                      Here&apos;s what&apos;s happening with your work today.
+                    </p>
+                  </div>
                 </div>
-              </div>
 
               {/* Stats Cards */}
               <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-3">
@@ -130,58 +129,60 @@ export default function DashboardPage() {
               {/* Main Content Area */}
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
                 {/* Wellness Chart */}
-                <Link href="/dashboard/wellness" className="md:col-span-2">
-                  <Card className="hover:bg-accent/50 h-full cursor-pointer transition-colors">
-                    <CardHeader className="pb-3">
-                      <CardTitle>Burnout Trends</CardTitle>
-                      <CardDescription>Weekly burnout levels over the past 5 weeks</CardDescription>
-                    </CardHeader>
-                    <CardContent className="pb-4">
-                      <ChartContainer
-                        config={
-                          {
-                            burnout: {
-                              label: 'Burnout Level',
-                              color: 'hsl(var(--destructive))',
-                            },
-                          } satisfies ChartConfig
-                        }
-                        className="h-[280px]"
-                      >
-                        <AreaChart
-                          data={wellnessHistory}
-                          margin={{ top: 10, right: 10, left: 10, bottom: 25 }}
+                <ChartErrorBoundary>
+                  <Link href="/dashboard/wellness" className="md:col-span-2">
+                    <Card className="hover:bg-accent/50 h-full cursor-pointer transition-colors">
+                      <CardHeader className="pb-3">
+                        <CardTitle>Burnout Trends</CardTitle>
+                        <CardDescription>Weekly burnout levels over the past 5 weeks</CardDescription>
+                      </CardHeader>
+                      <CardContent className="pb-4">
+                        <ChartContainer
+                          config={
+                            {
+                              burnout: {
+                                label: 'Burnout Level',
+                                color: 'hsl(var(--destructive))',
+                              },
+                            } satisfies ChartConfig
+                          }
+                          className="h-[280px]"
                         >
-                          <XAxis
-                            dataKey="date"
-                            axisLine={false}
-                            tickLine={false}
-                            tick={{ fontSize: 11 }}
-                            interval={0}
-                          />
-                          <YAxis
-                            domain={[0, 100]}
-                            axisLine={false}
-                            tickLine={false}
-                            tick={{ fontSize: 12 }}
-                          />
-                          <ChartTooltip
-                            content={<ChartTooltipContent />}
-                            labelFormatter={(value) => `${value}`}
-                          />
-                          <Area
-                            type="monotone"
-                            dataKey="burnout"
-                            stroke="hsl(var(--destructive))"
-                            fill="hsl(var(--destructive))"
-                            fillOpacity={0.3}
-                            strokeWidth={2}
-                          />
-                        </AreaChart>
-                      </ChartContainer>
-                    </CardContent>
-                  </Card>
-                </Link>
+                          <AreaChart
+                            data={wellnessHistory}
+                            margin={{ top: 10, right: 10, left: 10, bottom: 25 }}
+                          >
+                            <XAxis
+                              dataKey="date"
+                              axisLine={false}
+                              tickLine={false}
+                              tick={{ fontSize: 11 }}
+                              interval={0}
+                            />
+                            <YAxis
+                              domain={[0, 100]}
+                              axisLine={false}
+                              tickLine={false}
+                              tick={{ fontSize: 12 }}
+                            />
+                            <ChartTooltip
+                              content={<ChartTooltipContent />}
+                              labelFormatter={(value) => `${value}`}
+                            />
+                            <Area
+                              type="monotone"
+                              dataKey="burnout"
+                              stroke="hsl(var(--destructive))"
+                              fill="hsl(var(--destructive))"
+                              fillOpacity={0.3}
+                              strokeWidth={2}
+                            />
+                          </AreaChart>
+                        </ChartContainer>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                </ChartErrorBoundary>
 
                 {/* Recent Activity */}
                 <Card className="h-full md:col-span-2">
@@ -254,6 +255,7 @@ export default function DashboardPage() {
           </SidebarInset>
         </SidebarProvider>
       </ClientOnly>
+    </PageErrorBoundary>
     </ProtectedRoute>
   );
 }

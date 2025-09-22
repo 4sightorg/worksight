@@ -3,6 +3,7 @@
 import { useAuth } from '@/auth';
 import { ProtectedRoute } from '@/components/auth/protected-route';
 import { ClientOnly } from '@/components/core';
+import { useAsyncOperation } from '@/hooks';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,22 +25,25 @@ export default function AdminPage() {
   const { user } = useAuth();
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
+  const { executeAsync } = useAsyncOperation();
 
   useEffect(() => {
-    const loadEmployees = async () => {
-      try {
-        const allEmployees = await employeeApi.getAll();
+    executeAsync(
+      async (signal) => {
+        return await employeeApi.getAll();
+      },
+      (allEmployees) => {
         setEmployees(allEmployees);
-      } catch (error) {
+      },
+      (error) => {
         console.error('Failed to load employees:', error);
         toast.error('Failed to load employees');
-      } finally {
+      },
+      () => {
         setLoading(false);
       }
-    };
-
-    loadEmployees();
-  }, []);
+    );
+  }, [executeAsync]);
 
   // Redirect if not admin
   if (user?.role !== 'admin') {

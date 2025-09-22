@@ -24,4 +24,5 @@ export function ClientOnly({ children, fallback = null }: ClientOnlyProps) {
 // Core utility components index
 export * from './client-only';
 export * from './error-boundary';
+export * from './enhanced-error-boundary';
 export * from './loading-state';

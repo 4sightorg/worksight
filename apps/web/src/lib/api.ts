@@ -7,6 +7,8 @@ import {
 } from './supabase';
 import { Employees } from '@/data/employees';
 import { isOfflineMode } from '@/auth/offline';
+import { safeStorage, ValidationSchemas } from './validation';
+import { z } from 'zod';
 
 // Employee API
 export const employeeApi = {
@@ -159,9 +161,9 @@ export const surveyApi = {
         created_at: new Date().toISOString(),
       };
 
-      const existingResponses = JSON.parse(localStorage.getItem('offline_surveys') || '[]');
+      const existingResponses = safeStorage.getJson('offline_surveys', z.array(z.unknown())) || [];
       existingResponses.push(offlineResponse);
-      localStorage.setItem('offline_surveys', JSON.stringify(existingResponses));
+      safeStorage.setJson('offline_surveys', existingResponses);
 
       return offlineResponse;
     }
@@ -184,8 +186,8 @@ export const surveyApi = {
 
   getByUserId: async (userId: string): Promise<SurveyResponse[]> => {
     if (isOfflineMode()) {
-      const offlineResponses = JSON.parse(localStorage.getItem('offline_surveys') || '[]');
-      return offlineResponses.filter((response: SurveyResponse) => response.user_id === userId);
+      const offlineResponses = safeStorage.getJson('offline_surveys', z.array(z.unknown())) || [];
+      return offlineResponses.filter((response: any) => response.user_id === userId) as SurveyResponse[];
     }
 
     const { data, error } = await supabase

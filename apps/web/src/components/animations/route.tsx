@@ -13,7 +13,7 @@ interface RouteAnimationProps {
 export function RouteAnimation({ children, className = '' }: RouteAnimationProps) {
   const pathname = usePathname();
   const [isClient, setIsClient] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(true);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -22,49 +22,49 @@ export function RouteAnimation({ children, className = '' }: RouteAnimationProps
     // Reset animation state after transition completes
     const timer = setTimeout(() => {
       setIsAnimating(false);
-    }, 600);
+    }, 300);
 
     return () => clearTimeout(timer);
   }, [pathname]);
 
-  // Define route-specific animation classes
+  // Define route-specific animation classes (without opacity changes)
   const getRouteAnimationClass = () => {
-    const baseClass = 'min-h-screen transition-all ease-out';
+    const baseClass = 'min-h-screen transition-transform ease-out';
 
     switch (pathname) {
       case '/':
         return cn(
           baseClass,
-          'duration-600',
-          isAnimating ? 'opacity-0 scale-95 translate-y-5' : 'opacity-100 scale-100 translate-y-0'
+          'duration-300',
+          isAnimating ? 'scale-[0.999] translate-y-1' : 'scale-100 translate-y-0'
         );
 
       case '/survey':
         return cn(
           baseClass,
-          'duration-500',
-          isAnimating ? 'opacity-0 translate-x-24 scale-95' : 'opacity-100 translate-x-0 scale-100'
+          'duration-300',
+          isAnimating ? 'translate-x-2 scale-[0.999]' : 'translate-x-0 scale-100'
         );
 
       case '/survey/results':
         return cn(
           baseClass,
-          'duration-700',
-          isAnimating ? 'opacity-0 translate-y-12' : 'opacity-100 translate-y-0'
+          'duration-300',
+          isAnimating ? 'translate-y-2' : 'translate-y-0'
         );
 
       case '/dashboard':
         return cn(
           baseClass,
-          'duration-400',
-          isAnimating ? 'opacity-0 scale-90' : 'opacity-100 scale-100'
+          'duration-300',
+          isAnimating ? 'scale-[0.999]' : 'scale-100'
         );
 
       default:
         return cn(
           baseClass,
-          'duration-400',
-          isAnimating ? 'opacity-0 translate-y-5' : 'opacity-100 translate-y-0'
+          'duration-300',
+          isAnimating ? 'translate-y-1' : 'translate-y-0'
         );
     }
   };

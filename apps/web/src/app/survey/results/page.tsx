@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { PageErrorBoundary, ChartErrorBoundary } from '@/components/core/enhanced-error-boundary';
 import { safeUrlParamParse } from '@/lib/validation';
 import { ValidationSchemas } from '@/lib/validation';
 import { useSurveyResultsStore } from '@/store/survey-results-store';
@@ -837,17 +838,19 @@ function SurveyResultsContent() {
 
 export default function SurveyResultsPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="from-background to-muted/20 flex min-h-screen items-center justify-center bg-gradient-to-br p-4">
-          <div className="text-center">
-            <div className="border-primary mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2"></div>
-            <p className="text-muted-foreground">Loading your results...</p>
+    <PageErrorBoundary>
+      <Suspense
+        fallback={
+          <div className="from-background to-muted/20 flex min-h-screen items-center justify-center bg-gradient-to-br p-4">
+            <div className="text-center">
+              <div className="border-primary mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2"></div>
+              <p className="text-muted-foreground">Loading your results...</p>
+            </div>
           </div>
-        </div>
-      }
-    >
-      <SurveyResultsContent />
-    </Suspense>
+        }
+      >
+        <SurveyResultsContent />
+      </Suspense>
+    </PageErrorBoundary>
   );
 }

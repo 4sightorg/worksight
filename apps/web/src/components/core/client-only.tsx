@@ -52,13 +52,26 @@ export function ClientOnly({
       setHasError(true);
       console.error('ClientOnly mounting error:', error);
 
-      // Retry logic
+      // Retry logic will be handled in useEffect
       if (retryOnError && retryCount < maxRetries) {
         setRetryCount((prev) => prev + 1);
-        setTimeout(mount, Math.pow(2, retryCount) * 1000); // Exponential backoff
       }
     }
   }, [retryCount, maxRetries, retryOnError]);
+
+  useEffect(() => {
+    let retryTimer: NodeJS.Timeout | null = null;
+    
+    if (hasError && retryOnError && retryCount < maxRetries) {
+      retryTimer = setTimeout(mount, Math.pow(2, retryCount) * 1000);
+    }
+    
+    return () => {
+      if (retryTimer) {
+        clearTimeout(retryTimer);
+      }
+    };
+  }, [hasError, retryOnError, retryCount, maxRetries, mount]);
 
   useEffect(() => {
     if (!mounted && !hasError) {
