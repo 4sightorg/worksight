@@ -59,4 +59,17 @@ export const OFFLINE_EMAILS: string[] = [
   AUTH_CONFIG.MANAGER.email,
 ];
 
+// Single source of truth for offline demo accounts and their passwords
+export const OFFLINE_ACCOUNTS = [
+  AUTH_CONFIG.EMPLOYEE,
+  AUTH_CONFIG.ADMIN,
+  AUTH_CONFIG.MANAGER,
+] as const;
+
+export const OFFLINE_CREDENTIALS: Record<string, string> = {
+  [AUTH_CONFIG.EMPLOYEE.email]: 'testuser',
+  [AUTH_CONFIG.ADMIN.email]: 'admin123',
+  [AUTH_CONFIG.MANAGER.email]: 'manager123',
+};
+
 export type OAuthProvider = (typeof AUTH_CONFIG.OAUTH_PROVIDERS)[number];

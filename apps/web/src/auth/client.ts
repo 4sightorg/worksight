@@ -2,6 +2,7 @@ import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { AUTH_CONFIG } from './identity';
 import { AuthResponse, SessionData, User } from './types';
 import { generateMockToken, isOffline, isSessionExpired, storage } from './utils';
+import { offlineLogin } from './offline';
 
 // Client-side Supabase instance for auth (only if not offline)
 const supabase = !isOffline()
@@ -84,68 +85,17 @@ export async function signIn(
   { email, password }: { email: string; password: string },
   saveLogin: boolean = false
 ): Promise<AuthResponse> {
-  // Check for offline credentials first
-  if (email === 'test@worksight.app' && password === 'testuser') {
-    const user = {
-      ...AUTH_CONFIG.EMPLOYEE,
-      lastLogin: new Date().toISOString(),
-    };
-    const accessToken = generateMockToken();
-
-    storeSession(user, accessToken, saveLogin);
-    return { user, error: null, accessToken };
-  }
-
-  // Admin test credentials
-  if (email === 'admin@worksight.app' && password === 'admin123') {
-    const user = {
-      ...AUTH_CONFIG.ADMIN,
-      lastLogin: new Date().toISOString(),
-    };
-    const accessToken = generateMockToken();
-
-    storeSession(user, accessToken, saveLogin);
-    return { user, error: null, accessToken };
-  }
-
-  // Manager test credentials
-  if (email === 'manager@worksight.app' && password === 'manager123') {
-    const user = {
-      ...AUTH_CONFIG.MANAGER,
-      lastLogin: new Date().toISOString(),
-    };
-    const accessToken = generateMockToken();
-
-    storeSession(user, accessToken, saveLogin);
-    return { user, error: null, accessToken };
-  }
-
-  // Legacy test credentials
-  if (
-    (email === 'test' && password === 'testuser') ||
-    (email === 'testuser' && password === 'test')
-  ) {
-    const user = {
-      ...AUTH_CONFIG.EMPLOYEE,
-      email: 'testuser@worksight.app',
-      lastLogin: new Date().toISOString(),
-    };
-    const accessToken = generateMockToken();
-
-    storeSession(user, accessToken, saveLogin);
-    return { user, error: null, accessToken };
-  }
-
-  // If offline mode, reject other credentials
+  // Offline mode: delegate to consolidated offlineLogin
   if (isOffline()) {
-    return {
-      user: null,
-      error: {
-        message:
-          'Invalid credentials. Use test@worksight.app/testuser, admin@worksight.app/admin123, or manager@worksight.app/manager123',
-      },
-      accessToken: null,
-    };
+    const { user, error } = await offlineLogin(email, password);
+    if (user) {
+      const accessToken = generateMockToken();
+      // record last login in user shape if applicable
+      const withLastLogin = { ...user, lastLogin: new Date().toISOString() } as User;
+      storeSession(withLastLogin, accessToken, saveLogin);
+      return { user: withLastLogin, error: null, accessToken };
+    }
+    return { user: null, error: { message: error || 'Invalid credentials' }, accessToken: null };
   }
 
   // Online mode with Supabase

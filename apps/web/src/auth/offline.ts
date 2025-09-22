@@ -1,4 +1,5 @@
 import { Employees } from '@/data/employees';
+import { AUTH_CONFIG, OFFLINE_ACCOUNTS, OFFLINE_CREDENTIALS } from './identity';
 import { User } from './types';
 
 // Check if app is in offline mode
@@ -46,35 +47,26 @@ export const offlineLogin = async (
   email: string,
   password: string
 ): Promise<{ user: User | null; error: string | null }> => {
-  // Always accept "testuser" as password in offline mode
-  if (password !== 'testuser') {
-    return { user: null, error: 'Invalid credentials' };
-  }
-
-  // Check in employees data
-  const employeeEntry = Object.entries(Employees).find(([_, emp]) => emp.email === email);
-
-  if (employeeEntry) {
-    const [employeeId, employee] = employeeEntry;
-    const user = mapEmployeeToUser(employeeId, employee);
+  // If email matches one of our offline demo accounts, check mapped password
+  if (email in OFFLINE_CREDENTIALS) {
+    const expected = OFFLINE_CREDENTIALS[email as keyof typeof OFFLINE_CREDENTIALS];
+    if (password !== expected) {
+      return { user: null, error: 'Invalid credentials' };
+    }
+    // Map to configured offline user
+    const account = OFFLINE_ACCOUNTS.find((u) => u.email === email)!;
+    const user: User = { ...account };
     return { user, error: null };
   }
 
-  // Check test accounts
-  const testAccounts = [
-    { email: 'admin@worksight.com', name: 'System Admin', role: 'admin' as const },
-    { email: 'guest@worksight.com', name: 'Guest User', role: 'guest' as const },
-  ];
-
-  const testAccount = testAccounts.find((acc) => acc.email === email);
-  if (testAccount) {
-    const user: User = {
-      id: `test-${testAccount.role}`,
-      email: testAccount.email,
-      name: testAccount.name,
-      role: testAccount.role,
-    } as User;
-    return { user, error: null };
+  // Otherwise, try to match against Employees dataset (password must be 'testuser')
+  if (password === 'testuser') {
+    const employeeEntry = Object.entries(Employees).find(([_, emp]) => emp.email === email);
+    if (employeeEntry) {
+      const [employeeId, employee] = employeeEntry;
+      const user = mapEmployeeToUser(employeeId, employee);
+      return { user, error: null };
+    }
   }
 
   return { user: null, error: 'User not found' };

@@ -20,7 +20,7 @@ import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import { OFFLINE_ACCOUNTS } from '../../auth/credentials';
+import { OFFLINE_ACCOUNTS } from '@/auth/identity';
 
 // Check if forced offline mode is enabled via environment variable
 const IS_FORCED_OFFLINE = process.env.NEXT_PUBLIC_IS_OFFLINE === 'true';

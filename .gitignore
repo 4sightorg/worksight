@@ -13,7 +13,8 @@ node_modules/
 !.yarn/releases
 !.yarn/versions
 pnpm-lock.yaml
-pnpm-workspace.yaml
+# keep workspace manifest tracked
+#!pnpm-workspace.yaml
 .pnpm-debug.log*
 
 ######################

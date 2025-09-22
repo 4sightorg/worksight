@@ -2,6 +2,8 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { safeUrlParamParse } from '@/lib/validation';
+import { ValidationSchemas } from '@/lib/validation';
 import { useSurveyResultsStore } from '@/store/survey-results-store';
 import { AlertTriangle, CheckCircle, Heart, TrendingUp } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -368,13 +370,26 @@ function SurveyResultsContent() {
       }
     }
 
-    try {
-      const scores = JSON.parse(decodeURIComponent(scoresParam));
+    // Safely parse URL parameters with validation
+    const scores = safeUrlParamParse(scoresParam, ValidationSchemas.surveyScores);
+    if (!scores) {
+      console.error('Invalid scores parameter - failed validation or parsing');
+      router.push('/survey');
+      return;
+    }
 
-      if (responsesParam) {
-        setResponses(JSON.parse(decodeURIComponent(responsesParam)));
+    let responsesData: SurveyResponse[] = [];
+    if (responsesParam) {
+      const parsedResponses = safeUrlParamParse(responsesParam, ValidationSchemas.surveyResponse.array());
+      if (parsedResponses) {
+        responsesData = parsedResponses;
+        setResponses(responsesData);
+      } else {
+        console.warn('Invalid responses parameter, continuing without response data');
       }
+    }
 
+    try {
       // Process results for each dimension
       const workloadResult = getWorkloadLevel(scores.workload);
       const balanceResult = getBalanceLevel(scores.balance);
@@ -444,12 +459,11 @@ function SurveyResultsContent() {
       setResult(finalResult);
 
       // Save to store for dashboard access
-      const finalResponses = responsesParam ? JSON.parse(decodeURIComponent(responsesParam)) : [];
-      saveResults(finalResult, finalResponses);
+      saveResults(finalResult, responsesData);
       setCurrentResults(finalResult);
-      setCurrentResponses(finalResponses);
+      setCurrentResponses(responsesData);
     } catch (error) {
-      console.error('Failed to parse survey results:', error);
+      console.error('Failed to process survey results:', error);
       router.push('/survey');
     }
   }, [searchParams, router, saveResults, setCurrentResults, setCurrentResponses, getLatestResults]);
