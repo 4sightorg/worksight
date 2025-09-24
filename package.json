@@ -3,7 +3,6 @@
   "private": true,
   "version": "1.0.0",
   "description": "WorkSight",
-  "packageManager": "pnpm@9.12.3",
   "workspaces": [
     "apps/*"
   ],
