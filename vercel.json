@@ -2,11 +2,10 @@
   "version": 2,
   "framework": "nextjs",
   "engines": {
-    "node": "20.x",
-    "pnpm": "9.x"
+    "node": "20.x"
   },
-  "installCommand": "pnpm install",
-  "buildCommand": "pnpm --filter web run build",
+  "installCommand": "npm install --workspace=web",
+  "buildCommand": "cd apps/web && npm run build",
   "outputDirectory": "apps/web/.next",
   "build": {
     "env": {
