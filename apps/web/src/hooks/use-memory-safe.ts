@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 /**
  * Custom hook for handling async operations with proper cleanup
@@ -30,7 +30,7 @@ export function useAsyncOperation() {
 
     try {
       const result = await asyncOperation(controller.signal);
-      
+
       // Only execute callbacks if component is still mounted
       if (isMountedRef.current && !controller.signal.aborted) {
         onSuccess?.(result);
@@ -49,7 +49,7 @@ export function useAsyncOperation() {
   }, []);
 
   const isMounted = useCallback(() => isMountedRef.current, []);
-  
+
   const abort = useCallback(() => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
@@ -176,9 +176,9 @@ export function useEventListener<T extends keyof WindowEventMap>(
 
   useEffect(() => {
     const eventListener = (event: Event) => savedHandler.current(event as WindowEventMap[T]);
-    
+
     element.addEventListener(eventType, eventListener, options);
-    
+
     return () => {
       element.removeEventListener(eventType, eventListener, options);
     };

@@ -1,6 +1,6 @@
 import { SignupForm } from '@/components/auth';
+import { FormErrorBoundary, PageErrorBoundary } from '@/components/core';
 import { Branding } from '@/components/layout';
-import { PageErrorBoundary, FormErrorBoundary } from '@/components/core';
 
 export default function SignUpPage() {
   return (

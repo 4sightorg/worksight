@@ -17,12 +17,12 @@ export function safeJsonParse<T>(
 
   try {
     const parsed = JSON.parse(jsonString);
-    
+
     if (schema) {
       const result = schema.safeParse(parsed);
       return result.success ? result.data : null;
     }
-    
+
     return parsed;
   } catch (error) {
     console.warn('Failed to parse JSON:', error);
@@ -87,7 +87,7 @@ export function isValidEmail(email: string): boolean {
 export const safeStorage = {
   get: (key: string): string | null => {
     if (typeof window === 'undefined') return null;
-    
+
     try {
       const item = localStorage.getItem(key);
       return item;
@@ -104,7 +104,7 @@ export const safeStorage = {
 
   set: (key: string, value: string): boolean => {
     if (typeof window === 'undefined') return false;
-    
+
     try {
       localStorage.setItem(key, value);
       return true;
@@ -126,7 +126,7 @@ export const safeStorage = {
 
   remove: (key: string): boolean => {
     if (typeof window === 'undefined') return false;
-    
+
     try {
       localStorage.removeItem(key);
       return true;
@@ -138,7 +138,7 @@ export const safeStorage = {
 
   clear: (): boolean => {
     if (typeof window === 'undefined') return false;
-    
+
     try {
       localStorage.clear();
       return true;

@@ -61,11 +61,11 @@ export function ClientOnly({
 
   useEffect(() => {
     let retryTimer: NodeJS.Timeout | null = null;
-    
+
     if (hasError && retryOnError && retryCount < maxRetries) {
       retryTimer = setTimeout(mount, Math.pow(2, retryCount) * 1000);
     }
-    
+
     return () => {
       if (retryTimer) {
         clearTimeout(retryTimer);

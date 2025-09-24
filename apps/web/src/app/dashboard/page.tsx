@@ -3,7 +3,7 @@
 import { useAuth } from '@/auth';
 import { ProtectedRoute } from '@/components/auth/protected-route';
 import { ClientOnly } from '@/components/core';
-import { PageErrorBoundary, ChartErrorBoundary, AsyncErrorBoundary } from '@/components/core/enhanced-error-boundary';
+import { ChartErrorBoundary, PageErrorBoundary } from '@/components/core/enhanced-error-boundary';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   ChartConfig,
@@ -79,183 +79,183 @@ export default function DashboardPage() {
                   </div>
                 </div>
 
-              {/* Stats Cards */}
-              <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-3">
-                <Link href="/dashboard/tasks">
-                  <Card className="hover:bg-accent/50 cursor-pointer transition-colors">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Active Tasks</CardTitle>
-                      <CheckSquare className="text-muted-foreground h-4 w-4" />
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">12</div>
-                      <p className="text-muted-foreground flex items-center gap-1 text-xs">
-                        <TrendingUp className="h-3 w-3 text-green-600" />
-                        +2 from yesterday
-                      </p>
-                    </CardContent>
-                  </Card>
-                </Link>
-
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Hours Worked</CardTitle>
-                    <Clock className="text-muted-foreground h-4 w-4" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">6.5</div>
-                    <p className="text-muted-foreground flex items-center gap-1 text-xs">
-                      <TrendingUp className="h-3 w-3 text-green-600" />
-                      +0.5 from yesterday
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Productivity</CardTitle>
-                    <Activity className="text-muted-foreground h-4 w-4" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold text-blue-600">85%</div>
-                    <p className="text-muted-foreground flex items-center gap-1 text-xs">
-                      <TrendingUp className="h-3 w-3 text-green-600" />
-                      +5% this week
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Main Content Area */}
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-                {/* Wellness Chart */}
-                <ChartErrorBoundary>
-                  <Link href="/dashboard/wellness" className="md:col-span-2">
-                    <Card className="hover:bg-accent/50 h-full cursor-pointer transition-colors">
-                      <CardHeader className="pb-3">
-                        <CardTitle>Burnout Trends</CardTitle>
-                        <CardDescription>Weekly burnout levels over the past 5 weeks</CardDescription>
+                {/* Stats Cards */}
+                <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-3">
+                  <Link href="/dashboard/tasks">
+                    <Card className="hover:bg-accent/50 cursor-pointer transition-colors">
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Active Tasks</CardTitle>
+                        <CheckSquare className="text-muted-foreground h-4 w-4" />
                       </CardHeader>
-                      <CardContent className="pb-4">
-                        <ChartContainer
-                          config={
-                            {
-                              burnout: {
-                                label: 'Burnout Level',
-                                color: 'hsl(var(--destructive))',
-                              },
-                            } satisfies ChartConfig
-                          }
-                          className="h-[280px]"
-                        >
-                          <AreaChart
-                            data={wellnessHistory}
-                            margin={{ top: 10, right: 10, left: 10, bottom: 25 }}
-                          >
-                            <XAxis
-                              dataKey="date"
-                              axisLine={false}
-                              tickLine={false}
-                              tick={{ fontSize: 11 }}
-                              interval={0}
-                            />
-                            <YAxis
-                              domain={[0, 100]}
-                              axisLine={false}
-                              tickLine={false}
-                              tick={{ fontSize: 12 }}
-                            />
-                            <ChartTooltip
-                              content={<ChartTooltipContent />}
-                              labelFormatter={(value) => `${value}`}
-                            />
-                            <Area
-                              type="monotone"
-                              dataKey="burnout"
-                              stroke="hsl(var(--destructive))"
-                              fill="hsl(var(--destructive))"
-                              fillOpacity={0.3}
-                              strokeWidth={2}
-                            />
-                          </AreaChart>
-                        </ChartContainer>
+                      <CardContent>
+                        <div className="text-2xl font-bold">12</div>
+                        <p className="text-muted-foreground flex items-center gap-1 text-xs">
+                          <TrendingUp className="h-3 w-3 text-green-600" />
+                          +2 from yesterday
+                        </p>
                       </CardContent>
                     </Card>
                   </Link>
-                </ChartErrorBoundary>
 
-                {/* Recent Activity */}
-                <Card className="h-full md:col-span-2">
-                  <CardHeader className="pb-3">
-                    <CardTitle>Recent Activity</CardTitle>
-                    <CardDescription>Your latest actions and updates</CardDescription>
-                  </CardHeader>
-                  <CardContent className="pb-4">
-                    <div className="space-y-4">
-                      <div className="flex items-center space-x-4">
-                        <div className="h-2 w-2 rounded-full bg-green-500"></div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">
-                            Completed &quot;Project Review&quot;
-                          </p>
-                          <p className="text-muted-foreground text-xs">2 hours ago</p>
+                  <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">Hours Worked</CardTitle>
+                      <Clock className="text-muted-foreground h-4 w-4" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">6.5</div>
+                      <p className="text-muted-foreground flex items-center gap-1 text-xs">
+                        <TrendingUp className="h-3 w-3 text-green-600" />
+                        +0.5 from yesterday
+                      </p>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">Productivity</CardTitle>
+                      <Activity className="text-muted-foreground h-4 w-4" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold text-blue-600">85%</div>
+                      <p className="text-muted-foreground flex items-center gap-1 text-xs">
+                        <TrendingUp className="h-3 w-3 text-green-600" />
+                        +5% this week
+                      </p>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Main Content Area */}
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                  {/* Wellness Chart */}
+                  <ChartErrorBoundary>
+                    <Link href="/dashboard/wellness" className="md:col-span-2">
+                      <Card className="hover:bg-accent/50 h-full cursor-pointer transition-colors">
+                        <CardHeader className="pb-3">
+                          <CardTitle>Burnout Trends</CardTitle>
+                          <CardDescription>Weekly burnout levels over the past 5 weeks</CardDescription>
+                        </CardHeader>
+                        <CardContent className="pb-4">
+                          <ChartContainer
+                            config={
+                              {
+                                burnout: {
+                                  label: 'Burnout Level',
+                                  color: 'hsl(var(--destructive))',
+                                },
+                              } satisfies ChartConfig
+                            }
+                            className="h-[280px]"
+                          >
+                            <AreaChart
+                              data={wellnessHistory}
+                              margin={{ top: 10, right: 10, left: 10, bottom: 25 }}
+                            >
+                              <XAxis
+                                dataKey="date"
+                                axisLine={false}
+                                tickLine={false}
+                                tick={{ fontSize: 11 }}
+                                interval={0}
+                              />
+                              <YAxis
+                                domain={[0, 100]}
+                                axisLine={false}
+                                tickLine={false}
+                                tick={{ fontSize: 12 }}
+                              />
+                              <ChartTooltip
+                                content={<ChartTooltipContent />}
+                                labelFormatter={(value) => `${value}`}
+                              />
+                              <Area
+                                type="monotone"
+                                dataKey="burnout"
+                                stroke="hsl(var(--destructive))"
+                                fill="hsl(var(--destructive))"
+                                fillOpacity={0.3}
+                                strokeWidth={2}
+                              />
+                            </AreaChart>
+                          </ChartContainer>
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  </ChartErrorBoundary>
+
+                  {/* Recent Activity */}
+                  <Card className="h-full md:col-span-2">
+                    <CardHeader className="pb-3">
+                      <CardTitle>Recent Activity</CardTitle>
+                      <CardDescription>Your latest actions and updates</CardDescription>
+                    </CardHeader>
+                    <CardContent className="pb-4">
+                      <div className="space-y-4">
+                        <div className="flex items-center space-x-4">
+                          <div className="h-2 w-2 rounded-full bg-green-500"></div>
+                          <div className="flex-1">
+                            <p className="text-sm font-medium">
+                              Completed &quot;Project Review&quot;
+                            </p>
+                            <p className="text-muted-foreground text-xs">2 hours ago</p>
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex items-center space-x-4">
-                        <div className="h-2 w-2 rounded-full bg-blue-500"></div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">Took wellness survey</p>
-                          <p className="text-muted-foreground text-xs">
-                            {typeof surveyData === 'object' &&
-                            surveyData !== null &&
-                            'completedAt' in surveyData &&
-                            surveyData.completedAt
-                              ? new Date(
+                        <div className="flex items-center space-x-4">
+                          <div className="h-2 w-2 rounded-full bg-blue-500"></div>
+                          <div className="flex-1">
+                            <p className="text-sm font-medium">Took wellness survey</p>
+                            <p className="text-muted-foreground text-xs">
+                              {typeof surveyData === 'object' &&
+                                surveyData !== null &&
+                                'completedAt' in surveyData &&
+                                surveyData.completedAt
+                                ? new Date(
                                   (surveyData as { completedAt: string }).completedAt
                                 ).toLocaleDateString()
-                              : '1 day ago'}
-                          </p>
+                                : '1 day ago'}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-4">
+                          <div className="h-2 w-2 rounded-full bg-yellow-500"></div>
+                          <div className="flex-1">
+                            <p className="text-sm font-medium">
+                              Started &quot;Team Meeting Prep&quot;
+                            </p>
+                            <p className="text-muted-foreground text-xs">Yesterday</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-4">
+                          <div className="h-2 w-2 rounded-full bg-purple-500"></div>
+                          <div className="flex-1">
+                            <p className="text-sm font-medium">Updated project status</p>
+                            <p className="text-muted-foreground text-xs">2 days ago</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-4">
+                          <div className="h-2 w-2 rounded-full bg-indigo-500"></div>
+                          <div className="flex-1">
+                            <p className="text-sm font-medium">Attended team standup</p>
+                            <p className="text-muted-foreground text-xs">3 days ago</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-4">
+                          <div className="h-2 w-2 rounded-full bg-pink-500"></div>
+                          <div className="flex-1">
+                            <p className="text-sm font-medium">Submitted quarterly report</p>
+                            <p className="text-muted-foreground text-xs">1 week ago</p>
+                          </div>
                         </div>
                       </div>
-                      <div className="flex items-center space-x-4">
-                        <div className="h-2 w-2 rounded-full bg-yellow-500"></div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">
-                            Started &quot;Team Meeting Prep&quot;
-                          </p>
-                          <p className="text-muted-foreground text-xs">Yesterday</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-4">
-                        <div className="h-2 w-2 rounded-full bg-purple-500"></div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">Updated project status</p>
-                          <p className="text-muted-foreground text-xs">2 days ago</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-4">
-                        <div className="h-2 w-2 rounded-full bg-indigo-500"></div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">Attended team standup</p>
-                          <p className="text-muted-foreground text-xs">3 days ago</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-4">
-                        <div className="h-2 w-2 rounded-full bg-pink-500"></div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">Submitted quarterly report</p>
-                          <p className="text-muted-foreground text-xs">1 week ago</p>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                </div>
               </div>
-            </div>
-          </SidebarInset>
-        </SidebarProvider>
-      </ClientOnly>
-    </PageErrorBoundary>
+            </SidebarInset>
+          </SidebarProvider>
+        </ClientOnly>
+      </PageErrorBoundary>
     </ProtectedRoute>
   );
 }

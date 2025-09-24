@@ -1,10 +1,9 @@
 'use client';
 
+import { PageErrorBoundary } from '@/components/core/enhanced-error-boundary';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { PageErrorBoundary, ChartErrorBoundary } from '@/components/core/enhanced-error-boundary';
-import { safeUrlParamParse } from '@/lib/validation';
-import { ValidationSchemas } from '@/lib/validation';
+import { safeUrlParamParse, ValidationSchemas } from '@/lib/validation';
 import { useSurveyResultsStore } from '@/store/survey-results-store';
 import { AlertTriangle, CheckCircle, Heart, TrendingUp } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -516,15 +515,14 @@ function SurveyResultsContent() {
               {result.overallLevel === 'severe' && <Heart className="h-8 w-8 text-red-600" />}
             </div>
             <CardTitle
-              className={`text-3xl ${
-                result.overallLevel === 'low'
+              className={`text-3xl ${result.overallLevel === 'low'
                   ? 'text-green-600'
                   : result.overallLevel === 'moderate'
                     ? 'text-yellow-600'
                     : result.overallLevel === 'high'
                       ? 'text-orange-600'
                       : 'text-red-600'
-              }`}
+                }`}
             >
               {result.overallLevel === 'low'
                 ? 'Low Burnout Risk'
@@ -574,15 +572,14 @@ function SurveyResultsContent() {
                 </div>
                 <div className="bg-muted mb-2 h-2 w-full rounded-full">
                   <div
-                    className={`h-2 rounded-full transition-all ${
-                      result.workload.level === 'low'
+                    className={`h-2 rounded-full transition-all ${result.workload.level === 'low'
                         ? 'bg-green-500'
                         : result.workload.level === 'moderate'
                           ? 'bg-yellow-500'
                           : result.workload.level === 'high'
                             ? 'bg-orange-500'
                             : 'bg-red-500'
-                    }`}
+                      }`}
                     style={{ width: `${(result.workload.score / 30) * 100}%` }}
                   />
                 </div>
@@ -602,15 +599,14 @@ function SurveyResultsContent() {
                 </div>
                 <div className="bg-muted mb-2 h-2 w-full rounded-full">
                   <div
-                    className={`h-2 rounded-full transition-all ${
-                      result.balance.level === 'low'
+                    className={`h-2 rounded-full transition-all ${result.balance.level === 'low'
                         ? 'bg-green-500'
                         : result.balance.level === 'moderate'
                           ? 'bg-yellow-500'
                           : result.balance.level === 'high'
                             ? 'bg-orange-500'
                             : 'bg-red-500'
-                    }`}
+                      }`}
                     style={{ width: `${(result.balance.score / 25) * 100}%` }}
                   />
                 </div>
@@ -630,15 +626,14 @@ function SurveyResultsContent() {
                 </div>
                 <div className="bg-muted mb-2 h-2 w-full rounded-full">
                   <div
-                    className={`h-2 rounded-full transition-all ${
-                      result.support.level === 'low'
+                    className={`h-2 rounded-full transition-all ${result.support.level === 'low'
                         ? 'bg-green-500'
                         : result.support.level === 'moderate'
                           ? 'bg-yellow-500'
                           : result.support.level === 'high'
                             ? 'bg-orange-500'
                             : 'bg-red-500'
-                    }`}
+                      }`}
                     style={{ width: `${(result.support.score / 25) * 100}%` }}
                   />
                 </div>
@@ -658,15 +653,14 @@ function SurveyResultsContent() {
                 </div>
                 <div className="bg-muted mb-2 h-2 w-full rounded-full">
                   <div
-                    className={`h-2 rounded-full transition-all ${
-                      result.engagement.level === 'low'
+                    className={`h-2 rounded-full transition-all ${result.engagement.level === 'low'
                         ? 'bg-green-500'
                         : result.engagement.level === 'moderate'
                           ? 'bg-yellow-500'
                           : result.engagement.level === 'high'
                             ? 'bg-orange-500'
                             : 'bg-red-500'
-                    }`}
+                      }`}
                     style={{ width: `${(result.engagement.score / 45) * 100}%` }}
                   />
                 </div>

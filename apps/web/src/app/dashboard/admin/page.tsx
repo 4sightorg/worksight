@@ -3,7 +3,6 @@
 import { useAuth } from '@/auth';
 import { ProtectedRoute } from '@/components/auth/protected-route';
 import { ClientOnly } from '@/components/core';
-import { useAsyncOperation } from '@/hooks';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,6 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { useAsyncOperation } from '@/hooks';
 import { employeeApi } from '@/lib/api';
 import { Employee } from '@/lib/supabase';
 import { Database, Settings, Shield, Users } from 'lucide-react';

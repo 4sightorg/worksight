@@ -2,9 +2,9 @@
 
 import { useAuth } from '@/auth';
 import { ProtectedRoute } from '@/components/auth/protected-route';
+import { ComponentErrorBoundary, PageErrorBoundary } from '@/components/core';
 import { SessionTimer } from '@/components/features';
 import { AppSidebar } from '@/components/main/sidebar';
-import { PageErrorBoundary, ComponentErrorBoundary } from '@/components/core';
 import { Badge } from '@/components/ui/badge';
 import {
   Breadcrumb,

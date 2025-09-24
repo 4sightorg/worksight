@@ -1,17 +1,17 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { PageErrorBoundary } from '@/components/core';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { 
-  useAsyncOperation, 
-  useInterval, 
-  useTimeout, 
+import {
+  useAsyncOperation,
   useEventListener,
-  useSafeState 
+  useInterval,
+  useSafeState,
+  useTimeout
 } from '@/hooks';
-import { PageErrorBoundary } from '@/components/core';
+import { useRef, useState } from 'react';
 
 // Test component for memory leaks
 function MemoryLeakTestComponent() {
@@ -21,7 +21,7 @@ function MemoryLeakTestComponent() {
   const [asyncState, setAsyncState] = useSafeState('idle');
   const [eventCount, setEventCount] = useState(0);
   const [abortCount, setAbortCount] = useState(0);
-  
+
   const { executeAsync, abort } = useAsyncOperation();
   const componentRef = useRef<HTMLDivElement>(null);
 
@@ -53,11 +53,11 @@ function MemoryLeakTestComponent() {
         setAsyncState('loading');
         // Simulate long running operation
         await new Promise(resolve => setTimeout(resolve, 3000));
-        
+
         if (signal.aborted) {
           throw new Error('Operation aborted');
         }
-        
+
         return 'Success!';
       },
       (result) => {
@@ -133,9 +133,9 @@ function MemoryLeakTestComponent() {
             <Badge variant={mounted ? "default" : "destructive"}>
               {mounted ? "Mounted" : "Unmounted"}
             </Badge>
-            <Button 
-              size="sm" 
-              variant="outline" 
+            <Button
+              size="sm"
+              variant="outline"
               onClick={handleUnmount}
               disabled={!mounted}
             >
@@ -184,8 +184,8 @@ export function MemoryLeakTest() {
               <Button onClick={remountComponent}>
                 {showTestComponent ? 'Remount' : 'Mount'} Test Component
               </Button>
-              <Button 
-                variant="destructive" 
+              <Button
+                variant="destructive"
                 onClick={unmountComponent}
                 disabled={!showTestComponent}
               >

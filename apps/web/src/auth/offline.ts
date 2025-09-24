@@ -1,5 +1,5 @@
 import { Employees } from '@/data/employees';
-import { AUTH_CONFIG, OFFLINE_ACCOUNTS, OFFLINE_CREDENTIALS } from './identity';
+import { OFFLINE_ACCOUNTS, OFFLINE_CREDENTIALS } from './identity';
 import { User } from './types';
 
 // Check if app is in offline mode

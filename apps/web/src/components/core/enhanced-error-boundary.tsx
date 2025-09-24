@@ -2,9 +2,8 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertTriangle, RefreshCw, Home, ArrowLeft } from 'lucide-react';
+import { AlertTriangle, ArrowLeft, Home, RefreshCw } from 'lucide-react';
 import { Component, ErrorInfo, ReactNode } from 'react';
-import { useRouter } from 'next/navigation';
 
 interface BaseErrorBoundaryProps {
   children: ReactNode;
@@ -38,8 +37,8 @@ export class BaseErrorBoundary extends Component<BaseErrorBoundaryProps, ErrorBo
 
   public static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
     const errorId = `error-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    return { 
-      hasError: true, 
+    return {
+      hasError: true,
       error,
       errorId,
     };
@@ -47,12 +46,12 @@ export class BaseErrorBoundary extends Component<BaseErrorBoundaryProps, ErrorBo
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
-    
+
     this.setState({ errorInfo });
-    
+
     // Call custom error handler if provided
     this.props.onError?.(error, errorInfo);
-    
+
     // Report to error monitoring service (e.g., Sentry)
     if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
       this.reportError(error, errorInfo);
@@ -62,10 +61,10 @@ export class BaseErrorBoundary extends Component<BaseErrorBoundaryProps, ErrorBo
   public componentDidUpdate(prevProps: BaseErrorBoundaryProps) {
     const { resetKeys, resetOnPropsChange } = this.props;
     const { hasError } = this.state;
-    
+
     if (hasError && prevProps.resetKeys !== resetKeys) {
       if (resetKeys) {
-        const hasResetKeyChanged = resetKeys.some((key, idx) => 
+        const hasResetKeyChanged = resetKeys.some((key, idx) =>
           this.prevResetKeys[idx] !== key
         );
         if (hasResetKeyChanged) {
@@ -74,7 +73,7 @@ export class BaseErrorBoundary extends Component<BaseErrorBoundaryProps, ErrorBo
         }
       }
     }
-    
+
     if (hasError && resetOnPropsChange && prevProps.children !== this.props.children) {
       this.resetErrorBoundary();
     }
@@ -91,7 +90,7 @@ export class BaseErrorBoundary extends Component<BaseErrorBoundaryProps, ErrorBo
       timestamp: new Date().toISOString(),
       errorId: this.state.errorId,
     };
-    
+
     // Here you would send to your error monitoring service
     console.warn('Error report:', errorReport);
   };
@@ -100,10 +99,10 @@ export class BaseErrorBoundary extends Component<BaseErrorBoundaryProps, ErrorBo
     if (this.resetTimeoutId) {
       clearTimeout(this.resetTimeoutId);
     }
-    
-    this.setState({ 
-      hasError: false, 
-      error: undefined, 
+
+    this.setState({
+      hasError: false,
+      error: undefined,
       errorInfo: undefined,
       errorId: undefined,
     });
@@ -222,11 +221,11 @@ export class BaseErrorBoundary extends Component<BaseErrorBoundaryProps, ErrorBo
 }
 
 // Navigation button component for error boundaries
-function NavigationButton({ 
-  href, 
-  icon: Icon, 
-  label, 
-  variant = "default" 
+function NavigationButton({
+  href,
+  icon: Icon,
+  label,
+  variant = "default"
 }: {
   href: string;
   icon: any;
@@ -234,8 +233,8 @@ function NavigationButton({
   variant?: "default" | "outline";
 }) {
   return (
-    <Button 
-      variant={variant} 
+    <Button
+      variant={variant}
       className="flex-1"
       onClick={() => window.location.href = href}
     >

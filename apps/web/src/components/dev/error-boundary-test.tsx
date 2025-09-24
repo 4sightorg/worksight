@@ -1,22 +1,22 @@
 'use client';
 
-import { useState } from 'react';
+import {
+  AsyncErrorBoundary,
+  ChartErrorBoundary,
+  ComponentErrorBoundary,
+  FormErrorBoundary,
+  PageErrorBoundary
+} from '@/components/core';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { 
-  PageErrorBoundary, 
-  ComponentErrorBoundary, 
-  ChartErrorBoundary, 
-  FormErrorBoundary,
-  AsyncErrorBoundary 
-} from '@/components/core';
+import { useState } from 'react';
 
 // Test component that throws an error when triggered
 function ErrorThrowingComponent({ shouldThrow }: { shouldThrow: boolean }) {
   if (shouldThrow) {
     throw new Error('This is a test error to verify error boundary functionality');
   }
-  
+
   return (
     <div className="p-4 bg-green-50 border border-green-200 rounded-md">
       <p className="text-green-700">✅ Component rendered successfully</p>
@@ -29,7 +29,7 @@ function AsyncErrorComponent({ shouldThrow }: { shouldThrow: boolean }) {
   if (shouldThrow) {
     throw new Error('Async operation failed - testing AsyncErrorBoundary');
   }
-  
+
   return (
     <div className="p-4 bg-blue-50 border border-blue-200 rounded-md">
       <p className="text-blue-700">📊 Async component loaded successfully</p>
@@ -42,7 +42,7 @@ function ChartErrorComponent({ shouldThrow }: { shouldThrow: boolean }) {
   if (shouldThrow) {
     throw new Error('Chart rendering failed - testing ChartErrorBoundary');
   }
-  
+
   return (
     <div className="p-4 bg-purple-50 border border-purple-200 rounded-md">
       <p className="text-purple-700">📈 Chart rendered successfully</p>
@@ -55,7 +55,7 @@ function FormErrorComponent({ shouldThrow }: { shouldThrow: boolean }) {
   if (shouldThrow) {
     throw new Error('Form validation failed - testing FormErrorBoundary');
   }
-  
+
   return (
     <div className="p-4 bg-orange-50 border border-orange-200 rounded-md">
       <p className="text-orange-700">📝 Form component working correctly</p>
@@ -76,25 +76,25 @@ export function ErrorBoundaryTest() {
           <CardHeader>
             <CardTitle>Error Boundary Testing</CardTitle>
             <p className="text-sm text-muted-foreground">
-              Use the buttons below to test different error boundary types. 
+              Use the buttons below to test different error boundary types.
               Each error boundary should catch its respective error and display a fallback UI.
             </p>
           </CardHeader>
           <CardContent className="space-y-6">
-            
+
             {/* Component Error Boundary Test */}
             <div className="space-y-2">
               <h3 className="font-medium">Component Error Boundary</h3>
               <div className="flex gap-2">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   onClick={() => setComponentError(false)}
                 >
                   Reset
                 </Button>
-                <Button 
-                  variant="destructive" 
+                <Button
+                  variant="destructive"
                   size="sm"
                   onClick={() => setComponentError(true)}
                 >
@@ -110,15 +110,15 @@ export function ErrorBoundaryTest() {
             <div className="space-y-2">
               <h3 className="font-medium">Async Error Boundary</h3>
               <div className="flex gap-2">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   onClick={() => setAsyncError(false)}
                 >
                   Reset
                 </Button>
-                <Button 
-                  variant="destructive" 
+                <Button
+                  variant="destructive"
                   size="sm"
                   onClick={() => setAsyncError(true)}
                 >
@@ -134,15 +134,15 @@ export function ErrorBoundaryTest() {
             <div className="space-y-2">
               <h3 className="font-medium">Chart Error Boundary</h3>
               <div className="flex gap-2">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   onClick={() => setChartError(false)}
                 >
                   Reset
                 </Button>
-                <Button 
-                  variant="destructive" 
+                <Button
+                  variant="destructive"
                   size="sm"
                   onClick={() => setChartError(true)}
                 >
@@ -158,15 +158,15 @@ export function ErrorBoundaryTest() {
             <div className="space-y-2">
               <h3 className="font-medium">Form Error Boundary</h3>
               <div className="flex gap-2">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   onClick={() => setFormError(false)}
                 >
                   Reset
                 </Button>
-                <Button 
-                  variant="destructive" 
+                <Button
+                  variant="destructive"
                   size="sm"
                   onClick={() => setFormError(true)}
                 >

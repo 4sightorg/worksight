@@ -34,7 +34,7 @@ export default function SettingsPage() {
     const loadSettings = async () => {
       try {
         const userSettings = await settingsApi.get(user.id);
-        
+
         if (!abortController.signal.aborted) {
           setSettings(
             userSettings || {
@@ -61,7 +61,7 @@ export default function SettingsPage() {
     };
 
     loadSettings();
-    
+
     return () => {
       abortController.abort();
     };

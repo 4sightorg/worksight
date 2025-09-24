@@ -2,9 +2,9 @@
 
 import { useAuth } from '@/auth';
 import { AdminRoute } from '@/components/admin';
+import { PageErrorBoundary } from '@/components/core';
 import { SessionTimer } from '@/components/features';
 import { AppSidebar } from '@/components/main/sidebar';
-import { PageErrorBoundary, ComponentErrorBoundary, ChartErrorBoundary } from '@/components/core';
 import { Badge } from '@/components/ui/badge';
 import {
   Breadcrumb,

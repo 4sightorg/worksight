@@ -1,6 +1,6 @@
 import { LoginForm } from '@/components/auth';
+import { FormErrorBoundary, PageErrorBoundary } from '@/components/core';
 import { Branding } from '@/components/layout';
-import { PageErrorBoundary, FormErrorBoundary } from '@/components/core';
 
 // Force dynamic rendering to avoid build-time Supabase client creation
 export const dynamic = 'force-dynamic';
