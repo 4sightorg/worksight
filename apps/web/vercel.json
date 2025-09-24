@@ -1,9 +1,12 @@
 {
   "version": 2,
-  "installCommand": "pnpm install",
-  "buildCommand": "pnpm run build",
-  "outputDirectory": ".next",
   "framework": "nextjs",
+  "engines": {
+    "node": "20.x"
+  },
+  "installCommand": "npm install",
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
   "env": {
     "NEXT_PUBLIC_APP_NAME": "WorkSight",
     "NEXT_PUBLIC_APP_DESCRIPTION": "Employee Well-being Analytics Platform",
