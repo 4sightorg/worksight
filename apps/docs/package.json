@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@catppuccin/vitepress": "^0.1.2",
+    "esbuild": "^0.25.10",
     "react": "18",
     "react-dom": "18"
   }

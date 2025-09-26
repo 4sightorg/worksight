@@ -1,10 +1,10 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
+import { AUTH_CONFIG } from './identity';
 import { isOfflineMode, offlineLogin } from './offline';
 import { User } from './types';
-import { AUTH_CONFIG } from './identity';
-import { storage, isSessionExpired } from './utils';
+import { isSessionExpired, storage } from './utils';
 
 interface AuthContextType {
   user: User | null;
