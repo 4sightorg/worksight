@@ -12,15 +12,16 @@ const nextConfig: NextConfig = {
 
   // Development server configuration
   allowedDevOrigins: [
-    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://192.168.1.2:3001', // full LAN origin with port
     ...(process.env.NEXT_PUBLIC_DEV_URL
       ? [
-          process.env.NEXT_PUBLIC_DEV_URL,
-          // Also allow without port if DEV_URL includes a port
-          process.env.NEXT_PUBLIC_DEV_URL.includes(':')
-            ? process.env.NEXT_PUBLIC_DEV_URL.replace(/:\d+$/, '')
-            : null,
-        ].filter(Boolean)
+        process.env.NEXT_PUBLIC_DEV_URL,
+        // Also allow without port if DEV_URL includes a port
+        process.env.NEXT_PUBLIC_DEV_URL.includes(':')
+          ? process.env.NEXT_PUBLIC_DEV_URL.replace(/:\d+$/, '')
+          : null,
+      ].filter(Boolean)
       : []),
   ] as string[],
 
