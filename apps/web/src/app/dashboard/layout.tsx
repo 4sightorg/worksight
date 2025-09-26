@@ -27,7 +27,6 @@ type SurveyDataSchema = {
   totalScore: number;
   score: number;
   burnoutScore: number;
-
 };
 const sidebarItems = [
   {
@@ -149,7 +148,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <div className="bg-background flex h-screen">
       {/* Sidebar */}
-      <aside className="bg-background/95 supports-[backdrop-filter]:bg-background/60 fixed left-0 top-0 z-40 flex h-screen w-64 flex-col border-r backdrop-blur">
+      <aside className="bg-background/95 supports-[backdrop-filter]:bg-background/60 fixed top-0 left-0 z-40 flex h-screen w-64 flex-col border-r backdrop-blur">
         <div className="flex items-center justify-center gap-3 p-4 pb-3">
           <h1 className="text-xl font-bold">WorkSight</h1>
           {isOffline && <Badge variant="secondary">Offline</Badge>}
@@ -201,18 +200,19 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <div className="px-4 pt-2">
           <Card className="mb-4">
             <CardHeader>
-              {burnoutScore !== null ?
+              {burnoutScore !== null ? (
                 <p
                   className={`text-muted-foreground text-center text-7xl font-bold ${currentBurnout.color}`}
                 >
                   ${burnoutScore}%
-                </p> :
+                </p>
+              ) : (
                 <p
                   className={`text-muted-foreground text-center text-xl font-bold ${currentBurnout.color}`}
                 >
                   Take a survey to see your burnout level
                 </p>
-              }
+              )}
             </CardHeader>
             <CardContent>
               <div className={`text-center text-lg font-bold ${currentBurnout.color}`}>
@@ -228,7 +228,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <div className="relative mt-auto border-t p-3">
           {/* Expandable Profile Menu - Shows upward */}
           {isProfileExpanded && (
-            <div className="absolute bottom-full left-3 right-3 mb-2">
+            <div className="absolute right-3 bottom-full left-3 mb-2">
               <Card className="border shadow-lg">
                 <CardContent className="px-0 py-1">
                   <div className="space-y-0">
@@ -285,7 +285,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 <div className="bg-primary/10 border-primary/20 flex h-7 w-7 items-center justify-center rounded-full border">
                   <User className="text-primary h-3.5 w-3.5" />
                 </div>
-                <div className="border-background absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 bg-green-500"></div>
+                <div className="border-background absolute -right-0.5 -bottom-0.5 h-2.5 w-2.5 rounded-full border-2 bg-green-500"></div>
               </div>
               <div className="flex-1 text-left">
                 <div className="text-sm font-medium">{user?.name || 'User'}</div>

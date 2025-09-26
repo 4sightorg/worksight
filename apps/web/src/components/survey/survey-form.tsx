@@ -334,7 +334,7 @@ export function SurveyComponent() {
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
-            <h3 className="text-lg font-medium leading-relaxed">{currentQuestion.question_text}</h3>
+            <h3 className="text-lg leading-relaxed font-medium">{currentQuestion.question_text}</h3>
 
             {currentQuestion.response_type === 'scale' && (
               <div className="space-y-4">

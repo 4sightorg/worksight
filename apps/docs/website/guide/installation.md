@@ -17,7 +17,7 @@ Ensure you have the following installed on your system:
 
 - **Operating System**: Windows 10+, macOS 10.15+, or Linux
 - **Memory**: 502MB RAM minimum (1GB recommended)
-- **Storage**: 256MB  free disk space
+- **Storage**: 256MB free disk space
 
 ### Step-by-Step Installation
 

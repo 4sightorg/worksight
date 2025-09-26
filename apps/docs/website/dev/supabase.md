@@ -2,7 +2,9 @@
 
 ## What is Supabase?
 
-Supabase is an open-source Firebase alternative providing a hosted Postgres database, authentication, real-time APIs, and storage. It integrates easily with modern web frameworks like Next.js.
+Supabase is an open-source Firebase alternative providing a hosted Postgres
+database, authentication, real-time APIs, and storage. It integrates easily with
+modern web frameworks like Next.js.
 
 ---
 
@@ -12,7 +14,8 @@ Supabase is an open-source Firebase alternative providing a hosted Postgres data
 
 1. Go to [supabase.com](https://supabase.com/) and sign up.
 2. Create a new project.
-3. Note your project URL and anon/public API key (found in Project Settings > API).
+3. Note your project URL and anon/public API key (found in Project Settings >
+   API).
 
 ### b. Install Supabase Client
 
@@ -54,10 +57,15 @@ export const supabase = createClient(supabaseUrl, supabaseKey);
 const { data, error } = await supabase.from('tasks').select('*');
 
 // Insert a new task
-const { data, error } = await supabase.from('tasks').insert([{ title: 'New Task' }]);
+const { data, error } = await supabase
+  .from('tasks')
+  .insert([{ title: 'New Task' }]);
 
 // Update a task
-const { data, error } = await supabase.from('tasks').update({ done: true }).eq('id', 1);
+const { data, error } = await supabase
+  .from('tasks')
+  .update({ done: true })
+  .eq('id', 1);
 
 // Delete a task
 const { data, error } = await supabase.from('tasks').delete().eq('id', 1);
@@ -68,14 +76,14 @@ const { data, error } = await supabase.from('tasks').delete().eq('id', 1);
 ```typescript
 // Sign up
 const { data, error } = await supabase.auth.signUp({
- email: 'user@example.com',
- password: 'password'
+  email: 'user@example.com',
+  password: 'password',
 });
 
 // Sign in
 const { data, error } = await supabase.auth.signInWithPassword({
- email: 'user@example.com',
- password: 'password'
+  email: 'user@example.com',
+  password: 'password',
 });
 
 // Sign out
@@ -87,9 +95,13 @@ const { error } = await supabase.auth.signOut();
 ```typescript
 supabase
   .channel('public:tasks')
-  .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, payload => {
-    console.log('Change received!', payload);
-  })
+  .on(
+    'postgres_changes',
+    { event: '*', schema: 'public', table: 'tasks' },
+    (payload) => {
+      console.log('Change received!', payload);
+    }
+  )
   .subscribe();
 ```
 
@@ -109,16 +121,20 @@ supabase
 
 - **Storage:** Upload and manage files with Supabase Storage.
 - **Edge Functions:** Write serverless functions for custom backend logic.
-- **Policies:** Write RLS policies in the Supabase dashboard for secure data access.
-- **Server-side Usage:** Use the service key only in API routes or server functions.
+- **Policies:** Write RLS policies in the Supabase dashboard for secure data
+  access.
+- **Server-side Usage:** Use the service key only in API routes or server
+  functions.
 
 ---
 
 ## 6. Troubleshooting
 
 - **Auth errors:** Double-check your API keys and project URL.
-- **RLS issues:** Ensure your policies allow the intended operations for authenticated users.
-- **Network issues:** Make sure your environment variables are set and accessible.
+- **RLS issues:** Ensure your policies allow the intended operations for
+  authenticated users.
+- **Network issues:** Make sure your environment variables are set and
+  accessible.
 
 ---
 

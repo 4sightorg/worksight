@@ -82,7 +82,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
         } else {
           // Backward compatibility: legacy key fallback
-          const savedUser = typeof window !== 'undefined' ? localStorage.getItem('user_session') : null;
+          const savedUser =
+            typeof window !== 'undefined' ? localStorage.getItem('user_session') : null;
           if (savedUser) {
             const parsedUser = JSON.parse(savedUser);
             setUser(parsedUser);

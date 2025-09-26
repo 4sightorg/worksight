@@ -399,7 +399,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
             {OFFLINE_ACCOUNTS.map((user, i) => (
               <div key={i} className="flex w-full flex-row items-center justify-between">
                 <span className="mr-5 text-sm font-medium">{capitalize(user.role)}</span>
-                <code className="bg-background break-all rounded px-2 py-0.5 text-xs">
+                <code className="bg-background rounded px-2 py-0.5 text-xs break-all">
                   {user.email}
                 </code>
               </div>

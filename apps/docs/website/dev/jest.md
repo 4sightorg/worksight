@@ -2,7 +2,8 @@
 
 ## What is Jest?
 
-Jest is a JavaScript/TypeScript testing framework for unit and integration tests.
+Jest is a JavaScript/TypeScript testing framework for unit and integration
+tests.
 
 ## How to Use
 
@@ -18,8 +19,8 @@ Add to `package.json` or create `jest.config.js`:
 
 ```js
 module.exports = {
- preset: 'ts-jest',
- testEnvironment: 'node',
+  preset: 'ts-jest',
+  testEnvironment: 'node',
 };
 ```
 
@@ -31,9 +32,9 @@ Create a file like `__tests__/math.test.ts`:
 import { add } from '../utils/math';
 
 describe('add', () => {
- it('adds two numbers', () => {
-  expect(add(1, 2)).toBe(3);
- });
+  it('adds two numbers', () => {
+    expect(add(1, 2)).toBe(3);
+  });
 });
 ```
 

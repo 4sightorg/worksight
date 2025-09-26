@@ -2,7 +2,8 @@
 
 ## What is VitePress?
 
-VitePress is a fast, modern static site generator powered by Vite and Vue, ideal for project documentation.
+VitePress is a fast, modern static site generator powered by Vite and Vue, ideal
+for project documentation.
 
 ---
 
@@ -71,14 +72,14 @@ npm install --save-dev vitepress
     themeConfig: {
       nav: [
         { text: 'Guide', link: '/guide' },
-        { text: 'API', link: '/api' }
+        { text: 'API', link: '/api' },
       ],
       sidebar: [
         { text: 'Introduction', link: '/' },
         { text: 'Guide', link: '/guide' },
-        { text: 'Features', link: '/features' }
-      ]
-    }
+        { text: 'Features', link: '/features' },
+      ],
+    },
   });
   ```
 
@@ -96,7 +97,8 @@ npm install --save-dev vitepress
 
 ### For Usage Docs
 
-- **Write for users, not just devs:** Explain setup, configuration, and common workflows.
+- **Write for users, not just devs:** Explain setup, configuration, and common
+  workflows.
 - **Include screenshots and GIFs** for UI features.
 - **Add troubleshooting and FAQ sections.**
 - **Keep quick start guides short and actionable.**
@@ -130,7 +132,8 @@ npm install --save-dev vitepress
 
 ## 6. Deployment
 
-- Deploy the `docs/.vitepress/dist` folder to any static host (Vercel, Netlify, GitHub Pages).
+- Deploy the `docs/.vitepress/dist` folder to any static host (Vercel, Netlify,
+  GitHub Pages).
 - Automate deployment with CI/CD for up-to-date docs.
 
 ---

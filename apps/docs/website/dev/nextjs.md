@@ -2,7 +2,8 @@
 
 ## What is Next.js?
 
-Next.js is a React framework for building full-stack web apps with server-side rendering, API routes, and more.
+Next.js is a React framework for building full-stack web apps with server-side
+rendering, API routes, and more.
 
 ## How to Use
 
@@ -22,7 +23,8 @@ Next.js is a React framework for building full-stack web apps with server-side r
      ```
 
 3. **Data Fetching**
-   - Use `getServerSideProps`, `getStaticProps`, or React Server Components for data fetching.
+   - Use `getServerSideProps`, `getStaticProps`, or React Server Components for
+     data fetching.
 
 4. **Styling**
    - Use Tailwind CSS, CSS Modules, or any CSS-in-JS solution.

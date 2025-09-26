@@ -1,6 +1,7 @@
 # Step-by-Step Guide: From 0 to Hero
 
-This guide will walk you through the essentials of working on this project, from setup to advanced practices.
+This guide will walk you through the essentials of working on this project, from
+setup to advanced practices.
 
 ---
 
@@ -31,7 +32,8 @@ This guide will walk you through the essentials of working on this project, from
 
 ## 2. Documentation
 
-- **Comment your code** as you write it. Use `//` for inline comments and `/** ... */` for function/class docs.
+- **Comment your code** as you write it. Use `//` for inline comments and
+  `/** ... */` for function/class docs.
 - **JSDoc Example:**
 
   ```typescript

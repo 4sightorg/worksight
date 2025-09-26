@@ -2,7 +2,9 @@
 
 ## What is JSDoc?
 
-JSDoc is a standard for documenting JavaScript/TypeScript code using special comments. It helps generate documentation and improves code readability and editor intellisense.
+JSDoc is a standard for documenting JavaScript/TypeScript code using special
+comments. It helps generate documentation and improves code readability and
+editor intellisense.
 
 ## How to Use
 
@@ -19,7 +21,7 @@ JSDoc is a standard for documenting JavaScript/TypeScript code using special com
  * @returns {number} Sum of a and b
  */
 function add(a: number, b: number): number {
- return a + b;
+  return a + b;
 }
 ```
 

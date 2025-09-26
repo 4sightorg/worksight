@@ -747,7 +747,7 @@ function TaskCard({
               />
             )}
             <div>
-              <CardTitle className="text-sm font-medium leading-tight">{task.title}</CardTitle>
+              <CardTitle className="text-sm leading-tight font-medium">{task.title}</CardTitle>
               <p className="text-muted-foreground mt-1 text-xs">{task.description}</p>
             </div>
           </div>
