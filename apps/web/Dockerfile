@@ -1,32 +1,54 @@
 # ---- Base ----
-FROM node:20-alpine AS base
+FROM node:24-alpine AS base
 WORKDIR /app
+
+# Enable Corepack (optional, mainly for yarn/pnpm)
 RUN corepack enable
 
-# ---- Dependencies ----
+# ---- Dependencies (dev + prod for build) ----
 FROM base AS deps
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
+WORKDIR /app
+
+# Copy manifests
+COPY package.json turbo.json ./
 COPY apps/web/package.json apps/web/
-RUN pnpm install --frozen-lockfile --filter=apps/web
+
+# Install all dependencies (dev + prod) for build
+RUN npm install --workspace=apps/web --legacy-peer-deps
 
 # ---- Build ----
 FROM deps AS build
+WORKDIR /app
+
+# Copy full source code
 COPY . .
+
+# Set dummy environment variables for build
 ENV NEXT_PUBLIC_SUPABASE_URL="http://localhost:54321"
 ENV NEXT_PUBLIC_SUPABASE_ANON_KEY="dummy_anon_key"
 ENV NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="dummy_key"
 ENV NEXT_PUBLIC_IS_OFFLINE=false
-RUN pnpm --filter=apps/web build
 
-# ---- Runtime ----
-FROM base AS runtime
+# Build only the web app workspace
+RUN npm --workspace=apps/web run build
+
+# ---- Runtime (production only) ----
+FROM node:24-alpine AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
 
-COPY --from=build /app/apps/web/.next /app/apps/web/.next
-COPY --from=build /app/apps/web/public /app/apps/web/public
-COPY --from=build /app/node_modules /app/node_modules
+# Copy package manifests
+COPY package.json turbo.json ./
 COPY apps/web/package.json apps/web/
 
+# Install only production dependencies for the web workspace
+RUN npm install --workspace=apps/web --omit=dev --legacy-peer-deps
+
+# Copy build artifacts
+COPY --from=build /app/apps/web/.next /app/apps/web/.next
+COPY --from=build /app/apps/web/public /app/apps/web/public
+
 EXPOSE 3000
-CMD ["pnpm", "--filter=apps/web", "start"]
+
+# Start the app
+CMD ["npm", "--workspace=apps/web", "start"]

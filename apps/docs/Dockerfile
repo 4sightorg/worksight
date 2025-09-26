@@ -1,29 +1,29 @@
 # ---- Build stage ----
-FROM node:20-alpine AS builder
+FROM node:24-alpine AS builder
 WORKDIR /app
-
-RUN npm install
 
 # Copy root manifests (required for monorepo install)
 COPY package.json turbo.json ./
 COPY apps/docs/package.json apps/docs/
 
-RUN npm install  --filter=apps/docs
+# Install dependencies for the docs workspace
+RUN npm install --workspace=apps/docs --legacy-peer-deps
 
 # Copy the rest of the project
 COPY . .
 
-# Build VitePress site
-RUN pnpm --filter=apps/docs build
+# Build VitePress site for production
+RUN npm --workspace=apps/docs run build
 
 # ---- Runtime stage ----
-FROM nginx:alpine
+FROM nginx:mainline-alpine
+WORKDIR /usr/share/nginx/html
 
 # Clean default nginx content
-RUN rm -rf /usr/share/nginx/html/*
+RUN rm -rf ./*
 
-# Copy build output
-COPY --from=builder /app/apps/docs/.vitepress/dist /usr/share/nginx/html
+# Copy built site
+COPY --from=builder /app/apps/docs/.vitepress/dist ./
 
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
