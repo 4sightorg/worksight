@@ -1,5 +1,5 @@
 'use client';
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
 import { validateOAuthUser } from '@/auth/client';
 import { useAuth } from '@/auth/provider';

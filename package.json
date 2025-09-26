@@ -16,6 +16,7 @@
     "dev:docs": "turbo dev --filter=docs",
     "lint": "turbo lint",
     "lint:fix": "turbo lint:fix",
+    "quality": "turbo quality",
     "test": "turbo test",
     "test:ci": "turbo test:ci",
     "type-check": "turbo type-check",

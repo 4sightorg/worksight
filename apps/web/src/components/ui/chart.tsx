@@ -69,7 +69,9 @@ function ChartContainer({ id, className, children, config, ...props }: ChartCont
 // ------------------ ChartStyle ------------------
 
 const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
-  const colorConfig = Object.entries(config).filter(([, cfg]) => Boolean(cfg.color) || Boolean(cfg.theme));
+  const colorConfig = Object.entries(config).filter(
+    ([, cfg]) => Boolean(cfg.color) || Boolean(cfg.theme)
+  );
 
   if (!colorConfig.length) return null;
 
@@ -192,7 +194,9 @@ function ChartTooltipContent({
                 <div className="grid gap-1.5">{nestLabel ? tooltipLabel : null}</div>
                 {item.value !== undefined && (
                   <span className="text-foreground font-mono font-medium tabular-nums">
-                    {typeof item.value === 'number' ? item.value.toLocaleString() : String(item.value)}
+                    {typeof item.value === 'number'
+                      ? item.value.toLocaleString()
+                      : String(item.value)}
                   </span>
                 )}
               </div>
@@ -258,7 +262,6 @@ function ChartLegendContent({
   );
 }
 
-
 // ------------------ Helper ------------------
 
 function getPayloadConfigFromPayload(config: ChartConfig, payload: unknown, key: string) {
@@ -290,6 +293,5 @@ export {
   ChartLegendContent,
   ChartStyle,
   ChartTooltip,
-  ChartTooltipContent
+  ChartTooltipContent,
 };
-
