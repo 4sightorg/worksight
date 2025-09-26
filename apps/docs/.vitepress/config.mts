@@ -11,7 +11,7 @@ export default defineConfig({
   outDir: '.vitepress/dist',
   cleanUrls: true,
   head: [
-    ['link', { rel: 'icon', href: 'assets/logo.png' }],
+    ['link', { rel: 'icon', href: '/assets/logo.png' }],
   ],
   sitemap: {
     hostname,
@@ -19,7 +19,7 @@ export default defineConfig({
   base: env.VITE_BASE || '/',
 
   themeConfig: {
-    logo: 'assets/logo.png',
+    logo: '/assets/logo.png',
     siteTitle: 'WorkSight',
 
     nav: [
