@@ -10,6 +10,7 @@
     "baseUrl": ".",
     "paths": {
       "@worksight/common/*": ["packages/common/src/*"],
+      "@worksight/assets/*": ["packages/assets/*"],
       "@worksight/api/*": ["apps/api/src/*"],
       "@worksight/docs/*": ["apps/docs/src/*"],
       "@worksight/web/*": ["apps/web/src/*"]
