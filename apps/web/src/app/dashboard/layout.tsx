@@ -18,6 +18,7 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { CommandPalette } from '@/components/command-palette/command-palette';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -146,7 +147,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const filteredSidebarItems = getFilteredSidebarItems();
 
   return (
-    <div className="bg-background flex h-screen">
+  <div className="bg-background flex h-screen">
       {/* Sidebar */}
       <aside className="bg-background/95 supports-[backdrop-filter]:bg-background/60 fixed top-0 left-0 z-40 flex h-screen w-64 flex-col border-r backdrop-blur">
         <div className="flex items-center justify-center gap-3 p-4 pb-3">
@@ -300,6 +301,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <main className="ml-64 h-screen flex-1 overflow-y-auto">
         <div className="px-6 py-3">{children}</div>
       </main>
+      <CommandPalette />
     </div>
   );
 }
