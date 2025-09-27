@@ -53,7 +53,8 @@ import {
   Flag,
 } from 'lucide-react';
 import { EmptyState } from '@/components/empty/empty-state';
-import { useState } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 
 interface Task {
   id: string;
@@ -816,6 +817,10 @@ function NewTaskDialog({
   onClose: () => void;
   onSave: (task: Omit<Task, 'id'>) => void;
 }) {
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  const firstFieldRef = useRef<HTMLInputElement | null>(null);
+  const previouslyFocusedRef = useRef<HTMLElement | null>(null);
+  const [mounted, setMounted] = useState(false);
   const [newTask, setNewTask] = useState<Omit<Task, 'id'>>({
     title: '',
     description: '',
@@ -824,6 +829,69 @@ function NewTaskDialog({
     dueDate: new Date().toISOString().split('T')[0],
     storyPoints: 1,
   });
+
+  // Save element that triggered dialog
+  useEffect(() => {
+    if (open) previouslyFocusedRef.current = (document.activeElement as HTMLElement) || null;
+  }, [open]);
+
+  // Mount portal only on client
+  useEffect(() => setMounted(true), []);
+
+  // Focus trap implementation
+  const trapFocus = useCallback((e: KeyboardEvent) => {
+    if (!dialogRef.current) return;
+    if (e.key !== 'Tab') return;
+    const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+    );
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (e.shiftKey) {
+      if (document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      }
+    } else if (document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  }, []);
+
+  // ESC to close
+  const onKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose();
+      }
+      trapFocus(e);
+    },
+    [onClose, trapFocus]
+  );
+
+  useEffect(() => {
+    if (!open) return;
+    document.addEventListener('keydown', onKeyDown);
+    const timer = requestAnimationFrame(() => {
+      firstFieldRef.current?.focus();
+    });
+    // Make background inert (basic implementation)
+    const rootChildren = Array.from(document.body.children).filter(
+      (el) => !el.id.startsWith('task-dialog-portal')
+    );
+    rootChildren.forEach((el) => {
+      if (el.getAttribute('aria-hidden') === 'true') return;
+      el.setAttribute('aria-hidden', 'true');
+    });
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+      cancelAnimationFrame(timer);
+      rootChildren.forEach((el) => el.removeAttribute('aria-hidden'));
+      previouslyFocusedRef.current?.focus();
+    };
+  }, [open, onKeyDown]);
 
   const handleSave = () => {
     if (newTask.title.trim()) {
@@ -839,43 +907,62 @@ function NewTaskDialog({
     }
   };
 
-  if (!open) return null;
+  if (!open || !mounted) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-background mx-4 w-full max-w-md rounded-lg p-6">
-        <h2 className="mb-4 text-lg font-semibold">Create New Task</h2>
+  const dialog = (
+    <div
+      id="task-dialog-portal"
+      className="fixed inset-0 z-50 flex items-center justify-center"
+      role="presentation"
+    >
+      <div
+        aria-modal="true"
+        role="dialog"
+        aria-labelledby="new-task-title"
+        aria-describedby="new-task-description"
+        ref={dialogRef}
+        className="bg-background mx-4 w-full max-w-md rounded-lg border p-6 shadow-lg outline-none"
+      >
+        <h2 id="new-task-title" className="mb-1 text-lg font-semibold">
+          Create New Task
+        </h2>
+        <p id="new-task-description" className="text-muted-foreground mb-4 text-sm">
+          Fill out the details below to add a task to your workspace.
+        </p>
 
         <div className="space-y-4">
           <div>
-            <label className="text-sm font-medium">Title</label>
+            <label className="text-sm font-medium" htmlFor="task-title-input">Title</label>
             <Input
+              id="task-title-input"
+              ref={firstFieldRef}
               value={newTask.title}
               onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
               placeholder="Enter task title"
             />
           </div>
 
-          <div>
-            <label className="text-sm font-medium">Description</label>
-            <Textarea
-              value={newTask.description}
-              onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
-              placeholder="Enter task description"
-              rows={3}
-            />
-          </div>
+            <div>
+              <label className="text-sm font-medium" htmlFor="task-desc-input">Description</label>
+              <Textarea
+                id="task-desc-input"
+                value={newTask.description}
+                onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
+                placeholder="Enter task description"
+                rows={3}
+              />
+            </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium">Status</label>
+              <label className="text-sm font-medium" htmlFor="task-status-select">Status</label>
               <Select
                 value={newTask.status}
                 onValueChange={(value) =>
                   setNewTask({ ...newTask, status: value as Task['status'] })
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger id="task-status-select">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -887,14 +974,14 @@ function NewTaskDialog({
             </div>
 
             <div>
-              <label className="text-sm font-medium">Priority</label>
+              <label className="text-sm font-medium" htmlFor="task-priority-select">Priority</label>
               <Select
                 value={newTask.priority}
                 onValueChange={(value) =>
                   setNewTask({ ...newTask, priority: value as Task['priority'] })
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger id="task-priority-select">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -908,8 +995,9 @@ function NewTaskDialog({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium">Due Date</label>
+              <label className="text-sm font-medium" htmlFor="task-due-date">Due Date</label>
               <Input
+                id="task-due-date"
                 type="date"
                 value={newTask.dueDate}
                 onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
@@ -917,8 +1005,9 @@ function NewTaskDialog({
             </div>
 
             <div>
-              <label className="text-sm font-medium">Story Points</label>
+              <label className="text-sm font-medium" htmlFor="task-story-points">Story Points</label>
               <Input
+                id="task-story-points"
                 type="number"
                 value={newTask.storyPoints}
                 onChange={(e) =>
@@ -931,14 +1020,37 @@ function NewTaskDialog({
         </div>
 
         <div className="mt-6 flex justify-end gap-3">
-          <Button variant="outline" onClick={onClose} aria-label="Cancel creating new task dialog">
+          <Button
+            variant="outline"
+            onClick={onClose}
+            aria-label="Cancel creating new task dialog"
+          >
             Cancel Creation
           </Button>
-          <Button onClick={handleSave} disabled={!newTask.title.trim()} aria-label="Create new task">
+          <Button
+            onClick={handleSave}
+            disabled={!newTask.title.trim()}
+            aria-label="Create new task"
+          >
             Create Task
           </Button>
         </div>
+        <button
+          type="button"
+            className="absolute right-3 top-3 rounded p-1 text-muted-foreground hover:text-foreground focus-visible:outline-none"
+            aria-label="Close dialog"
+            onClick={onClose}
+        >
+          <span aria-hidden="true">×</span>
+        </button>
       </div>
+      <div
+        className="bg-black/50 fixed inset-0 -z-10"
+        aria-hidden="true"
+        onClick={onClose}
+      />
     </div>
   );
+
+  return createPortal(dialog, document.body);
 }
