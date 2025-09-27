@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "installCommand": "npm install --workspace=web",
+  "installCommand": "npm install --workspace=@worksight/web",
   "buildCommand": "npm run build",
   "outputDirectory": ".next",
   "framework": "nextjs",
