@@ -120,7 +120,7 @@ export default function DashboardPage() {
               {showGettingStarted && (
                 <section
                   aria-labelledby="getting-started-heading"
-                  className="border-border/50 relative overflow-hidden rounded-lg border bg-gradient-to-r from-accent/40 to-accent/10 p-5 shadow-sm transition-all"
+                  className="border-border/50 relative overflow-hidden rounded-lg border bg-gradient-to-r from-accent/40 to-accent/10 p-6 shadow-sm transition-all"
                 >
                   <div className="absolute right-0 top-0 -mr-12 -mt-12 size-32 rounded-full bg-accent/40 opacity-30 blur-2xl" aria-hidden="true" />
                   <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
