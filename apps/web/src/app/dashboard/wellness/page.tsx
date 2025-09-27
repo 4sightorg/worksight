@@ -6,7 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Activity, Calendar, TrendingUp, Users } from 'lucide-react';
+import { Activity, Calendar, TrendingUp, Users, FolderPlus } from 'lucide-react';
+import { EmptyState } from '@/components/empty/empty-state';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { DashboardSubNav } from '@/components/dashboard/sub-nav';
@@ -53,7 +54,7 @@ export default function WellnessPage() {
     trend: 'improving',
   };
 
-  const recentSurveys = [
+  const recentSurveys: { date: string; score: number; status: string }[] = [
     { date: '2025-01-24', score: 65, status: 'moderate' },
     { date: '2025-01-17', score: 72, status: 'high' },
     { date: '2025-01-10', score: 58, status: 'moderate' },
@@ -199,26 +200,37 @@ export default function WellnessPage() {
               <CardTitle>Recent Survey Results</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {recentSurveys.map((survey, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between rounded-lg border p-4"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="text-sm font-medium">
-                        {new Date(survey.date).toLocaleDateString()}
+              {recentSurveys.length === 0 ? (
+                <EmptyState
+                  size="sm"
+                  icon={<FolderPlus className="h-5 w-5" />}
+                  title="No surveys yet"
+                  description="Take your first wellness survey to start tracking burnout risk over time."
+                  primaryAction={{ href: '/survey', label: 'Take Survey' }}
+                  secondaryAction={{ href: '/help', label: 'Learn more' }}
+                />
+              ) : (
+                <div className="space-y-4">
+                  {recentSurveys.map((survey, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between rounded-lg border p-4"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="text-sm font-medium">
+                          {new Date(survey.date).toLocaleDateString()}
+                        </div>
+                        <Badge className={getStatusBadge(survey.status)}>
+                          {survey.status.charAt(0).toUpperCase() + survey.status.slice(1)} Risk
+                        </Badge>
                       </div>
-                      <Badge className={getStatusBadge(survey.status)}>
-                        {survey.status.charAt(0).toUpperCase() + survey.status.slice(1)} Risk
-                      </Badge>
+                      <div className={`text-lg font-bold ${getBurnoutColor(survey.score)}`}>
+                        {survey.score}%
+                      </div>
                     </div>
-                    <div className={`text-lg font-bold ${getBurnoutColor(survey.score)}`}>
-                      {survey.score}%
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
 

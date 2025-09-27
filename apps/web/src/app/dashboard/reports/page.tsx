@@ -3,6 +3,8 @@
 import { ProtectedRoute } from '@/components/auth/protected-route';
 import { ClientOnly } from '@/components/core';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { EmptyState } from '@/components/empty/empty-state';
+import { BarChart3, Sparkles } from 'lucide-react';
 import { DashboardSubNav } from '@/components/dashboard/sub-nav';
 import { Construction } from 'lucide-react';
 
@@ -27,27 +29,23 @@ export default function ReportsPage() {
             </div>
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Construction className="h-5 w-5" />
-                Coming Soon
-              </CardTitle>
-              <CardDescription>This section is under development</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">
-                We&apos;re working on comprehensive reporting features including:
-              </p>
-              <ul className="text-muted-foreground mt-4 space-y-2 text-sm">
-                <li>• Team productivity analytics</li>
-                <li>• Burnout risk assessments</li>
-                <li>• Work-life balance trends</li>
-                <li>• Custom report generation</li>
-                <li>• Data export capabilities</li>
-              </ul>
-            </CardContent>
-          </Card>
+          <EmptyState
+            icon={<BarChart3 className="h-6 w-6" />}
+            title="Analytics arriving soon"
+            description="Powerful team insights, burnout trend correlation, and exportable performance data will appear here once enabled."
+            primaryAction={{ label: 'View Tasks', href: '/dashboard/tasks' }}
+            secondaryAction={{ label: 'Product roadmap', href: '/about' }}
+            illustration={<svg aria-hidden="true" className="mx-auto mt-6 h-28 w-28 opacity-30" viewBox="0 0 200 200">
+              <rect x="30" y="110" width="24" height="60" rx="4" className="fill-primary/10" />
+              <rect x="70" y="90" width="24" height="80" rx="4" className="fill-primary/15" />
+              <rect x="110" y="70" width="24" height="100" rx="4" className="fill-primary/20" />
+              <rect x="150" y="50" width="24" height="120" rx="4" className="fill-primary/25" />
+              <circle cx="55" cy="105" r="6" className="fill-primary/40" />
+              <circle cx="95" cy="85" r="6" className="fill-primary/50" />
+              <circle cx="135" cy="65" r="6" className="fill-primary/60" />
+              <circle cx="175" cy="45" r="6" className="fill-primary/70" />
+            </svg>}
+          />
         </div>
       </ClientOnly>
     </ProtectedRoute>

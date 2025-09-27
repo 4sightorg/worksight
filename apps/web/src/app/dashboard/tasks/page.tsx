@@ -50,7 +50,9 @@ import {
   LayoutGrid,
   List,
   Plus,
+  Flag,
 } from 'lucide-react';
+import { EmptyState } from '@/components/empty/empty-state';
 import { useState } from 'react';
 
 interface Task {
@@ -296,7 +298,30 @@ export default function TasksPage() {
                 </div>
               </div>
 
-              {/* Stats Cards */}
+              {/* Zero State / Stats */}
+              {tasks.length === 0 ? (
+                <EmptyState
+                  icon={<Flag className="h-6 w-6" />}
+                  title="No tasks yet"
+                  description="Kick off your workflow by creating your first task. Organize work, track progress, and visualize status across the board."
+                  primaryAction={{
+                    label: 'Create Task',
+                    onClick: () => setShowNewTaskDialog(true),
+                    icon: <Plus className="mr-2 h-4 w-4" />,
+                  }}
+                  secondaryAction={{
+                    label: 'Learn about tasks',
+                    href: '/help',
+                  }}
+                  illustration={<svg aria-hidden="true" className="mx-auto mt-6 h-32 w-32 opacity-30" viewBox="0 0 200 200">
+                    <circle cx="100" cy="100" r="90" className="fill-primary/5" />
+                    <rect x="55" y="60" width="90" height="12" rx="3" className="fill-primary/10" />
+                    <rect x="55" y="86" width="70" height="12" rx="3" className="fill-primary/10" />
+                    <rect x="55" y="112" width="80" height="12" rx="3" className="fill-primary/10" />
+                    <rect x="55" y="138" width="50" height="12" rx="3" className="fill-primary/10" />
+                  </svg>}
+                />
+              ) : (
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -346,8 +371,10 @@ export default function TasksPage() {
                   </CardContent>
                 </Card>
               </div>
+              )}
 
               {/* Task Views */}
+              {tasks.length > 0 && (
               <DndContext
                 sensors={sensors}
                 onDragStart={handleDragStart}
@@ -374,6 +401,7 @@ export default function TasksPage() {
                   {activeTask ? <TaskCard task={activeTask} isDragging /> : null}
                 </DragOverlay>
               </DndContext>
+              )}
 
               {/* New Task Dialog */}
               <NewTaskDialog
