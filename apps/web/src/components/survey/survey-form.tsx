@@ -1,13 +1,13 @@
 'use client';
 
-import { useAuth } from '@/auth';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { Progress } from '@/components/ui/progress';
-import { Textarea } from '@/components/ui/textarea';
-import { Employees } from '@/data/employees';
+import { useAuth } from '@worksight/web/auth';
+import { Badge } from '@worksight/web/components/ui/badge';
+import { Button } from '@worksight/web/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@worksight/web/components/ui/card';
+import { Label } from '@worksight/web/components/ui/label';
+import { Progress } from '@worksight/web/components/ui/progress';
+import { Textarea } from '@worksight/web/components/ui/textarea';
+import { Employees } from '@worksight/web/data/employees';
 import {
   SURVEY_QUESTIONS,
   addSurveyResponse,
@@ -17,8 +17,8 @@ import {
   getLatestSurvey,
   getWellnessInsights,
   type Survey,
-} from '@/data/surveys';
-import { useSurveyResultsStore } from '@/store/survey-results-store';
+} from '@worksight/web/data/surveys';
+import { useSurveyResultsStore } from '@worksight/web/store/survey-results-store';
 import { useEffect, useState } from 'react';
 
 // Simple RadioGroup component since we don't have shadcn's radio-group

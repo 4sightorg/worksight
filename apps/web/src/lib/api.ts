@@ -1,12 +1,12 @@
+import { isOfflineMode } from '@worksight/web/auth/offline';
+import { Employees } from '@worksight/web/data/employees';
 import {
   supabase,
   type Employee,
-  type Task,
   type SurveyResponse,
+  type Task,
   type UserSettings,
 } from './supabase';
-import { Employees } from '@/data/employees';
-import { isOfflineMode } from '@/auth/offline';
 
 // Employee API
 export const employeeApi = {

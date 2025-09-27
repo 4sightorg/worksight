@@ -1,8 +1,8 @@
 "use client";
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { cn } from '@worksight/web/lib/utils';
+import { Loader2, Search } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Search, Loader2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface CommandItem {
   id: string;

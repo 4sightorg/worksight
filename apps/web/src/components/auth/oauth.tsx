@@ -1,7 +1,7 @@
 'use client';
 
-import { signIn, signInWithOAuth, useAuth } from '@/auth';
-import { Button } from '@/components/ui/button';
+import { signIn, signInWithOAuth, useAuth } from '@worksight/web/auth';
+import { Button } from '@worksight/web/components/ui/button';
 import {
   Card,
   CardContent,
@@ -9,13 +9,13 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { providers } from '@/data/authProviders';
-import { cn } from '@/lib/utils';
-import { useConnectivityStore } from '@/stores/connectivity-store';
+} from '@worksight/web/components/ui/card';
+import { Checkbox } from '@worksight/web/components/ui/checkbox';
+import { Input } from '@worksight/web/components/ui/input';
+import { Label } from '@worksight/web/components/ui/label';
+import { providers } from '@worksight/web/data/authProviders';
+import { cn } from '@worksight/web/lib/utils';
+import { useConnectivityStore } from '@worksight/web/stores/connectivity-store';
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';

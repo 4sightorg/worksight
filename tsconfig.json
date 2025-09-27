@@ -1,36 +1,20 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "noEmit": true,
-    "esModuleInterop": true,
+    "target": "ES2023",
     "module": "esnext",
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve",
-    "incremental": true,
-    "composite": false,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@worksight/common/*": ["packages/common/src/*"],
+      "@worksight/api/*": ["apps/api/src/*"],
+      "@worksight/docs/*": ["apps/docs/src/*"],
+      "@worksight/web/*": ["apps/web/src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "src/__tests__/**/*",
-    "**/*.test.ts",
-    "**/*.test.tsx",
-    "jest.config.js",
-    "jest.setup.js"
-  ]
+  "include": [],
+  "references": [{ "path": "packages/common" }, { "path": "apps/docs" }, { "path": "apps/web" }]
 }

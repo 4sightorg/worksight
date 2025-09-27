@@ -1,8 +1,8 @@
 'use client';
 
-import { BounceLink, ScaleLink, SlideLink } from '@/components/animations';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { BounceLink, ScaleLink, SlideLink } from '@worksight/web/components/animations';
+import { Button } from '@worksight/web/components/ui/button';
+import { cn } from '@worksight/web/lib/utils';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 

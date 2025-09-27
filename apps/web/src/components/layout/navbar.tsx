@@ -1,8 +1,8 @@
-import { sections } from '@/data/sections';
+import { ViewSwitcher } from '@worksight/web/components/features';
+import { Button } from '@worksight/web/components/ui';
+import { sections } from '@worksight/web/data/sections';
 import Link from 'next/link';
 import { SiGithub } from 'react-icons/si';
-import { Button } from '@/components/ui';
-import { ViewSwitcher } from '@/components/features';
 
 export function SiteHeader() {
   return (

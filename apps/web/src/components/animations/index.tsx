@@ -1,4 +1,4 @@
-// Animation components index - allows importing from '@/components/animations'
+// Animation components index - allows importing from '@worksight/web/components/animations'
 
 // Export animation configuration and components
 export * from './config';
@@ -12,8 +12,9 @@ export {
   InlineScaleLink,
   InlineSlideLink,
   ScaleLink,
-  SlideLink,
+  SlideLink
 } from './link';
 export * from './page';
 export * from './route';
 export * from './safe-motion';
+

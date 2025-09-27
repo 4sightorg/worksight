@@ -10,7 +10,7 @@ Next.js application.
 Use this for client-side components, browser-based operations, and React hooks.
 
 ```typescript
-import { createBrowserClient } from '@/utils/supabase/client';
+import { createBrowserClient } from '@worksight/web/utils/supabase/client';
 
 // In a React component
 export function UserProfile() {
@@ -44,7 +44,7 @@ Use this in Server Components, API routes, and server actions where you need to
 access user session.
 
 ```typescript
-import { createServerClient } from '@/utils/supabase/client';
+import { createServerClient } from '@worksight/web/utils/supabase/client';
 
 // In a Server Component
 export default async function DashboardPage() {
@@ -92,7 +92,7 @@ Use this for admin operations, background jobs, or when you need to bypass RLS
 policies.
 
 ```typescript
-import { createServiceRoleClient } from '@/utils/supabase/client';
+import { createServiceRoleClient } from '@worksight/web/utils/supabase/client';
 
 // In an admin API route
 export async function POST(request: Request) {
@@ -139,8 +139,8 @@ export async function cleanupExpiredSessions() {
 
 ```typescript
 // Old inconsistent API
-import { getClient } from '@/data/supabase';
-import { getServerClient } from '@/utils/supabase/client';
+import { getClient } from '@worksight/web/data/supabase';
+import { getServerClient } from '@worksight/web/utils/supabase/client';
 
 // Client-side
 const supabase = getClient();
@@ -157,7 +157,7 @@ import {
   createBrowserClient,
   createServerClient,
   createServiceRoleClient,
-} from '@/utils/supabase/client';
+} from '@worksight/web/utils/supabase/client';
 
 // Client-side
 const supabase = createBrowserClient();
@@ -189,7 +189,7 @@ SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 ```typescript
 // Login page
 'use client';
-import { createBrowserClient } from '@/utils/supabase/client';
+import { createBrowserClient } from '@worksight/web/utils/supabase/client';
 
 export function LoginForm() {
   const handleLogin = async (email: string, password: string) => {
@@ -213,7 +213,7 @@ export function LoginForm() {
 
 ```typescript
 // Server Component with auth check
-import { createServerClient } from '@/utils/supabase/client';
+import { createServerClient } from '@worksight/web/utils/supabase/client';
 import { redirect } from 'next/navigation';
 
 export default async function ProtectedPage() {
@@ -235,7 +235,7 @@ export default async function ProtectedPage() {
 ```typescript
 // Client component with real-time updates
 'use client';
-import { createBrowserClient } from '@/utils/supabase/client';
+import { createBrowserClient } from '@worksight/web/utils/supabase/client';
 
 export function RealtimeComponent() {
   const [data, setData] = useState([]);

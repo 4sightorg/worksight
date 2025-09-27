@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        app: [web, docs]
+        app: ["@worksight/web", "@worksight/docs"]
       max-parallel: 2
     steps:
       - uses: actions/checkout@v4

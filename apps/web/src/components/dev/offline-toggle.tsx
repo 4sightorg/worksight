@@ -1,7 +1,7 @@
 // Environment configuration for WorkSight offline mode
 'use client';
 
-import { getOfflineUsers, isOfflineMode, setOfflineMode } from '@/auth/offline';
+import { getOfflineUsers, isOfflineMode, setOfflineMode } from '@worksight/web/auth/offline';
 import { useEffect, useState } from 'react';
 
 export function OfflineModeToggle() {

@@ -1,4 +1,4 @@
-import { User } from '@/auth/types';
+import { User } from '@worksight/web/auth/types';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 

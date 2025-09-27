@@ -1,7 +1,7 @@
 'use client';
 
-import { useAuth } from '@/auth/provider';
-import { Button } from '@/components/ui/button';
+import { useAuth } from '@worksight/web/auth/provider';
+import { Button } from '@worksight/web/components/ui/button';
 import {
   Card,
   CardContent,
@@ -9,11 +9,11 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { createBrowserClient } from '@/utils/supabase/client';
+} from '@worksight/web/components/ui/card';
+import { Checkbox } from '@worksight/web/components/ui/checkbox';
+import { Input } from '@worksight/web/components/ui/input';
+import { Label } from '@worksight/web/components/ui/label';
+import { createBrowserClient } from '@worksight/web/utils/supabase/client';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';

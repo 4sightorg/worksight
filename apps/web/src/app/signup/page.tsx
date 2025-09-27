@@ -1,5 +1,5 @@
-import { SignupForm } from '@/components/auth';
-import { Branding } from '@/components/layout';
+import { SignupForm } from '@worksight/web/components/auth';
+import { Branding } from '@worksight/web/components/layout';
 
 export default function SignUpPage() {
   return (

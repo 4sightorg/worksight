@@ -1,7 +1,7 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@worksight/web/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@worksight/web/components/ui/card';
 
 export default function PrivacyPolicy() {
   return (

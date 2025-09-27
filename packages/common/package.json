@@ -1,0 +1,23 @@
+{
+  "name": "@worksight/common",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -w",
+    "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
+    "lint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --fix",
+    "lint:strict": "eslint --max-warnings 30 \"src/**/*.{ts,tsx}\"",
+    "prettier": "prettier --write \"**/*.{js,ts,tsx,md,json,css}\"",
+    "prettier:check": "prettier --check \"**/*.{js,ts,tsx,md,json,css}\"",
+    "format": "run-s prettier lint:fix stylelint",
+    "format:check": "run-s prettier:check lint:strict  stylelint:check",
+    "type-check": "tsc --noEmit",
+    "clean": "rimraf .next dist .turbo"
+  },
+  "peerDependencies": {
+    "zod": "^4.1.11"
+  }
+}

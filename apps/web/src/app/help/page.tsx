@@ -1,11 +1,11 @@
 'use client';
 
-import { ProtectedRoute } from '@/components/auth/protected-route';
-import { ClientOnly } from '@/components/core';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import { ProtectedRoute } from '@worksight/web/components/auth/protected-route';
+import { ClientOnly } from '@worksight/web/components/core';
+import { Button } from '@worksight/web/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@worksight/web/components/ui/card';
+import { Input } from '@worksight/web/components/ui/input';
+import { SidebarInset, SidebarProvider } from '@worksight/web/components/ui/sidebar';
 import {
   ArrowLeft,
   Book,

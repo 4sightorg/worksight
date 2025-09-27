@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@/lib/utils';
+import { cn } from '@worksight/web/lib/utils';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { MouseEvent, ReactNode } from 'react';

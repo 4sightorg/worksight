@@ -1,5 +1,5 @@
 // Only import server-only modules in server code
-import { createBrowserClient } from '@/utils/supabase/client';
+import { createBrowserClient } from '@worksight/web/utils/supabase/client';
 import { isOfflineMode, offlineLogin } from './offline';
 
 // Client-side Supabase instance for auth (only if not offline)

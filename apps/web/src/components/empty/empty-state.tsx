@@ -1,7 +1,7 @@
 "use client";
-import { Button } from '@/components/ui/button';
+import { Button } from '@worksight/web/components/ui/button';
+import { cn } from '@worksight/web/lib/utils';
 import Link from 'next/link';
-import { cn } from '@/lib/utils';
 import { ReactNode } from 'react';
 
 interface EmptyStateProps {

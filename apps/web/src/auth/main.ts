@@ -1,4 +1,4 @@
-import { createBrowserClient } from '@/utils/supabase/client';
+import { createBrowserClient } from '@worksight/web/utils/supabase/client';
 import { generateMockToken, storage } from './core';
 import { AUTH_CONFIG, OFFLINE_EMAILS } from './identity';
 import { SessionData, User } from './types';

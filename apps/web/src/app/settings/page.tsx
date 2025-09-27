@@ -1,13 +1,13 @@
 'use client';
 
-import { ProtectedRoute } from '@/components/auth/protected-route';
-import { ClientOnly } from '@/components/core';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
-import { Switch } from '@/components/ui/switch';
-import { ArrowLeft, Bell, Lock, Monitor, User, SlidersHorizontal, ShieldAlert } from 'lucide-react';
-import { CollapsibleSection } from '@/components/ui/collapsible-section';
+import { ProtectedRoute } from '@worksight/web/components/auth/protected-route';
+import { ClientOnly } from '@worksight/web/components/core';
+import { Button } from '@worksight/web/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@worksight/web/components/ui/card';
+import { CollapsibleSection } from '@worksight/web/components/ui/collapsible-section';
+import { SidebarInset, SidebarProvider } from '@worksight/web/components/ui/sidebar';
+import { Switch } from '@worksight/web/components/ui/switch';
+import { ArrowLeft, Bell, Lock, Monitor, ShieldAlert, User } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 

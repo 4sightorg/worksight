@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@/lib/utils';
+import { cn } from '@worksight/web/lib/utils';
 import * as React from 'react';
 import type { LegendPayload, LegendProps } from 'recharts';
 import * as RechartsPrimitive from 'recharts';
@@ -293,5 +293,6 @@ export {
   ChartLegendContent,
   ChartStyle,
   ChartTooltip,
-  ChartTooltipContent,
+  ChartTooltipContent
 };
+

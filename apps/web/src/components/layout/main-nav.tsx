@@ -1,21 +1,21 @@
 'use client';
 
-import * as React from 'react';
+import { Button } from '@worksight/web/components/ui';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Button } from '@/components/ui';
+import * as React from 'react';
 
-import { siteConfig } from '@/config/site';
-import { cn } from '@/lib/utils';
-import Image from 'next/image';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { SidebarMenuButton } from '@/components/ui/sidebar';
+} from '@worksight/web/components/ui/dropdown-menu';
+import { SidebarMenuButton } from '@worksight/web/components/ui/sidebar';
+import { siteConfig } from '@worksight/web/config/site';
+import { cn } from '@worksight/web/lib/utils';
 import { Check, ChevronsUpDown, GalleryVerticalEnd } from 'lucide-react';
+import Image from 'next/image';
 
 export function MainNav() {
   const sections = ['Employee', 'Manager'];

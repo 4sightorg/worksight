@@ -1,10 +1,10 @@
 'use client';
 export const dynamic = 'force-dynamic';
 
-import { validateOAuthUser } from '@/auth/client';
-import { useAuth } from '@/auth/provider';
-import { User } from '@/auth/types';
-import { createBrowserClient } from '@/utils/supabase/client';
+import { validateOAuthUser } from '@worksight/web/auth/client';
+import { useAuth } from '@worksight/web/auth/provider';
+import { User } from '@worksight/web/auth/types';
+import { createBrowserClient } from '@worksight/web/utils/supabase/client';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';

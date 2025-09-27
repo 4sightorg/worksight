@@ -1,9 +1,9 @@
 'use client';
 
-import { canManageSurveys, canManageUsers, isAdmin, isManager } from '@/auth/admin';
-import { useAuth } from '@/auth/provider';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { canManageSurveys, canManageUsers, isAdmin, isManager } from '@worksight/web/auth/admin';
+import { useAuth } from '@worksight/web/auth/provider';
+import { Button } from '@worksight/web/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@worksight/web/components/ui/card';
 import { AlertTriangle, ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { ReactNode } from 'react';

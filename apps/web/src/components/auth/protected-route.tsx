@@ -1,7 +1,7 @@
 'use client';
 
-import { useAuth } from '@/auth';
-import { LoadingState } from '@/components/core';
+import { useAuth } from '@worksight/web/auth';
+import { LoadingState } from '@worksight/web/components/core';
 import { useRouter } from 'next/navigation';
 import { ReactNode, useEffect } from 'react';
 

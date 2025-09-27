@@ -1,7 +1,7 @@
 'use client';
 
-import { ClientOnly } from '@/components/core/client-only';
-import { cn } from '@/lib/utils';
+import { ClientOnly } from '@worksight/web/components/core/client-only';
+import { cn } from '@worksight/web/lib/utils';
 import { usePathname } from 'next/navigation';
 import { ReactNode, useEffect, useState } from 'react';
 

@@ -1,10 +1,11 @@
 'use client';
 
-import { useAuth } from '@/auth';
-import { isOfflineMode } from '@/auth/offline';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useAuth } from '@worksight/web/auth';
+import { isOfflineMode } from '@worksight/web/auth/offline';
+import { CommandPalette } from '@worksight/web/components/command-palette/command-palette';
+import { Badge } from '@worksight/web/components/ui/badge';
+import { Button } from '@worksight/web/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@worksight/web/components/ui/card';
 import {
   Activity,
   BarChart3,
@@ -18,7 +19,6 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { CommandPalette } from '@/components/command-palette/command-palette';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;

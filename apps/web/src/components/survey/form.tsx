@@ -1,9 +1,9 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Kbd } from '@/components/ui/kbd';
+import { Button } from '@worksight/web/components/ui/button';
+import { Card, CardContent } from '@worksight/web/components/ui/card';
+import { Input } from '@worksight/web/components/ui/input';
+import { Kbd } from '@worksight/web/components/ui/kbd';
 import { ChevronLeft, ChevronRight, Home } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';

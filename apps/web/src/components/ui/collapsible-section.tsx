@@ -1,7 +1,7 @@
 "use client";
-import { useState, ReactNode, useId } from 'react';
+import { cn } from '@worksight/web/lib/utils';
 import { ChevronDown } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { ReactNode, useId, useState } from 'react';
 
 interface CollapsibleSectionProps {
   title: string;

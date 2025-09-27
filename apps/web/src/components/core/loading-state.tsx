@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@/lib/utils';
+import { cn } from '@worksight/web/lib/utils';
 import { Loader2 } from 'lucide-react';
 import { ReactNode } from 'react';
 

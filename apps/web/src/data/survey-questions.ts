@@ -1,5 +1,5 @@
 // Survey questions for WorkSight - with 4sight meta commentary!
-import { SURVEY_DIMENSIONS, SurveyQuestion } from '@/types/survey';
+import { SURVEY_DIMENSIONS, SurveyQuestion } from '@worksight/web/types/survey';
 
 export const SURVEY_QUESTIONS: SurveyQuestion[] = [
   // Workload questions

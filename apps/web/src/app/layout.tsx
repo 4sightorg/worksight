@@ -1,14 +1,13 @@
-import { AuthProvider } from '@/auth';
-import { PageTransition } from '@/components/animations';
-import { Suspense } from 'react';
-import { Skeleton } from '@/components/ui/skeleton';
-import { ErrorBoundary } from '@/components/core';
-import { ThemeProvider } from '@/components/theme/theme-provider';
-import { ThemeScript } from '@/components/theme/theme-script';
-import { ModeToggle } from '@/components/theme/theme-toggle';
-import '@/styles/globals.css';
-import { MetadataRecord } from '@/types/metadata';
-import { ReactNode } from 'react';
+import { AuthProvider } from '@worksight/web/auth';
+import { PageTransition } from '@worksight/web/components/animations';
+import { ErrorBoundary } from '@worksight/web/components/core';
+import { ThemeProvider } from '@worksight/web/components/theme/theme-provider';
+import { ThemeScript } from '@worksight/web/components/theme/theme-script';
+import { ModeToggle } from '@worksight/web/components/theme/theme-toggle';
+import { Skeleton } from '@worksight/web/components/ui/skeleton';
+import '@worksight/web/styles/globals.css';
+import { MetadataRecord } from '@worksight/web/types/metadata';
+import { ReactNode, Suspense } from 'react';
 
 type RootLayoutProps = {
   children: ReactNode;

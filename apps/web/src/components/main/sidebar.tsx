@@ -1,8 +1,8 @@
 'use client';
-import { useAuth } from '@/auth';
-import { isAdmin, isManager } from '@/auth/admin';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Card, CardContent } from '@/components/ui/card';
+import { useAuth } from '@worksight/web/auth';
+import { isAdmin, isManager } from '@worksight/web/auth/admin';
+import { Avatar, AvatarFallback, AvatarImage } from '@worksight/web/components/ui/avatar';
+import { Card, CardContent } from '@worksight/web/components/ui/card';
 import {
   Sidebar,
   SidebarContent,
@@ -15,16 +15,16 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from '@/components/ui/sidebar';
-import { SectionGroup } from '@/data/sections';
-import { useSidebarStore } from '@/store/sidebar-store';
+} from '@worksight/web/components/ui/sidebar';
+import { SectionGroup } from '@worksight/web/data/sections';
+import { useSidebarStore } from '@worksight/web/store/sidebar-store';
 import { TrendingUp } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import * as React from 'react';
 // Update the import path below to the correct location of SiteHeader
-import { SiteHeader } from '@/components/layout';
+import { SiteHeader } from '@worksight/web/components/layout';
 // or, if the correct path is different, update accordingly, e.g.:
-// import { SiteHeader } from '@/components/main/navbar';
+// import { SiteHeader } from '@worksight/web/components/main/navbar';
 
 type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
   sections: SectionGroup[];

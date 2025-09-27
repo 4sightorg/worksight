@@ -1,8 +1,8 @@
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { useSurveyStore } from '@/store/survey-store';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@worksight/web/components/ui/card';
+import { Progress } from '@worksight/web/components/ui/progress';
+import { useSurveyStore } from '@worksight/web/store/survey-store';
 import { Activity, TrendingDown, TrendingUp } from 'lucide-react';
 
 export function SurveyResultsCard() {

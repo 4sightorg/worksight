@@ -1,8 +1,8 @@
 'use client';
 
-import { SurveyForm, SurveyQuestion, SurveyResponse } from '@/components/survey/form';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { SurveyForm, SurveyQuestion, SurveyResponse } from '@worksight/web/components/survey/form';
+import { Button } from '@worksight/web/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@worksight/web/components/ui/card';
 import { AlertCircle, Clock } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';

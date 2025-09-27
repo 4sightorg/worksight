@@ -1,4 +1,4 @@
-import { Employees } from '@/data/employees';
+import { Employees } from '@worksight/web/data/employees';
 import { User } from './types';
 
 // Check if app is in offline mode

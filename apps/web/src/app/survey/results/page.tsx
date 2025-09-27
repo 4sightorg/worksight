@@ -1,8 +1,8 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useSurveyResultsStore } from '@/store/survey-results-store';
+import { Button } from '@worksight/web/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@worksight/web/components/ui/card';
+import { useSurveyResultsStore } from '@worksight/web/store/survey-results-store';
 import { AlertTriangle, CheckCircle, Heart, TrendingUp } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
