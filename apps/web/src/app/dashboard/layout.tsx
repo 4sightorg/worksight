@@ -199,7 +199,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </div>
         {/* Burnout Level Card */}
         <div className="px-4 pt-2">
-          <Card className="mb-4">
+          <Card elevation="sm" className="mb-4">
             <CardHeader>
               {burnoutScore !== null ? (
                 <p
@@ -230,7 +230,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           {/* Expandable Profile Menu - Shows upward */}
           {isProfileExpanded && (
             <div className="absolute right-3 bottom-full left-3 mb-2">
-              <Card className="border shadow-lg">
+              <Card elevation="lg" className="border">
                 <CardContent className="px-0 py-1">
                   <div className="space-y-0">
                     <Link

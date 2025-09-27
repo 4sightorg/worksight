@@ -1,13 +1,29 @@
 import * as React from 'react';
-
 import { cn } from '../../lib/utils';
 
-function Card({ className, ...props }: React.ComponentProps<'div'>) {
+type Elevation = 'none' | 'sm' | 'md' | 'lg';
+
+const elevationClasses: Record<Elevation, string> = {
+  none: 'shadow-none',
+  sm: 'shadow-sm',
+  md: 'shadow-md shadow-black/5 dark:shadow-black/30',
+  lg: 'shadow-lg shadow-black/10 dark:shadow-black/40',
+};
+
+interface CardProps extends React.ComponentProps<'div'> {
+  elevation?: Elevation; // visual depth tier
+  interactive?: boolean; // adds subtle hover elevation lift
+}
+
+function Card({ className, elevation = 'sm', interactive = false, ...props }: CardProps) {
   return (
     <div
       data-slot="card"
+      data-elevation={elevation}
       className={cn(
-        'bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm',
+        'bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 transition-shadow',
+        elevationClasses[elevation],
+        interactive && 'hover:shadow-md hover:shadow-black/10 dark:hover:shadow-black/40',
         className
       )}
       {...props}

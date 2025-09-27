@@ -236,7 +236,7 @@ export default function WellnessPage() {
 
           {/* Quick Actions */}
           <div className="grid gap-4 md:grid-cols-2">
-            <Card className="cursor-pointer transition-shadow hover:shadow-md">
+            <Card elevation="sm" interactive className="cursor-pointer">
               <CardHeader>
                 <CardTitle className="text-lg">Take New Survey</CardTitle>
               </CardHeader>
@@ -253,7 +253,7 @@ export default function WellnessPage() {
               </CardContent>
             </Card>
 
-            <Card className="cursor-pointer transition-shadow hover:shadow-md">
+            <Card elevation="sm" interactive className="cursor-pointer">
               <CardHeader>
                 <CardTitle className="text-lg">View History</CardTitle>
               </CardHeader>

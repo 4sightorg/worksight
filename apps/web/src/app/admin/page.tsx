@@ -201,7 +201,7 @@ function AdminDashboardContent() {
                 isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'
               )}
             >
-              <Card className="cursor-pointer transition-shadow hover:shadow-lg">
+              <Card elevation="sm" interactive className="cursor-pointer">
                 <Link href="/admin/users">
                   <CardHeader>
                     <div className="flex items-center gap-2">
@@ -223,7 +223,7 @@ function AdminDashboardContent() {
                 </Link>
               </Card>
 
-              <Card className="cursor-pointer transition-shadow hover:shadow-lg">
+              <Card elevation="sm" interactive className="cursor-pointer">
                 <Link href="/admin/surveys">
                   <CardHeader>
                     <div className="flex items-center gap-2">
@@ -245,7 +245,7 @@ function AdminDashboardContent() {
                 </Link>
               </Card>
 
-              <Card className="cursor-pointer transition-shadow hover:shadow-lg">
+              <Card elevation="sm" interactive className="cursor-pointer">
                 <Link href="/admin/reports">
                   <CardHeader>
                     <div className="flex items-center gap-2">
@@ -267,7 +267,7 @@ function AdminDashboardContent() {
                 </Link>
               </Card>
 
-              <Card className="cursor-pointer transition-shadow hover:shadow-lg">
+              <Card elevation="sm" interactive className="cursor-pointer">
                 <Link href="/admin/settings">
                   <CardHeader>
                     <div className="flex items-center gap-2">
@@ -290,7 +290,7 @@ function AdminDashboardContent() {
                 </Link>
               </Card>
 
-              <Card className="cursor-pointer transition-shadow hover:shadow-lg">
+              <Card elevation="sm" interactive className="cursor-pointer">
                 <Link href="/admin/audit">
                   <CardHeader>
                     <div className="flex items-center gap-2">

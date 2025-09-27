@@ -232,7 +232,7 @@ export default function DashboardPage() {
               {/* Stats Cards */}
               <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-3">
                 <Link href="/dashboard/tasks">
-                  <Card className="hover:bg-accent/50 cursor-pointer transition-colors">
+                  <Card elevation="sm" interactive className="hover:bg-accent/50 cursor-pointer transition-colors">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                       <CardTitle className="text-sm font-medium">Active Tasks</CardTitle>
                       <CheckSquare className="text-muted-foreground h-4 w-4" />
@@ -280,7 +280,7 @@ export default function DashboardPage() {
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
                 {/* Wellness Chart */}
                 <Link href="/dashboard/wellness" className="md:col-span-2">
-                  <Card className="hover:bg-accent/50 h-full cursor-pointer transition-colors">
+                  <Card elevation="md" interactive className="hover:bg-accent/50 h-full cursor-pointer transition-colors">
                     <CardHeader className="pb-3">
                       <CardTitle>Burnout Trends</CardTitle>
                       <CardDescription>Weekly burnout levels over the past 5 weeks</CardDescription>
@@ -333,7 +333,7 @@ export default function DashboardPage() {
                 </Link>
 
                 {/* Recent Activity */}
-                <Card className="h-full md:col-span-2">
+                <Card elevation="sm" className="h-full md:col-span-2">
                   <CardHeader className="pb-3">
                     <CardTitle>Recent Activity</CardTitle>
                     <CardDescription>Your latest actions and updates</CardDescription>
