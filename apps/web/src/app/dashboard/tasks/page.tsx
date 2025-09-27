@@ -829,6 +829,7 @@ function NewTaskDialog({
     dueDate: new Date().toISOString().split('T')[0],
     storyPoints: 1,
   });
+  const [errors, setErrors] = useState<{ id: string; message: string; field?: string }[]>([]);
 
   // Save element that triggered dialog
   useEffect(() => {
@@ -893,18 +894,36 @@ function NewTaskDialog({
     };
   }, [open, onKeyDown]);
 
+  const validate = () => {
+    const v: { id: string; message: string; field?: string }[] = [];
+    if (!newTask.title.trim()) v.push({ id: 'title', message: 'Title is required.', field: 'task-title-input' });
+    if (newTask.storyPoints < 1) v.push({ id: 'storyPoints', message: 'Story points must be at least 1.', field: 'task-story-points' });
+    return v;
+  };
+
   const handleSave = () => {
-    if (newTask.title.trim()) {
-      onSave(newTask);
-      setNewTask({
-        title: '',
-        description: '',
-        status: 'pending',
-        priority: 'medium',
-        dueDate: new Date().toISOString().split('T')[0],
-        storyPoints: 1,
+    const v = validate();
+    if (v.length > 0) {
+      setErrors(v);
+      // Focus first invalid field
+      requestAnimationFrame(() => {
+        if (v[0].field) {
+          const el = document.getElementById(v[0].field) as HTMLElement | null;
+          el?.focus();
+        }
       });
+      return;
     }
+    onSave(newTask);
+    setErrors([]);
+    setNewTask({
+      title: '',
+      description: '',
+      status: 'pending',
+      priority: 'medium',
+      dueDate: new Date().toISOString().split('T')[0],
+      storyPoints: 1,
+    });
   };
 
   if (!open || !mounted) return null;
@@ -919,7 +938,7 @@ function NewTaskDialog({
         aria-modal="true"
         role="dialog"
         aria-labelledby="new-task-title"
-        aria-describedby="new-task-description"
+        aria-describedby={errors.length ? 'new-task-error-summary' : 'new-task-description'}
         ref={dialogRef}
         className="bg-background mx-4 w-full max-w-md rounded-lg border p-6 shadow-lg outline-none"
       >
@@ -930,6 +949,22 @@ function NewTaskDialog({
           Fill out the details below to add a task to your workspace.
         </p>
 
+        {errors.length > 0 && (
+          <div
+            id="new-task-error-summary"
+            role="alert"
+            aria-live="assertive"
+            className="mb-4 rounded-md border border-destructive/40 bg-destructive/5 p-3 text-sm"
+          >
+            <p className="font-medium text-destructive mb-1">Please correct the following:</p>
+            <ul className="list-disc pl-5 space-y-0.5">
+              {errors.map((e) => (
+                <li key={e.id}>{e.message}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         <div className="space-y-4">
           <div>
             <label className="text-sm font-medium" htmlFor="task-title-input">Title</label>
@@ -939,19 +974,33 @@ function NewTaskDialog({
               value={newTask.title}
               onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
               placeholder="Enter task title"
+              aria-required="true"
+              aria-invalid={errors.some((e) => e.id === 'title') || undefined}
+              aria-describedby={[
+                errors.some((e) => e.id === 'title') && 'task-title-error',
+                errors.length > 0 && 'new-task-error-summary',
+              ]
+                .filter(Boolean)
+                .join(' ') || undefined}
             />
+            {errors.some((e) => e.id === 'title') && (
+              <p id="task-title-error" className="mt-1 text-xs text-destructive">
+                Title is required.
+              </p>
+            )}
           </div>
 
-            <div>
-              <label className="text-sm font-medium" htmlFor="task-desc-input">Description</label>
-              <Textarea
-                id="task-desc-input"
-                value={newTask.description}
-                onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
-                placeholder="Enter task description"
-                rows={3}
-              />
-            </div>
+          <div>
+            <label className="text-sm font-medium" htmlFor="task-desc-input">Description</label>
+            <Textarea
+              id="task-desc-input"
+              value={newTask.description}
+              onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
+              placeholder="Enter task description"
+              rows={3}
+              aria-describedby={errors.length > 0 ? 'new-task-error-summary' : undefined}
+            />
+          </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -1001,6 +1050,7 @@ function NewTaskDialog({
                 type="date"
                 value={newTask.dueDate}
                 onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
+                aria-describedby={errors.length > 0 ? 'new-task-error-summary' : undefined}
               />
             </div>
 
@@ -1014,7 +1064,19 @@ function NewTaskDialog({
                   setNewTask({ ...newTask, storyPoints: parseInt(e.target.value) || 1 })
                 }
                 min="1"
+                aria-invalid={errors.some((e) => e.id === 'storyPoints') || undefined}
+                aria-describedby={[
+                  errors.some((e) => e.id === 'storyPoints') && 'task-story-points-error',
+                  errors.length > 0 && 'new-task-error-summary',
+                ]
+                  .filter(Boolean)
+                  .join(' ') || undefined}
               />
+              {errors.some((e) => e.id === 'storyPoints') && (
+                <p id="task-story-points-error" className="mt-1 text-xs text-destructive">
+                  Story points must be at least 1.
+                </p>
+              )}
             </div>
           </div>
         </div>
