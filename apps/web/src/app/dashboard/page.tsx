@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/chart';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { Activity, CheckSquare, Clock, TrendingUp, User, Target, ListChecks, X, Check } from 'lucide-react';
+import { CollapsibleSection } from '@/components/ui/collapsible-section';
 import Link from 'next/link';
 import { useEffect, useState, useCallback } from 'react';
 import { Area, AreaChart, XAxis, YAxis } from 'recharts';
@@ -229,8 +230,14 @@ export default function DashboardPage() {
                 </section>
               )}
 
-              {/* Stats Cards */}
-              <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-3">
+              {/* KPI Cluster */}
+              <CollapsibleSection
+                title="Key Metrics"
+                description="Snapshot of today’s performance"
+                defaultOpen
+                className="bg-background/50 backdrop-blur-sm"
+              >
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 <Link href="/dashboard/tasks">
                   <Card elevation="sm" interactive className="hover:bg-accent/50 cursor-pointer transition-colors">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -275,9 +282,16 @@ export default function DashboardPage() {
                   </CardContent>
                 </Card>
               </div>
+              </CollapsibleSection>
 
-              {/* Main Content Area */}
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+              {/* Trends & Activity */}
+              <CollapsibleSection
+                title="Trends & Activity"
+                description="Recent patterns and latest actions"
+                defaultOpen
+                className="bg-background/50 backdrop-blur-sm"
+              >
+              <div className="grid gap-6 lg:grid-cols-4 md:grid-cols-2">
                 {/* Wellness Chart */}
                 <Link href="/dashboard/wellness" className="md:col-span-2">
                   <Card elevation="md" interactive className="hover:bg-accent/50 h-full cursor-pointer transition-colors">
@@ -399,6 +413,7 @@ export default function DashboardPage() {
                   </CardContent>
                 </Card>
               </div>
+              </CollapsibleSection>
             </div>
           </SidebarInset>
         </SidebarProvider>

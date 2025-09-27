@@ -5,6 +5,7 @@ import { ClientOnly } from '@/components/core';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CollapsibleSection } from '@/components/ui/collapsible-section';
 import { Progress } from '@/components/ui/progress';
 import { Activity, Calendar, TrendingUp, Users, FolderPlus } from 'lucide-react';
 import { EmptyState } from '@/components/empty/empty-state';
@@ -116,8 +117,14 @@ export default function WellnessPage() {
             )}
           </div>
 
-          {/* Current Status */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {/* KPI / Status Cluster */}
+          <CollapsibleSection
+            title="Current Metrics"
+            description="Latest wellness indicators"
+            defaultOpen
+            className="bg-background/50 backdrop-blur-sm"
+          >
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Current Burnout Level</CardTitle>
@@ -167,14 +174,21 @@ export default function WellnessPage() {
                 <p className="text-muted-foreground text-xs">Compared to last month</p>
               </CardContent>
             </Card>
-          </div>
+            </div>
+          </CollapsibleSection>
 
-          {/* Burnout Level Chart */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Burnout Level Progress</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+          {/* Progress & History Section (collapsible to control scroll) */}
+          <CollapsibleSection
+            title="Progress & Risk Range"
+            description="Track progression against risk thresholds"
+            defaultOpen
+            className="bg-background/50 backdrop-blur-sm"
+          >
+            <Card elevation="sm" className="shadow-none">
+              <CardHeader>
+                <CardTitle>Burnout Level Progress</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">Current Level</span>
@@ -191,15 +205,21 @@ export default function WellnessPage() {
                   <span>High Risk (70-100%)</span>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </CollapsibleSection>
 
-          {/* Recent Surveys */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Survey Results</CardTitle>
-            </CardHeader>
-            <CardContent>
+          <CollapsibleSection
+            title="Recent Survey Results"
+            description="Past submissions and risk classification"
+            defaultOpen
+            className="bg-background/50 backdrop-blur-sm"
+          >
+            <Card elevation="sm" className="shadow-none">
+              <CardHeader>
+                <CardTitle>Recent Survey Results</CardTitle>
+              </CardHeader>
+              <CardContent>
               {recentSurveys.length === 0 ? (
                 <EmptyState
                   size="sm"
@@ -231,8 +251,9 @@ export default function WellnessPage() {
                   ))}
                 </div>
               )}
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </CollapsibleSection>
 
           {/* Quick Actions */}
           <div className="grid gap-4 md:grid-cols-2">
