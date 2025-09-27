@@ -9,6 +9,7 @@ import { Progress } from '@/components/ui/progress';
 import { Activity, Calendar, TrendingUp, Users } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { DashboardSubNav } from '@/components/dashboard/sub-nav';
 
 export default function WellnessPage() {
   const [canTakeSurvey, setCanTakeSurvey] = useState(true);
@@ -77,7 +78,15 @@ export default function WellnessPage() {
   return (
     <ProtectedRoute>
       <ClientOnly>
-        <div className="space-y-6">
+        <div className="space-y-6 p-6">
+          <DashboardSubNav
+            aria-label="Wellness sub navigation"
+            items={[
+              { label: 'Tasks', href: '/dashboard/tasks' },
+              { label: 'Reports', href: '/dashboard/reports', soon: true },
+              { label: 'Wellness', href: '/dashboard/wellness', badge: recentSurveys.length },
+            ]}
+          />
           {/* Header */}
           <div className="flex items-center justify-between">
             <div>

@@ -3,6 +3,7 @@
 import { ProtectedRoute } from '@/components/auth/protected-route';
 import { ClientOnly } from '@/components/core';
 import { Badge } from '@/components/ui/badge';
+import { DashboardSubNav } from '@/components/dashboard/sub-nav';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -250,6 +251,14 @@ export default function TasksPage() {
         <SidebarProvider>
           <SidebarInset>
             <div className="flex flex-1 flex-col space-y-6 p-6">
+              <DashboardSubNav
+                aria-label="Tasks sub navigation"
+                items={[
+                  { label: 'Tasks', href: '/dashboard/tasks', badge: tasks.length },
+                  { label: 'Reports', href: '/dashboard/reports', soon: true },
+                  { label: 'Wellness', href: '/dashboard/wellness' },
+                ]}
+              />
               {/* Header */}
               <div className="flex items-center justify-between">
                 <div>

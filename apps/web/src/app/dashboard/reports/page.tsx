@@ -3,13 +3,22 @@
 import { ProtectedRoute } from '@/components/auth/protected-route';
 import { ClientOnly } from '@/components/core';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { DashboardSubNav } from '@/components/dashboard/sub-nav';
 import { Construction } from 'lucide-react';
 
 export default function ReportsPage() {
   return (
     <ProtectedRoute>
       <ClientOnly>
-        <div className="space-y-6">
+        <div className="space-y-6 p-6">
+          <DashboardSubNav
+            aria-label="Reports sub navigation"
+            items={[
+              { label: 'Tasks', href: '/dashboard/tasks' },
+              { label: 'Reports', href: '/dashboard/reports' },
+              { label: 'Wellness', href: '/dashboard/wellness' },
+            ]}
+          />
           {/* Header */}
           <div className="flex items-center justify-between">
             <div>
