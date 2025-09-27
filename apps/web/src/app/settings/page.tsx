@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { Switch } from '@/components/ui/switch';
-import { ArrowLeft, Bell, Lock, Monitor, User } from 'lucide-react';
+import { ArrowLeft, Bell, Lock, Monitor, User, SlidersHorizontal, ShieldAlert } from 'lucide-react';
+import { CollapsibleSection } from '@/components/ui/collapsible-section';
 import Link from 'next/link';
 import { useState } from 'react';
 
@@ -66,7 +67,7 @@ export default function SettingsPage() {
                   </CardContent>
                 </Card>
 
-                {/* Notification Settings */}
+                {/* Notification Settings (always visible) */}
                 <Card>
                   <CardHeader>
                     <div className="flex items-center gap-2">
@@ -99,7 +100,7 @@ export default function SettingsPage() {
                   </CardContent>
                 </Card>
 
-                {/* Appearance Settings */}
+                {/* Appearance Settings with advanced subsection */}
                 <Card>
                   <CardHeader>
                     <div className="flex items-center gap-2">
@@ -109,61 +110,100 @@ export default function SettingsPage() {
                     <CardDescription>Customize how WorkSight looks on your device</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
+                    <div className="space-y-6">
                       <div className="flex items-center justify-between">
                         <div>
                           <label className="text-sm font-medium">Dark Mode</label>
-                          <p className="text-muted-foreground text-sm">
-                            Use dark theme throughout the app
-                          </p>
+                          <p className="text-muted-foreground text-sm">Use dark theme throughout the app</p>
                         </div>
                         <Switch checked={darkMode} onCheckedChange={setDarkMode} />
                       </div>
+                      <CollapsibleSection
+                        title="Advanced Theme Options"
+                        description="Fine tune visual density and motion preferences"
+                      >
+                        <div className="space-y-4 pt-1">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm font-medium">Reduced Motion</p>
+                              <p className="text-muted-foreground text-xs">Minimize animations for accessibility</p>
+                            </div>
+                            <Switch />
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm font-medium">Compact Spacing</p>
+                              <p className="text-muted-foreground text-xs">Denser layout for large screens</p>
+                            </div>
+                            <Switch />
+                          </div>
+                        </div>
+                      </CollapsibleSection>
                     </div>
                   </CardContent>
                 </Card>
 
-                {/* Privacy Settings */}
+                {/* Privacy & Data with progressive disclosure */}
                 <Card>
                   <CardHeader>
                     <div className="flex items-center gap-2">
                       <Lock className="h-5 w-5" />
-                      <CardTitle>Privacy</CardTitle>
+                      <CardTitle>Privacy & Data</CardTitle>
                     </div>
                     <CardDescription>Control how your data is used and shared</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
+                    <div className="space-y-6">
                       <div className="flex items-center justify-between">
                         <div>
                           <label className="text-sm font-medium">Analytics</label>
-                          <p className="text-muted-foreground text-sm">
-                            Help improve WorkSight with usage data
-                          </p>
+                          <p className="text-muted-foreground text-sm">Help improve WorkSight with usage data</p>
                         </div>
                         <Switch checked={analytics} onCheckedChange={setAnalytics} />
                       </div>
-                      <div>
-                        <Button variant="outline" size="sm">
-                          Download My Data
-                        </Button>
-                      </div>
+                      <CollapsibleSection
+                        title="Advanced Data Controls"
+                        description="Export, retention and consent history"
+                      >
+                        <div className="space-y-4 pt-1">
+                          <div>
+                            <p className="text-sm font-medium">Data Export</p>
+                            <p className="text-muted-foreground mb-2 text-xs">Generate a portable JSON of your activity and survey data.</p>
+                            <Button variant="outline" size="sm">Download My Data</Button>
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium">Retention Policy</p>
+                            <p className="text-muted-foreground mb-2 text-xs">We automatically prune raw telemetry after 90 days.</p>
+                            <Button variant="ghost" size="sm">Learn more</Button>
+                          </div>
+                        </div>
+                      </CollapsibleSection>
                     </div>
                   </CardContent>
                 </Card>
 
-                {/* Danger Zone */}
+                {/* Danger Zone collapsed by default */}
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-red-600">Danger Zone</CardTitle>
+                    <div className="flex items-center gap-2">
+                      <ShieldAlert className="h-5 w-5 text-red-600" />
+                      <CardTitle className="text-red-600">Danger Zone</CardTitle>
+                    </div>
                     <CardDescription>Irreversible actions that affect your account</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
-                      <Button variant="destructive" size="sm">
-                        Delete Account
-                      </Button>
-                    </div>
+                    <CollapsibleSection
+                      title="Account Deletion"
+                      description="Permanently remove your account and associated data"
+                    >
+                      <div className="space-y-4 pt-1">
+                        <p className="text-muted-foreground text-xs leading-relaxed">
+                          This action cannot be undone. All personal data, survey results and task
+                          history will be permanently removed.
+                        </p>
+                        <Button variant="destructive" size="sm">Delete Account</Button>
+                      </div>
+                    </CollapsibleSection>
                   </CardContent>
                 </Card>
               </div>
