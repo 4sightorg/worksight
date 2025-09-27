@@ -19,6 +19,7 @@ import {
 import { SectionGroup } from '@/data/sections';
 import { useSidebarStore } from '@/store/sidebar-store';
 import { TrendingUp } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 import * as React from 'react';
 // Update the import path below to the correct location of SiteHeader
 import { SiteHeader } from '@/components/layout';
@@ -34,6 +35,7 @@ export function AppSidebar({ sections, defaultSection, ...props }: AppSidebarPro
   // Use Zustand store for activeItem
   const activeItem = useSidebarStore((state) => state.activeItem) || defaultSection;
   const setActiveItem = useSidebarStore((state) => state.setActiveItem);
+  const pathname = usePathname();
   const { user } = useAuth();
 
   // Generate a random number with color for the stats card
@@ -123,17 +125,28 @@ export function AppSidebar({ sections, defaultSection, ...props }: AppSidebarPro
             <SidebarGroupLabel>{section.title}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {section.items.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={activeItem === item.title}
-                      onClick={() => setActiveItem(item.title)}
-                    >
-                      <a href={item.url}>{item.title}</a>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
+                {section.items.map((item) => {
+                  const isRouteActive = pathname === item.url || (pathname.startsWith(item.url + '/') && item.url !== '/');
+                  const isActive = isRouteActive || activeItem === item.title;
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={isActive}
+                        onClick={() => setActiveItem(item.title)}
+                        className={
+                          isActive
+                            ? 'relative pl-3 before:absolute before:inset-y-1 before:left-0 before:w-1 before:rounded-md before:bg-primary/80 before:content-[""] data-[active=true]:bg-primary/10 hover:data-[active=true]:bg-primary/15'
+                            : 'pl-3'
+                        }
+                      >
+                        <a href={item.url} className="flex flex-1 items-center justify-between gap-2">
+                          <span>{item.title}</span>
+                        </a>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
