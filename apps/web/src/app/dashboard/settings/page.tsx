@@ -213,8 +213,8 @@ export default function SettingsPage() {
 
             {/* Save Button */}
             <div className="flex justify-end">
-              <Button onClick={handleSave} disabled={saving}>
-                {saving ? 'Saving...' : 'Save Settings'}
+              <Button onClick={handleSave} disabled={saving} aria-label="Save account and application settings">
+                {saving ? 'Saving Settings...' : 'Save Settings'}
               </Button>
             </div>
           </div>

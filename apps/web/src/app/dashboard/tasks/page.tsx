@@ -669,11 +669,11 @@ function SortableTableRow({
               rows={2}
             />
             <div className="flex gap-2">
-              <Button size="sm" onClick={handleSave}>
-                Save
+              <Button size="sm" onClick={handleSave} aria-label="Save task changes">
+                Save Task
               </Button>
-              <Button size="sm" variant="outline" onClick={handleCancel}>
-                Cancel
+              <Button size="sm" variant="outline" onClick={handleCancel} aria-label="Cancel editing task">
+                Cancel Edit
               </Button>
             </div>
           </div>
@@ -931,10 +931,10 @@ function NewTaskDialog({
         </div>
 
         <div className="mt-6 flex justify-end gap-3">
-          <Button variant="outline" onClick={onClose}>
-            Cancel
+          <Button variant="outline" onClick={onClose} aria-label="Cancel creating new task dialog">
+            Cancel Creation
           </Button>
-          <Button onClick={handleSave} disabled={!newTask.title.trim()}>
+          <Button onClick={handleSave} disabled={!newTask.title.trim()} aria-label="Create new task">
             Create Task
           </Button>
         </div>
