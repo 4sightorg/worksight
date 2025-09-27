@@ -147,16 +147,16 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const filteredSidebarItems = getFilteredSidebarItems();
 
   return (
-  <div className="bg-background flex h-screen">
+  <div className="bg-background flex h-screen" id="app-shell">
       {/* Sidebar */}
-      <aside className="bg-background/95 supports-[backdrop-filter]:bg-background/60 fixed top-0 left-0 z-40 flex h-screen w-64 flex-col border-r backdrop-blur">
-        <div className="flex items-center justify-center gap-3 p-4 pb-3">
+    <aside className="bg-background/95 supports-[backdrop-filter]:bg-background/60 fixed top-0 left-0 z-40 flex h-screen w-64 flex-col border-r backdrop-blur" role="complementary" aria-label="Primary navigation sidebar">
+  <div className="flex items-center justify-center gap-3 p-4 pb-3" role="banner">
           <h1 className="text-xl font-bold">WorkSight</h1>
           {isOffline && <Badge variant="secondary">Offline</Badge>}
         </div>
 
         <div className="flex-1 overflow-y-auto">
-          <nav className="space-y-2 border-t p-4">
+          <nav className="space-y-2 border-t p-4" role="navigation" aria-label="Dashboard primary">
             {filteredSidebarItems.map((item) => {
               const isActive =
                 pathname === item.href ||
@@ -298,8 +298,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       </aside>
 
       {/* Main Content */}
-      <main className="ml-64 h-screen flex-1 overflow-y-auto">
-        <div className="px-6 py-3">{children}</div>
+      <main id="main-content" className="ml-64 h-screen flex-1 overflow-y-auto" role="main" tabIndex={-1}>
+        <div className="px-6 py-3" aria-live="polite">{children}</div>
       </main>
       <CommandPalette />
     </div>

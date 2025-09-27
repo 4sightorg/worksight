@@ -26,6 +26,13 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <ThemeScript />
       </head>
       <body suppressHydrationWarning>
+        {/* Skip navigation link for keyboard users */}
+        <a
+          href="#main-content"
+          className="focus:ring-ring bg-primary text-primary-foreground absolute left-2 top-2 -translate-y-16 rounded px-3 py-2 text-sm font-medium focus:translate-y-0 focus:outline-none focus:ring-2"
+        >
+          Skip to main content
+        </a>
         <ErrorBoundary>
           <ThemeProvider
             attribute="class"
