@@ -163,6 +163,9 @@ html.dark {
   --radius: 0.625rem;
   --background: oklch(100% 0 0deg);
   --foreground: oklch(14.5% 0 0deg);
+  /* Focus ring token (light theme): target >=3:1 contrast vs white background.
+     Chosen value (L≈28%) provides sufficient contrast without appearing fully black. */
+  --focus-ring: oklch(28% 0 0deg);
   --card: oklch(100% 0 0deg);
   --card-foreground: oklch(14.5% 0 0deg);
   --popover: oklch(100% 0 0deg);
@@ -251,6 +254,8 @@ body {
 .dark {
   --background: oklch(14.5% 0 0deg);
   --foreground: oklch(98.5% 0 0deg);
+  /* Dark theme focus ring: needs >=3:1 against dark background (L≈14.5%). L≈70% satisfies. */
+  --focus-ring: oklch(70% 0 0deg);
   --card: oklch(20.5% 0 0deg);
   --card-foreground: oklch(98.5% 0 0deg);
   --popover: oklch(20.5% 0 0deg);
@@ -289,7 +294,11 @@ body {
 
   /* Improve focus styles for accessibility */
   *:focus-visible {
-    @apply outline-ring outline-2 outline-offset-2;
+    /* Accessible, high-contrast focus indicator with 2px outline + subtle halo */
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+    /* Extra perceivable halo (4px spread) while respecting reduced motion users */
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--focus-ring) 35%, transparent);
   }
 
   /* Smooth transitions for theme changes */
