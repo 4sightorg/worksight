@@ -11,15 +11,51 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
-import { Activity, CheckSquare, Clock, TrendingUp } from 'lucide-react';
+import { Activity, CheckSquare, Clock, TrendingUp, User, Target, ListChecks, X, Check } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Area, AreaChart, XAxis, YAxis } from 'recharts';
 
 export default function DashboardPage() {
   const { user } = useAuth();
   const [surveyData, setSurveyData] = useState<unknown>(null);
   const [wellnessHistory, setWellnessHistory] = useState<unknown[]>([]);
+  // Getting Started state
+  const [showGettingStarted, setShowGettingStarted] = useState(false);
+  const [profileComplete, setProfileComplete] = useState(false);
+  const [surveyTaken, setSurveyTaken] = useState(false);
+  const [tasksStarted, setTasksStarted] = useState(false);
+
+  // Derive profile completeness (simple heuristic: has name & department OR team)
+  useEffect(() => {
+    const hasName = Boolean(user?.name || user?.user_metadata?.name);
+    const hasOrgInfo = Boolean(user?.department || user?.team || user?.user_metadata?.department || user?.user_metadata?.team);
+    setProfileComplete(hasName && hasOrgInfo);
+  }, [user]);
+
+  const evaluateGettingStarted = useCallback(() => {
+    try {
+      const dismissed = localStorage.getItem('worksight_getting_started_dismissed') === 'true';
+      const survey = localStorage.getItem('survey_results');
+      // Optional tracking of tasks created (other parts of app could increment this later)
+      const tasksCreatedRaw = localStorage.getItem('tasks_created');
+      const tasksCreated = tasksCreatedRaw ? parseInt(tasksCreatedRaw, 10) : 0;
+      setSurveyTaken(!!survey);
+      setTasksStarted(tasksCreated > 0);
+      const allDone = profileComplete && !!survey && tasksCreated > 0;
+      setShowGettingStarted(!dismissed && !allDone);
+    } catch (e) {
+      // Fail open (do not block UI)
+      setShowGettingStarted(false);
+    }
+  }, [profileComplete]);
+
+  const dismissGettingStarted = () => {
+    try {
+      localStorage.setItem('worksight_getting_started_dismissed', 'true');
+    } catch {}
+    setShowGettingStarted(false);
+  };
 
   useEffect(() => {
     // Load latest survey results
@@ -60,7 +96,8 @@ export default function DashboardPage() {
 
     loadSurveyData();
     loadWellnessHistory();
-  }, []);
+    evaluateGettingStarted();
+  }, [evaluateGettingStarted]);
 
   return (
     <ProtectedRoute>
@@ -79,6 +116,118 @@ export default function DashboardPage() {
                   </p>
                 </div>
               </div>
+
+              {showGettingStarted && (
+                <section
+                  aria-labelledby="getting-started-heading"
+                  className="border-border/50 relative overflow-hidden rounded-lg border bg-gradient-to-r from-accent/40 to-accent/10 p-5 shadow-sm transition-all"
+                >
+                  <div className="absolute right-0 top-0 -mr-12 -mt-12 size-32 rounded-full bg-accent/40 opacity-30 blur-2xl" aria-hidden="true" />
+                  <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                    <div className="max-w-xl space-y-2">
+                      <h2 id="getting-started-heading" className="text-lg font-semibold tracking-tight">
+                        Getting Started
+                      </h2>
+                      <p className="text-muted-foreground text-sm">
+                        Finish these quick steps to personalize your workspace and unlock insights.
+                      </p>
+                      <div className="flex items-center gap-2 pt-1 text-xs font-medium text-muted-foreground">
+                        <div className="flex items-center gap-1">
+                          <Check className={`h-3 w-3 ${profileComplete ? 'text-green-600' : 'text-muted-foreground'}`} /> Profile
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Check className={`h-3 w-3 ${surveyTaken ? 'text-green-600' : 'text-muted-foreground'}`} /> Survey
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Check className={`h-3 w-3 ${tasksStarted ? 'text-green-600' : 'text-muted-foreground'}`} /> Task
+                        </div>
+                        <span className="ml-2 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+                          {Number(profileComplete) + Number(surveyTaken) + Number(tasksStarted)}/3 Complete
+                        </span>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={dismissGettingStarted}
+                      className="text-muted-foreground hover:text-foreground absolute right-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-md transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      aria-label="Dismiss getting started"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <ol className="mt-4 grid gap-3 md:grid-cols-3" aria-label="Getting started steps">
+                    {/* Step 1: Complete Profile */}
+                    <li className="group relative flex items-start gap-3 rounded-md border bg-background/60 p-3 transition-colors hover:bg-background">
+                      <div className={`mt-0.5 flex h-8 w-8 items-center justify-center rounded-md border ${profileComplete ? 'bg-green-600 text-white' : 'bg-accent text-foreground'} shadow-sm`}>
+                        <User className="h-4 w-4" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium">Complete your profile</p>
+                        <p className="text-muted-foreground text-xs">Add your name & team context</p>
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          <Link
+                            href="/settings"
+                            className={`text-xs underline-offset-4 ${profileComplete ? 'pointer-events-none text-muted-foreground' : 'text-primary hover:underline'}`}
+                            aria-disabled={profileComplete}
+                          >
+                            {profileComplete ? 'Done' : 'Go to Settings'}
+                          </Link>
+                        </div>
+                      </div>
+                      {profileComplete && <Check className="text-green-600 h-4 w-4" aria-hidden="true" />}
+                    </li>
+                    {/* Step 2: Take Wellness Survey */}
+                    <li className="group relative flex items-start gap-3 rounded-md border bg-background/60 p-3 transition-colors hover:bg-background">
+                      <div className={`mt-0.5 flex h-8 w-8 items-center justify-center rounded-md border ${surveyTaken ? 'bg-green-600 text-white' : 'bg-accent text-foreground'} shadow-sm`}>
+                        <Target className="h-4 w-4" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium">Take wellness survey</p>
+                        <p className="text-muted-foreground text-xs">Establish your baseline</p>
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          <Link
+                            href="/wellness-survey"
+                            className={`text-xs underline-offset-4 ${surveyTaken ? 'pointer-events-none text-muted-foreground' : 'text-primary hover:underline'}`}
+                            aria-disabled={surveyTaken}
+                          >
+                            {surveyTaken ? 'Completed' : 'Start Survey'}
+                          </Link>
+                        </div>
+                      </div>
+                      {surveyTaken && <Check className="text-green-600 h-4 w-4" aria-hidden="true" />}
+                    </li>
+                    {/* Step 3: Create First Task */}
+                    <li className="group relative flex items-start gap-3 rounded-md border bg-background/60 p-3 transition-colors hover:bg-background">
+                      <div className={`mt-0.5 flex h-8 w-8 items-center justify-center rounded-md border ${tasksStarted ? 'bg-green-600 text-white' : 'bg-accent text-foreground'} shadow-sm`}>
+                        <ListChecks className="h-4 w-4" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium">Create your first task</p>
+                        <p className="text-muted-foreground text-xs">Track and organize your work</p>
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          <Link
+                            href="/dashboard/tasks"
+                            className={`text-xs underline-offset-4 ${tasksStarted ? 'pointer-events-none text-muted-foreground' : 'text-primary hover:underline'}`}
+                            aria-disabled={tasksStarted}
+                          >
+                            {tasksStarted ? 'Created' : 'Add Task'}
+                          </Link>
+                        </div>
+                      </div>
+                      {tasksStarted && <Check className="text-green-600 h-4 w-4" aria-hidden="true" />}
+                    </li>
+                  </ol>
+                  <div className="mt-3 flex items-center justify-end gap-4">
+                    <button
+                      type="button"
+                      onClick={dismissGettingStarted}
+                      className="text-xs text-muted-foreground underline-offset-4 hover:underline"
+                    >
+                      Skip for now
+                    </button>
+                  </div>
+                </section>
+              )}
 
               {/* Stats Cards */}
               <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-3">
