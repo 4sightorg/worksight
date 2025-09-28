@@ -31,10 +31,10 @@ export const SurveySchema = z.object({
   description: z.string().max(1000, 'Description too long').optional(),
   status: z.enum(['draft', 'active', 'completed', 'archived']),
   createdBy: z.string().min(1, 'Creator ID is required'),
-  createdAt: z.string().datetime('Invalid creation date'),
-  updatedAt: z.string().datetime('Invalid update date'),
-  startDate: z.string().datetime('Invalid start date').optional(),
-  endDate: z.string().datetime('Invalid end date').optional(),
+  createdAt: z.datetime('Invalid creation date'),
+  updatedAt: z.datetime('Invalid update date'),
+  startDate: z.datetime('Invalid start date').optional(),
+  endDate: z.datetime('Invalid end date').optional(),
   targetDepartments: z.array(z.string()).default([]),
   targetRoles: z.array(z.string()).default([]),
   questions: z.array(SurveyQuestionSchema).min(1, 'Survey must have at least one question'),
@@ -46,8 +46,8 @@ export const SurveySchema = z.object({
 export const CreateSurveySchema = z.object({
   title: z.string().min(1, 'Survey title is required').max(200, 'Title too long'),
   description: z.string().max(1000, 'Description too long').optional(),
-  startDate: z.string().datetime('Invalid start date').optional(),
-  endDate: z.string().datetime('Invalid end date').optional(),
+  startDate: z.datetime('Invalid start date').optional(),
+  endDate: z.datetime('Invalid end date').optional(),
   targetDepartments: z.array(z.string()).default([]),
   targetRoles: z.array(z.string()).default([]),
   questions: z
@@ -61,8 +61,8 @@ export const UpdateSurveySchema = z.object({
   title: z.string().min(1, 'Survey title is required').max(200, 'Title too long').optional(),
   description: z.string().max(1000, 'Description too long').optional(),
   status: z.enum(['draft', 'active', 'completed', 'archived']).optional(),
-  startDate: z.string().datetime('Invalid start date').optional(),
-  endDate: z.string().datetime('Invalid end date').optional(),
+  startDate: z.datetime('Invalid start date').optional(),
+  endDate: z.datetime('Invalid end date').optional(),
   targetDepartments: z.array(z.string()).optional(),
   targetRoles: z.array(z.string()).optional(),
   questions: z.array(SurveyQuestionSchema).optional(),
@@ -77,7 +77,7 @@ export const SurveyResponseSchema = z.object({
     z.string(),
     z.union([z.string(), z.number(), z.boolean(), z.array(z.string())])
   ),
-  completedAt: z.string().datetime('Invalid completion date'),
+  completedAt: z.datetime('Invalid completion date'),
   timeSpent: z.number().min(0, 'Time spent cannot be negative'), // in seconds
 });
 
@@ -89,8 +89,8 @@ export const SurveyFiltersSchema = z.object({
   createdBy: z.string().max(50, 'Creator filter too long').default('all'),
   dateRange: z
     .object({
-      from: z.string().datetime().optional(),
-      to: z.string().datetime().optional(),
+      from: z.datetime().optional(),
+      to: z.datetime().optional(),
     })
     .optional(),
 });

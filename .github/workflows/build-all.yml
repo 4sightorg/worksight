@@ -29,11 +29,11 @@ jobs:
         id: filter
         with:
           filters: |
-            @worksight/docs:
+            docs:
               - 'apps/docs/**'
-            @worksight/web:
+            web:
               - 'apps/web/**'
-            @worksight/common:
+            common:
               - 'packages/common/**'
 
       - name: Debug paths filter
@@ -61,7 +61,7 @@ jobs:
         run: npm ci
 
       - name: Lint
-        run: npm run quality --workspace=${{ matrix.app }}
+        run: npm run quality --workspace=@worksight/${{ matrix.app }}
 
       - name: Build Docker image
         run: |

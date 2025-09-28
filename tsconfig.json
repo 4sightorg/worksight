@@ -17,5 +17,10 @@
     }
   },
   "include": [],
-  "references": [{ "path": "packages/common" }, { "path": "apps/api" }, { "path": "apps/docs" }, { "path": "apps/web" }]
+  "references": [
+    { "path": "packages/common" },
+    { "path": "apps/api" },
+    { "path": "apps/docs" },
+    { "path": "apps/web" }
+  ]
 }
