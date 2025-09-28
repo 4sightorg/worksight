@@ -76,7 +76,7 @@ jobs:
         run: npm ci
 
       - name: Analyze bundle
-        run: npm run build:analyze --workspace=@workspace/web
+        run: npm run build:analyze --workspace=@worksight/web
 
       - name: Upload bundle analysis
         uses: actions/upload-artifact@v4
