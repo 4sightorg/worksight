@@ -1,32 +1,10 @@
-export type AttendanceRecord = {
-  id: string;
-  employee_id: string;
-  date: Date;
-  check_in: Date | null;
-  check_out: Date | null;
-  hours_worked: number | null;
-  created_at: Date;
-};
-
-type AttendanceData = {
-  [key: string]: AttendanceRecord;
-};
-
-// Helper function to calculate hours worked
-export const calculateHoursWorked = (
-  checkIn: Date | null,
-  checkOut: Date | null
-): number | null => {
-  if (!checkIn || !checkOut) return null;
-  const diffMs = checkOut.getTime() - checkIn.getTime();
-  return Math.round((diffMs / (1000 * 60 * 60)) * 100) / 100; // Round to 2 decimal places
-};
+import { AttendanceRecord } from '@worksight/common/types/attendance';
 
 // Generate sample attendance data for the past week
-export const attendance: AttendanceData = {
+export const Attendance: AttendanceRecord[] = [
   // John Carlo Santos (E001) - Full week with overtime
-  'a1b2c3d4-e5f6-7890-abcd-123456789001': {
-    id: 'a1b2c3d4-e5f6-7890-abcd-123456789001',
+  {
+    system_id: 'a1b2c3d4-e5f6-7890-abcd-123456789001',
     employee_id: '08b6fc43-77e6-4fcf-8ed8-dafc16b4b025',
     date: new Date('2025-08-18'),
     check_in: new Date('2025-08-18T08:00:00+00:00'),
@@ -34,8 +12,8 @@ export const attendance: AttendanceData = {
     hours_worked: 10.5,
     created_at: new Date('2025-08-18T08:00:00+00:00'),
   },
-  'a1b2c3d4-e5f6-7890-abcd-123456789002': {
-    id: 'a1b2c3d4-e5f6-7890-abcd-123456789002',
+  {
+    system_id: 'a1b2c3d4-e5f6-7890-abcd-123456789002',
     employee_id: '08b6fc43-77e6-4fcf-8ed8-dafc16b4b025',
     date: new Date('2025-08-19'),
     check_in: new Date('2025-08-19T08:15:00+00:00'),
@@ -43,8 +21,8 @@ export const attendance: AttendanceData = {
     hours_worked: 8.75,
     created_at: new Date('2025-08-19T08:15:00+00:00'),
   },
-  'a1b2c3d4-e5f6-7890-abcd-123456789003': {
-    id: 'a1b2c3d4-e5f6-7890-abcd-123456789003',
+  {
+    system_id: 'a1b2c3d4-e5f6-7890-abcd-123456789003',
     employee_id: '08b6fc43-77e6-4fcf-8ed8-dafc16b4b025',
     date: new Date('2025-08-20'),
     check_in: new Date('2025-08-20T07:45:00+00:00'),
@@ -52,8 +30,8 @@ export const attendance: AttendanceData = {
     hours_worked: 9.0,
     created_at: new Date('2025-08-20T07:45:00+00:00'),
   },
-  'a1b2c3d4-e5f6-7890-abcd-123456789004': {
-    id: 'a1b2c3d4-e5f6-7890-abcd-123456789004',
+  {
+    system_id: 'a1b2c3d4-e5f6-7890-abcd-123456789004',
     employee_id: '08b6fc43-77e6-4fcf-8ed8-dafc16b4b025',
     date: new Date('2025-08-21'),
     check_in: new Date('2025-08-21T08:30:00+00:00'),
@@ -61,8 +39,8 @@ export const attendance: AttendanceData = {
     hours_worked: 9.0,
     created_at: new Date('2025-08-21T08:30:00+00:00'),
   },
-  'a1b2c3d4-e5f6-7890-abcd-123456789005': {
-    id: 'a1b2c3d4-e5f6-7890-abcd-123456789005',
+  {
+    system_id: 'a1b2c3d4-e5f6-7890-abcd-123456789005',
     employee_id: '08b6fc43-77e6-4fcf-8ed8-dafc16b4b025',
     date: new Date('2025-08-22'),
     check_in: new Date('2025-08-22T08:00:00+00:00'),
@@ -72,8 +50,8 @@ export const attendance: AttendanceData = {
   },
 
   // Adriel M. Magalona (E002) - Regular schedule with one late arrival
-  'b2c3d4e5-f6g7-8901-bcde-234567890001': {
-    id: 'b2c3d4e5-f6g7-8901-bcde-234567890001',
+  {
+    system_id: 'b2c3d4e5-f6g7-8901-bcde-234567890001',
     employee_id: '58f36d76-f382-41b4-ad3e-f8192958d12b',
     date: new Date('2025-08-18'),
     check_in: new Date('2025-08-18T09:00:00+00:00'),
@@ -81,8 +59,8 @@ export const attendance: AttendanceData = {
     hours_worked: 8.0,
     created_at: new Date('2025-08-18T09:00:00+00:00'),
   },
-  'b2c3d4e5-f6g7-8901-bcde-234567890002': {
-    id: 'b2c3d4e5-f6g7-8901-bcde-234567890002',
+  {
+    system_id: 'b2c3d4e5-f6g7-8901-bcde-234567890002',
     employee_id: '58f36d76-f382-41b4-ad3e-f8192958d12b',
     date: new Date('2025-08-19'),
     check_in: new Date('2025-08-19T09:30:00+00:00'), // Late arrival
@@ -90,8 +68,8 @@ export const attendance: AttendanceData = {
     hours_worked: 8.0,
     created_at: new Date('2025-08-19T09:30:00+00:00'),
   },
-  'b2c3d4e5-f6g7-8901-bcde-234567890003': {
-    id: 'b2c3d4e5-f6g7-8901-bcde-234567890003',
+  {
+    system_id: 'b2c3d4e5-f6g7-8901-bcde-234567890003',
     employee_id: '58f36d76-f382-41b4-ad3e-f8192958d12b',
     date: new Date('2025-08-20'),
     check_in: new Date('2025-08-20T08:45:00+00:00'),
@@ -99,8 +77,8 @@ export const attendance: AttendanceData = {
     hours_worked: 8.0,
     created_at: new Date('2025-08-20T08:45:00+00:00'),
   },
-  'b2c3d4e5-f6g7-8901-bcde-234567890004': {
-    id: 'b2c3d4e5-f6g7-8901-bcde-234567890004',
+  {
+    system_id: 'b2c3d4e5-f6g7-8901-bcde-234567890004',
     employee_id: '58f36d76-f382-41b4-ad3e-f8192958d12b',
     date: new Date('2025-08-21'),
     check_in: new Date('2025-08-21T09:00:00+00:00'),
@@ -108,8 +86,8 @@ export const attendance: AttendanceData = {
     hours_worked: 8.0,
     created_at: new Date('2025-08-21T09:00:00+00:00'),
   },
-  'b2c3d4e5-f6g7-8901-bcde-234567890005': {
-    id: 'b2c3d4e5-f6g7-8901-bcde-234567890005',
+  {
+    system_id: 'b2c3d4e5-f6g7-8901-bcde-234567890005',
     employee_id: '58f36d76-f382-41b4-ad3e-f8192958d12b',
     date: new Date('2025-08-22'),
     check_in: new Date('2025-08-22T08:50:00+00:00'),
@@ -119,8 +97,8 @@ export const attendance: AttendanceData = {
   },
 
   // Kiel Ethan L. Lanzanas (E003) - One day with early checkout (sick leave)
-  'c3d4e5f6-g7h8-9012-cdef-345678901001': {
-    id: 'c3d4e5f6-g7h8-9012-cdef-345678901001',
+  {
+    system_id: 'c3d4e5f6-g7h8-9012-cdef-345678901001',
     employee_id: '71400e28-3c2a-4694-8124-8fbb9a0b66d8',
     date: new Date('2025-08-18'),
     check_in: new Date('2025-08-18T08:30:00+00:00'),
@@ -128,8 +106,8 @@ export const attendance: AttendanceData = {
     hours_worked: 8.0,
     created_at: new Date('2025-08-18T08:30:00+00:00'),
   },
-  'c3d4e5f6-g7h8-9012-cdef-345678901002': {
-    id: 'c3d4e5f6-g7h8-9012-cdef-345678901002',
+  {
+    system_id: 'c3d4e5f6-g7h8-9012-cdef-345678901002',
     employee_id: '71400e28-3c2a-4694-8124-8fbb9a0b66d8',
     date: new Date('2025-08-19'),
     check_in: new Date('2025-08-19T08:15:00+00:00'),
@@ -137,8 +115,8 @@ export const attendance: AttendanceData = {
     hours_worked: 3.75,
     created_at: new Date('2025-08-19T08:15:00+00:00'),
   },
-  'c3d4e5f6-g7h8-9012-cdef-345678901003': {
-    id: 'c3d4e5f6-g7h8-9012-cdef-345678901003',
+  {
+    system_id: 'c3d4e5f6-g7h8-9012-cdef-345678901003',
     employee_id: '71400e28-3c2a-4694-8124-8fbb9a0b66d8',
     date: new Date('2025-08-20'),
     check_in: new Date('2025-08-20T08:20:00+00:00'),
@@ -146,8 +124,8 @@ export const attendance: AttendanceData = {
     hours_worked: 8.0,
     created_at: new Date('2025-08-20T08:20:00+00:00'),
   },
-  'c3d4e5f6-g7h8-9012-cdef-345678901004': {
-    id: 'c3d4e5f6-g7h8-9012-cdef-345678901004',
+  {
+    system_id: 'c3d4e5f6-g7h8-9012-cdef-345678901004',
     employee_id: '71400e28-3c2a-4694-8124-8fbb9a0b66d8',
     date: new Date('2025-08-21'),
     check_in: new Date('2025-08-21T08:30:00+00:00'),
@@ -155,8 +133,8 @@ export const attendance: AttendanceData = {
     hours_worked: 8.25,
     created_at: new Date('2025-08-21T08:30:00+00:00'),
   },
-  'c3d4e5f6-g7h8-9012-cdef-345678901005': {
-    id: 'c3d4e5f6-g7h8-9012-cdef-345678901005',
+  {
+    system_id: 'c3d4e5f6-g7h8-9012-cdef-345678901005',
     employee_id: '71400e28-3c2a-4694-8124-8fbb9a0b66d8',
     date: new Date('2025-08-22'),
     check_in: new Date('2025-08-22T08:10:00+00:00'),
@@ -166,8 +144,8 @@ export const attendance: AttendanceData = {
   },
 
   // Ellah D. Benerado (E004) - One day absent, consistent schedule otherwise
-  'd4e5f6g7-h8i9-0123-defg-456789012001': {
-    id: 'd4e5f6g7-h8i9-0123-defg-456789012001',
+  {
+    system_id: 'd4e5f6g7-h8i9-0123-defg-456789012001',
     employee_id: '88165ccb-2c80-455a-9ace-466a30448f67',
     date: new Date('2025-08-18'),
     check_in: new Date('2025-08-18T08:45:00+00:00'),
@@ -176,8 +154,8 @@ export const attendance: AttendanceData = {
     created_at: new Date('2025-08-18T08:45:00+00:00'),
   },
   // August 19 - Absent (no record)
-  'd4e5f6g7-h8i9-0123-defg-456789012003': {
-    id: 'd4e5f6g7-h8i9-0123-defg-456789012003',
+  {
+    system_id: 'd4e5f6g7-h8i9-0123-defg-456789012003',
     employee_id: '88165ccb-2c80-455a-9ace-466a30448f67',
     date: new Date('2025-08-20'),
     check_in: new Date('2025-08-20T09:00:00+00:00'),
@@ -185,8 +163,8 @@ export const attendance: AttendanceData = {
     hours_worked: 8.25,
     created_at: new Date('2025-08-20T09:00:00+00:00'),
   },
-  'd4e5f6g7-h8i9-0123-defg-456789012004': {
-    id: 'd4e5f6g7-h8i9-0123-defg-456789012004',
+  {
+    system_id: 'd4e5f6g7-h8i9-0123-defg-456789012004',
     employee_id: '88165ccb-2c80-455a-9ace-466a30448f67',
     date: new Date('2025-08-21'),
     check_in: new Date('2025-08-21T08:40:00+00:00'),
@@ -194,8 +172,8 @@ export const attendance: AttendanceData = {
     hours_worked: 8.25,
     created_at: new Date('2025-08-21T08:40:00+00:00'),
   },
-  'd4e5f6g7-h8i9-0123-defg-456789012005': {
-    id: 'd4e5f6g7-h8i9-0123-defg-456789012005',
+  {
+    system_id: 'd4e5f6g7-h8i9-0123-defg-456789012005',
     employee_id: '88165ccb-2c80-455a-9ace-466a30448f67',
     date: new Date('2025-08-22'),
     check_in: new Date('2025-08-22T08:35:00+00:00'),
@@ -205,8 +183,8 @@ export const attendance: AttendanceData = {
   },
 
   // Current day (August 25) - Only check-ins, no check-outs yet
-  'e5f6g7h8-i9j0-1234-efgh-567890123001': {
-    id: 'e5f6g7h8-i9j0-1234-efgh-567890123001',
+  {
+    system_id: 'e5f6g7h8-i9j0-1234-efgh-567890123001',
     employee_id: '08b6fc43-77e6-4fcf-8ed8-dafc16b4b025',
     date: new Date('2025-08-25'),
     check_in: new Date('2025-08-25T08:05:00+00:00'),
@@ -214,8 +192,8 @@ export const attendance: AttendanceData = {
     hours_worked: null,
     created_at: new Date('2025-08-25T08:05:00+00:00'),
   },
-  'e5f6g7h8-i9j0-1234-efgh-567890123002': {
-    id: 'e5f6g7h8-i9j0-1234-efgh-567890123002',
+  {
+    system_id: 'e5f6g7h8-i9j0-1234-efgh-567890123002',
     employee_id: '58f36d76-f382-41b4-ad3e-f8192958d12b',
     date: new Date('2025-08-25'),
     check_in: new Date('2025-08-25T08:55:00+00:00'),
@@ -223,8 +201,8 @@ export const attendance: AttendanceData = {
     hours_worked: null,
     created_at: new Date('2025-08-25T08:55:00+00:00'),
   },
-  'e5f6g7h8-i9j0-1234-efgh-567890123003': {
-    id: 'e5f6g7h8-i9j0-1234-efgh-567890123003',
+  {
+    system_id: 'e5f6g7h8-i9j0-1234-efgh-567890123003',
     employee_id: '71400e28-3c2a-4694-8124-8fbb9a0b66d8',
     date: new Date('2025-08-25'),
     check_in: new Date('2025-08-25T08:25:00+00:00'),
@@ -232,42 +210,521 @@ export const attendance: AttendanceData = {
     hours_worked: null,
     created_at: new Date('2025-08-25T08:25:00+00:00'),
   },
-};
 
-// Utility functions for working with attendance data
-export const getAttendanceByEmployee = (employeeId: string): AttendanceRecord[] => {
-  return Object.values(attendance).filter((record) => record.employee_id === employeeId);
-};
+  // Mike Johnson – usually early, steady hours
+  {
+    system_id: '9653df0b-b5a3-406f-b567-a83e90cf7ac3',
+    employee_id: '0001',
+    date: new Date('2025-08-18'),
+    check_in: new Date('2025-08-18T08:42:00+00:00'),
+    check_out: new Date('2025-08-18T16:58:00+00:00'),
+    hours_worked: 8.25,
+    created_at: new Date('2025-08-18T08:42:00+00:00'),
+  },
+  {
+    system_id: '9b589624-474f-44bd-b147-51cf01fae2d0',
+    employee_id: '0001',
+    date: new Date('2025-08-19'),
+    check_in: new Date('2025-08-19T08:47:00+00:00'),
+    check_out: new Date('2025-08-19T17:02:00+00:00'),
+    hours_worked: 8.25,
+    created_at: new Date('2025-08-19T08:47:00+00:00'),
+  },
+  {
+    system_id: '793727cf-da8b-41a5-adde-166d0785af76',
+    employee_id: '0001',
+    date: new Date('2025-08-20'),
+    check_in: new Date('2025-08-20T08:38:00+00:00'),
+    check_out: new Date('2025-08-20T16:50:00+00:00'),
+    hours_worked: 8.2,
+    created_at: new Date('2025-08-20T08:38:00+00:00'),
+  },
+  {
+    system_id: '832f52d7-6a12-4266-a9e2-72ac0ec9b11c',
+    employee_id: '0001',
+    date: new Date('2025-08-21'),
+    check_in: new Date('2025-08-21T08:41:00+00:00'),
+    check_out: new Date('2025-08-21T17:05:00+00:00'),
+    hours_worked: 8.4,
+    created_at: new Date('2025-08-21T08:41:00+00:00'),
+  },
+  {
+    system_id: '306436c9-d52d-4192-add4-9e0051ed3916',
+    employee_id: '0001',
+    date: new Date('2025-08-22'),
+    check_in: new Date('2025-08-22T08:36:00+00:00'),
+    check_out: new Date('2025-08-22T16:55:00+00:00'),
+    hours_worked: 8.3,
+    created_at: new Date('2025-08-22T08:36:00+00:00'),
+  },
 
-export const getAttendanceByDate = (date: Date): AttendanceRecord[] => {
-  const targetDate = date.toISOString().split('T')[0];
-  return Object.values(attendance).filter(
-    (record) => record.date.toISOString().split('T')[0] === targetDate
-  );
-};
+  // Sarah Wilson – tends to arrive right at 9, sometimes stays a bit later
+  {
+    system_id: '2f692cff-37cb-4e46-914e-e4c9b72a688b',
+    employee_id: '0002',
+    date: new Date('2025-08-18'),
+    check_in: new Date('2025-08-18T09:02:00+00:00'),
+    check_out: new Date('2025-08-18T17:15:00+00:00'),
+    hours_worked: 8.22,
+    created_at: new Date('2025-08-18T09:02:00+00:00'),
+  },
+  {
+    system_id: 'a31e0ef1-2da0-4372-be44-4cf5c2f69127',
+    employee_id: '0002',
+    date: new Date('2025-08-19'),
+    check_in: new Date('2025-08-19T08:57:00+00:00'),
+    check_out: new Date('2025-08-19T17:20:00+00:00'),
+    hours_worked: 8.38,
+    created_at: new Date('2025-08-19T08:57:00+00:00'),
+  },
+  {
+    system_id: 'fc71386c-09a0-4b6e-baae-6fe2bb33bf9b',
+    employee_id: '0002',
+    date: new Date('2025-08-20'),
+    check_in: new Date('2025-08-20T09:08:00+00:00'),
+    check_out: new Date('2025-08-20T17:25:00+00:00'),
+    hours_worked: 8.28,
+    created_at: new Date('2025-08-20T09:08:00+00:00'),
+  },
+  {
+    system_id: 'a7d5f306-2105-4173-82f7-67bfc1c89316',
+    employee_id: '0002',
+    date: new Date('2025-08-21'),
+    check_in: new Date('2025-08-21T09:05:00+00:00'),
+    check_out: new Date('2025-08-21T17:10:00+00:00'),
+    hours_worked: 8.08,
+    created_at: new Date('2025-08-21T09:05:00+00:00'),
+  },
+  {
+    system_id: '861bf1b6-1119-4a22-b074-2d7ac54b767a',
+    employee_id: '0002',
+    date: new Date('2025-08-22'),
+    check_in: new Date('2025-08-22T09:00:00+00:00'),
+    check_out: new Date('2025-08-22T17:18:00+00:00'),
+    hours_worked: 8.3,
+    created_at: new Date('2025-08-22T09:00:00+00:00'),
+  },
 
-export const getTotalHoursWorkedByEmployee = (employeeId: string): number => {
-  return getAttendanceByEmployee(employeeId).reduce(
-    (total, record) => total + (record.hours_worked || 0),
-    0
-  );
-};
+  // Alex Chen – slightly inconsistent, sometimes later
+  {
+    system_id: '3c2a3941-2e7a-4519-b235-5f9f4b961aca',
+    employee_id: '0003',
+    date: new Date('2025-08-18'),
+    check_in: new Date('2025-08-18T09:12:00+00:00'),
+    check_out: new Date('2025-08-18T17:22:00+00:00'),
+    hours_worked: 8.17,
+    created_at: new Date('2025-08-18T09:12:00+00:00'),
+  },
+  {
+    system_id: '18c23b5b-a7ab-4359-9242-a0ab15fd970c',
+    employee_id: '0003',
+    date: new Date('2025-08-19'),
+    check_in: new Date('2025-08-19T09:05:00+00:00'),
+    check_out: new Date('2025-08-19T17:15:00+00:00'),
+    hours_worked: 8.17,
+    created_at: new Date('2025-08-19T09:05:00+00:00'),
+  },
+  {
+    system_id: '0155d9c0-d147-47fb-a990-4a885da166b8',
+    employee_id: '0003',
+    date: new Date('2025-08-20'),
+    check_in: new Date('2025-08-20T09:20:00+00:00'),
+    check_out: new Date('2025-08-20T17:28:00+00:00'),
+    hours_worked: 8.13,
+    created_at: new Date('2025-08-20T09:20:00+00:00'),
+  },
+  {
+    system_id: '1fd1f36d-f595-427b-bbc7-9b04f6b73b1a',
+    employee_id: '0003',
+    date: new Date('2025-08-21'),
+    check_in: new Date('2025-08-21T08:55:00+00:00'),
+    check_out: new Date('2025-08-21T17:05:00+00:00'),
+    hours_worked: 8.17,
+    created_at: new Date('2025-08-21T08:55:00+00:00'),
+  },
+  {
+    system_id: '4ee80f9d-9846-4ca7-b2f5-862bec816362',
+    employee_id: '0003',
+    date: new Date('2025-08-22'),
+    check_in: new Date('2025-08-22T09:18:00+00:00'),
+    check_out: new Date('2025-08-22T17:35:00+00:00'),
+    hours_worked: 8.28,
+    created_at: new Date('2025-08-22T09:18:00+00:00'),
+  },
 
-export const getEmployeeAttendanceStats = (employeeId: string) => {
-  const records = getAttendanceByEmployee(employeeId);
-  const totalHours = records.reduce((sum, record) => sum + (record.hours_worked || 0), 0);
-  const daysPresent = records.filter((record) => record.check_in !== null).length;
-  const averageHours = daysPresent > 0 ? totalHours / daysPresent : 0;
+  // System Admin – clockwork consistent
+  {
+    system_id: '9f0b0985-5127-4054-830c-2319e2758892',
+    employee_id: 'admin',
+    date: new Date('2025-08-18'),
+    check_in: new Date('2025-08-18T08:30:00+00:00'),
+    check_out: new Date('2025-08-18T16:30:00+00:00'),
+    hours_worked: 8,
+    created_at: new Date('2025-08-18T08:30:00+00:00'),
+  },
+  {
+    system_id: '810bfc65-a422-43f0-a612-650fceca9891',
+    employee_id: 'admin',
+    date: new Date('2025-08-19'),
+    check_in: new Date('2025-08-19T08:30:00+00:00'),
+    check_out: new Date('2025-08-19T16:30:00+00:00'),
+    hours_worked: 8,
+    created_at: new Date('2025-08-19T08:30:00+00:00'),
+  },
+  {
+    system_id: '6582760e-3227-4275-9dcd-6edc750e16ac',
+    employee_id: 'admin',
+    date: new Date('2025-08-20'),
+    check_in: new Date('2025-08-20T08:31:00+00:00'),
+    check_out: new Date('2025-08-20T16:31:00+00:00'),
+    hours_worked: 8,
+    created_at: new Date('2025-08-20T08:31:00+00:00'),
+  },
+  {
+    system_id: 'a082990b-a5de-4395-9b88-fc81e106de6b',
+    employee_id: 'admin',
+    date: new Date('2025-08-21'),
+    check_in: new Date('2025-08-21T08:29:00+00:00'),
+    check_out: new Date('2025-08-21T16:29:00+00:00'),
+    hours_worked: 8,
+    created_at: new Date('2025-08-21T08:29:00+00:00'),
+  },
+  {
+    system_id: '20a4077e-6d5a-4c04-afe8-836ca3c64522',
+    employee_id: 'admin',
+    date: new Date('2025-08-22'),
+    check_in: new Date('2025-08-22T08:32:00+00:00'),
+    check_out: new Date('2025-08-22T16:32:00+00:00'),
+    hours_worked: 8,
+    created_at: new Date('2025-08-22T08:32:00+00:00'),
+  },
 
-  return {
-    totalHours: Math.round(totalHours * 100) / 100,
-    daysPresent,
-    averageHours: Math.round(averageHours * 100) / 100,
-    totalRecords: records.length,
-  };
-};
+  // System Guest – short shifts, scattered
+  {
+    system_id: '13c4e8d2-9403-4b41-8ee6-d34526a19d76',
+    employee_id: 'guest',
+    date: new Date('2025-08-18'),
+    check_in: new Date('2025-08-18T09:30:00+00:00'),
+    check_out: new Date('2025-08-18T12:00:00+00:00'),
+    hours_worked: 2.5,
+    created_at: new Date('2025-08-18T09:30:00+00:00'),
+  },
+  {
+    system_id: 'df99fe51-7650-4108-aab2-40e79eb09e0a',
+    employee_id: 'guest',
+    date: new Date('2025-08-19'),
+    check_in: new Date('2025-08-19T14:00:00+00:00'),
+    check_out: new Date('2025-08-19T17:00:00+00:00'),
+    hours_worked: 3,
+    created_at: new Date('2025-08-19T14:00:00+00:00'),
+  },
+  {
+    system_id: 'e6453772-06b2-47b1-ad24-7864368cd9fc',
+    employee_id: 'guest',
+    date: new Date('2025-08-20'),
+    check_in: new Date('2025-08-20T10:15:00+00:00'),
+    check_out: new Date('2025-08-20T13:00:00+00:00'),
+    hours_worked: 2.75,
+    created_at: new Date('2025-08-20T10:15:00+00:00'),
+  },
+  {
+    system_id: '021ad691-49d5-49e2-8a3c-dfb819fa96a1',
+    employee_id: 'guest',
+    date: new Date('2025-08-21'),
+    check_in: new Date('2025-08-21T08:00:00+00:00'),
+    check_out: new Date('2025-08-21T11:00:00+00:00'),
+    hours_worked: 3,
+    created_at: new Date('2025-08-21T08:00:00+00:00'),
+  },
+  {
+    system_id: '5357a459-2bf3-4e21-8d9a-943c03c3a2c5',
+    employee_id: 'guest',
+    date: new Date('2025-08-22'),
+    check_in: new Date('2025-08-22T15:00:00+00:00'),
+    check_out: new Date('2025-08-22T18:00:00+00:00'),
+    hours_worked: 3,
+    created_at: new Date('2025-08-22T15:00:00+00:00'),
+  },
 
-// Example usage:
-// const johnAttendance = getAttendanceByEmployee("08b6fc43-77e6-4fcf-8ed8-dafc16b4b025");
-// const todayAttendance = getAttendanceByDate(new Date("2025-08-25"));
-// const johnStats = getEmployeeAttendanceStats("08b6fc43-77e6-4fcf-8ed8-dafc16b4b025");
+  // System Employee – normal 8h worker
+  {
+    system_id: 'c2249fc9-b9bd-4055-8aca-09934e4c610d',
+    employee_id: 'employee',
+    date: new Date('2025-08-18'),
+    check_in: new Date('2025-08-18T08:55:00+00:00'),
+    check_out: new Date('2025-08-18T17:05:00+00:00'),
+    hours_worked: 8.17,
+    created_at: new Date('2025-08-18T08:55:00+00:00'),
+  },
+  {
+    system_id: 'f7115d3e-57c5-432d-b31c-44c360f4dccf',
+    employee_id: 'employee',
+    date: new Date('2025-08-19'),
+    check_in: new Date('2025-08-19T08:50:00+00:00'),
+    check_out: new Date('2025-08-19T17:02:00+00:00'),
+    hours_worked: 8.2,
+    created_at: new Date('2025-08-19T08:50:00+00:00'),
+  },
+  {
+    system_id: '7747a83b-d3dd-49c5-b049-edc99213ee71',
+    employee_id: 'employee',
+    date: new Date('2025-08-20'),
+    check_in: new Date('2025-08-20T09:01:00+00:00'),
+    check_out: new Date('2025-08-20T17:12:00+00:00'),
+    hours_worked: 8.18,
+    created_at: new Date('2025-08-20T09:01:00+00:00'),
+  },
+  {
+    system_id: '37fb8762-efe6-459f-a614-02f2ce9924e7',
+    employee_id: 'employee',
+    date: new Date('2025-08-21'),
+    check_in: new Date('2025-08-21T08:42:00+00:00'),
+    check_out: new Date('2025-08-21T16:57:00+00:00'),
+    hours_worked: 8.25,
+    created_at: new Date('2025-08-21T08:42:00+00:00'),
+  },
+  {
+    system_id: 'e240eb42-899d-4b80-9287-35af82eec437',
+    employee_id: 'employee',
+    date: new Date('2025-08-22'),
+    check_in: new Date('2025-08-22T08:47:00+00:00'),
+    check_out: new Date('2025-08-22T17:06:00+00:00'),
+    hours_worked: 8.32,
+    created_at: new Date('2025-08-22T08:47:00+00:00'),
+  },
+
+  // Jane Doe - Infra
+  {
+    system_id: 'a1b2c3d4-e5f6-7890-abcd-111111111111',
+    employee_id: 'f2b6f6a7-3d9e-4f91-92b1-1f12345abcde',
+    date: new Date('2025-09-01'),
+    check_in: new Date('2025-09-01T08:55:00+00:00'),
+    check_out: new Date('2025-09-01T17:10:00+00:00'),
+    hours_worked: 8.25,
+    created_at: new Date('2025-09-01T08:55:00+00:00'),
+  },
+  {
+    system_id: 'a1b2c3d4-e5f6-7890-abcd-111111111112',
+    employee_id: 'f2b6f6a7-3d9e-4f91-92b1-1f12345abcde',
+    date: new Date('2025-09-02'),
+    check_in: new Date('2025-09-02T09:05:00+00:00'),
+    check_out: new Date('2025-09-02T17:00:00+00:00'),
+    hours_worked: 7.9,
+    created_at: new Date('2025-09-02T09:05:00+00:00'),
+  },
+  {
+    system_id: 'a1b2c3d4-e5f6-7890-abcd-111111111113',
+    employee_id: 'f2b6f6a7-3d9e-4f91-92b1-1f12345abcde',
+    date: new Date('2025-09-03'),
+    check_in: new Date('2025-09-03T08:45:00+00:00'),
+    check_out: new Date('2025-09-03T17:05:00+00:00'),
+    hours_worked: 8.33,
+    created_at: new Date('2025-09-03T08:45:00+00:00'),
+  },
+  {
+    system_id: 'a1b2c3d4-e5f6-7890-abcd-111111111114',
+    employee_id: 'f2b6f6a7-3d9e-4f91-92b1-1f12345abcde',
+    date: new Date('2025-09-04'),
+    check_in: new Date('2025-09-04T09:00:00+00:00'),
+    check_out: new Date('2025-09-04T16:50:00+00:00'),
+    hours_worked: 7.83,
+    created_at: new Date('2025-09-04T09:00:00+00:00'),
+  },
+  {
+    system_id: 'a1b2c3d4-e5f6-7890-abcd-111111111115',
+    employee_id: 'f2b6f6a7-3d9e-4f91-92b1-1f12345abcde',
+    date: new Date('2025-09-05'),
+    check_in: new Date('2025-09-05T08:50:00+00:00'),
+    check_out: new Date('2025-09-05T17:20:00+00:00'),
+    hours_worked: 8.5,
+    created_at: new Date('2025-09-05T08:50:00+00:00'),
+  },
+
+  // Robert Taylor - Engineering
+  {
+    system_id: 'b1b2c3d4-e5f6-7890-abcd-222222222221',
+    employee_id: 'a9c2d7e1-2b34-4b56-bcd7-98f12345abcd',
+    date: new Date('2025-09-02'),
+    check_in: new Date('2025-09-02T09:10:00+00:00'),
+    check_out: new Date('2025-09-02T17:15:00+00:00'),
+    hours_worked: 8.08,
+    created_at: new Date('2025-09-02T09:10:00+00:00'),
+  },
+  {
+    system_id: 'b1b2c3d4-e5f6-7890-abcd-222222222222',
+    employee_id: 'a9c2d7e1-2b34-4b56-bcd7-98f12345abcd',
+    date: new Date('2025-09-03'),
+    check_in: new Date('2025-09-03T08:55:00+00:00'),
+    check_out: new Date('2025-09-03T17:00:00+00:00'),
+    hours_worked: 8.08,
+    created_at: new Date('2025-09-03T08:55:00+00:00'),
+  },
+  {
+    system_id: 'b1b2c3d4-e5f6-7890-abcd-222222222223',
+    employee_id: 'a9c2d7e1-2b34-4b56-bcd7-98f12345abcd',
+    date: new Date('2025-09-04'),
+    check_in: new Date('2025-09-04T08:40:00+00:00'),
+    check_out: new Date('2025-09-04T17:05:00+00:00'),
+    hours_worked: 8.42,
+    created_at: new Date('2025-09-04T08:40:00+00:00'),
+  },
+  {
+    system_id: 'b1b2c3d4-e5f6-7890-abcd-222222222224',
+    employee_id: 'a9c2d7e1-2b34-4b56-bcd7-98f12345abcd',
+    date: new Date('2025-09-05'),
+    check_in: new Date('2025-09-05T09:05:00+00:00'),
+    check_out: new Date('2025-09-05T17:00:00+00:00'),
+    hours_worked: 7.92,
+    created_at: new Date('2025-09-05T09:05:00+00:00'),
+  },
+  {
+    system_id: 'b1b2c3d4-e5f6-7890-abcd-222222222225',
+    employee_id: 'a9c2d7e1-2b34-4b56-bcd7-98f12345abcd',
+    date: new Date('2025-09-08'),
+    check_in: new Date('2025-09-08T08:50:00+00:00'),
+    check_out: new Date('2025-09-08T17:25:00+00:00'),
+    hours_worked: 8.58,
+    created_at: new Date('2025-09-08T08:50:00+00:00'),
+  },
+
+  // Lisa Garcia - Data
+  {
+    system_id: 'c1b2c3d4-e5f6-7890-abcd-333333333331',
+    employee_id: 'b8f9c7d6-1e23-4f12-8bcd-67e12345abcd',
+    date: new Date('2025-09-02'),
+    check_in: new Date('2025-09-02T09:15:00+00:00'),
+    check_out: new Date('2025-09-02T17:05:00+00:00'),
+    hours_worked: 7.83,
+    created_at: new Date('2025-09-02T09:15:00+00:00'),
+  },
+  {
+    system_id: 'c1b2c3d4-e5f6-7890-abcd-333333333332',
+    employee_id: 'b8f9c7d6-1e23-4f12-8bcd-67e12345abcd',
+    date: new Date('2025-09-03'),
+    check_in: new Date('2025-09-03T08:50:00+00:00'),
+    check_out: new Date('2025-09-03T17:10:00+00:00'),
+    hours_worked: 8.33,
+    created_at: new Date('2025-09-03T08:50:00+00:00'),
+  },
+  {
+    system_id: 'c1b2c3d4-e5f6-7890-abcd-333333333333',
+    employee_id: 'b8f9c7d6-1e23-4f12-8bcd-67e12345abcd',
+    date: new Date('2025-09-04'),
+    check_in: new Date('2025-09-04T08:55:00+00:00'),
+    check_out: new Date('2025-09-04T17:00:00+00:00'),
+    hours_worked: 8.08,
+    created_at: new Date('2025-09-04T08:55:00+00:00'),
+  },
+  {
+    system_id: 'c1b2c3d4-e5f6-7890-abcd-333333333334',
+    employee_id: 'b8f9c7d6-1e23-4f12-8bcd-67e12345abcd',
+    date: new Date('2025-09-05'),
+    check_in: new Date('2025-09-05T09:00:00+00:00'),
+    check_out: new Date('2025-09-05T16:55:00+00:00'),
+    hours_worked: 7.92,
+    created_at: new Date('2025-09-05T09:00:00+00:00'),
+  },
+  {
+    system_id: 'c1b2c3d4-e5f6-7890-abcd-333333333335',
+    employee_id: 'b8f9c7d6-1e23-4f12-8bcd-67e12345abcd',
+    date: new Date('2025-09-08'),
+    check_in: new Date('2025-09-08T08:45:00+00:00'),
+    check_out: new Date('2025-09-08T17:20:00+00:00'),
+    hours_worked: 8.58,
+    created_at: new Date('2025-09-08T08:45:00+00:00'),
+  },
+
+  // David Brown - Data
+  {
+    system_id: 'd1b2c3d4-e5f6-7890-abcd-444444444441',
+    employee_id: 'c7e8d9f1-4a56-4b78-bdef-45f12345abcd',
+    date: new Date('2025-09-03'),
+    check_in: new Date('2025-09-03T08:55:00+00:00'),
+    check_out: new Date('2025-09-03T17:00:00+00:00'),
+    hours_worked: 8.08,
+    created_at: new Date('2025-09-03T08:55:00+00:00'),
+  },
+  {
+    system_id: 'd1b2c3d4-e5f6-7890-abcd-444444444442',
+    employee_id: 'c7e8d9f1-4a56-4b78-bdef-45f12345abcd',
+    date: new Date('2025-09-04'),
+    check_in: new Date('2025-09-04T09:05:00+00:00'),
+    check_out: new Date('2025-09-04T16:50:00+00:00'),
+    hours_worked: 7.75,
+    created_at: new Date('2025-09-04T09:05:00+00:00'),
+  },
+  {
+    system_id: 'd1b2c3d4-e5f6-7890-abcd-444444444443',
+    employee_id: 'c7e8d9f1-4a56-4b78-bdef-45f12345abcd',
+    date: new Date('2025-09-05'),
+    check_in: new Date('2025-09-05T08:50:00+00:00'),
+    check_out: new Date('2025-09-05T17:05:00+00:00'),
+    hours_worked: 8.25,
+    created_at: new Date('2025-09-05T08:50:00+00:00'),
+  },
+  {
+    system_id: 'd1b2c3d4-e5f6-7890-abcd-444444444444',
+    employee_id: 'c7e8d9f1-4a56-4b78-bdef-45f12345abcd',
+    date: new Date('2025-09-08'),
+    check_in: new Date('2025-09-08T09:00:00+00:00'),
+    check_out: new Date('2025-09-08T17:10:00+00:00'),
+    hours_worked: 8.17,
+    created_at: new Date('2025-09-08T09:00:00+00:00'),
+  },
+  {
+    system_id: 'd1b2c3d4-e5f6-7890-abcd-444444444445',
+    employee_id: 'c7e8d9f1-4a56-4b78-bdef-45f12345abcd',
+    date: new Date('2025-09-09'),
+    check_in: new Date('2025-09-09T08:40:00+00:00'),
+    check_out: new Date('2025-09-09T17:20:00+00:00'),
+    hours_worked: 8.67,
+    created_at: new Date('2025-09-09T08:40:00+00:00'),
+  },
+
+  // Maria Lopez - Engineering
+  {
+    system_id: 'e1b2c3d4-e5f6-7890-abcd-555555555551',
+    employee_id: 'd5f4a2b1-6c78-4d91-a123-12f12345abcd',
+    date: new Date('2025-09-04'),
+    check_in: new Date('2025-09-04T08:55:00+00:00'),
+    check_out: new Date('2025-09-04T17:00:00+00:00'),
+    hours_worked: 8.08,
+    created_at: new Date('2025-09-04T08:55:00+00:00'),
+  },
+  {
+    system_id: 'e1b2c3d4-e5f6-7890-abcd-555555555552',
+    employee_id: 'd5f4a2b1-6c78-4d91-a123-12f12345abcd',
+    date: new Date('2025-09-05'),
+    check_in: new Date('2025-09-05T09:05:00+00:00'),
+    check_out: new Date('2025-09-05T17:15:00+00:00'),
+    hours_worked: 8.17,
+    created_at: new Date('2025-09-05T09:05:00+00:00'),
+  },
+  {
+    system_id: 'e1b2c3d4-e5f6-7890-abcd-555555555553',
+    employee_id: 'd5f4a2b1-6c78-4d91-a123-12f12345abcd',
+    date: new Date('2025-09-08'),
+    check_in: new Date('2025-09-08T08:45:00+00:00'),
+    check_out: new Date('2025-09-08T17:20:00+00:00'),
+    hours_worked: 8.58,
+    created_at: new Date('2025-09-08T08:45:00+00:00'),
+  },
+  {
+    system_id: 'e1b2c3d4-e5f6-7890-abcd-555555555554',
+    employee_id: 'd5f4a2b1-6c78-4d91-a123-12f12345abcd',
+    date: new Date('2025-09-09'),
+    check_in: new Date('2025-09-09T09:00:00+00:00'),
+    check_out: new Date('2025-09-09T16:55:00+00:00'),
+    hours_worked: 7.92,
+    created_at: new Date('2025-09-09T09:00:00+00:00'),
+  },
+  {
+    system_id: 'e1b2c3d4-e5f6-7890-abcd-555555555555',
+    employee_id: 'd5f4a2b1-6c78-4d91-a123-12f12345abcd',
+    date: new Date('2025-09-10'),
+    check_in: new Date('2025-09-10T08:50:00+00:00'),
+    check_out: new Date('2025-09-10T17:05:00+00:00'),
+    hours_worked: 8.25,
+    created_at: new Date('2025-09-10T08:50:00+00:00'),
+  },
+];

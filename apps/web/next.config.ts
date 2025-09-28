@@ -1,8 +1,7 @@
-import type { NextConfig } from 'next';
+import withBundleAnalyzer from '@next/bundle-analyzer';
+import { NextConfig } from 'next';
 
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true',
-});
+const isAnalyze = process.env.ANALYZE === 'true';
 
 const nextConfig: NextConfig = {
   // Performance optimizations
@@ -13,15 +12,14 @@ const nextConfig: NextConfig = {
   // Development server configuration
   allowedDevOrigins: [
     'http://localhost:3001',
-    'http://192.168.1.2:3001', // full LAN origin with port
+    'http://192.168.1.2:3001',
     ...(process.env.NEXT_PUBLIC_DEV_URL
       ? [
-          process.env.NEXT_PUBLIC_DEV_URL,
-          // Also allow without port if DEV_URL includes a port
-          process.env.NEXT_PUBLIC_DEV_URL.includes(':')
-            ? process.env.NEXT_PUBLIC_DEV_URL.replace(/:\d+$/, '')
-            : null,
-        ].filter(Boolean)
+        process.env.NEXT_PUBLIC_DEV_URL,
+        process.env.NEXT_PUBLIC_DEV_URL.includes(':')
+          ? process.env.NEXT_PUBLIC_DEV_URL.replace(/:\d+$/, '')
+          : null,
+      ].filter(Boolean)
       : []),
   ] as string[],
 
@@ -42,11 +40,11 @@ const nextConfig: NextConfig = {
   // Image optimization
   images: {
     formats: ['image/avif', 'image/webp'],
-    minimumCacheTTL: 60 * 60 * 24 * 7, // 7 days
+    minimumCacheTTL: 60 * 60 * 24 * 7,
   },
 
   // Bundle analyzer in development
-  webpack: (config, { dev, isServer }) => {
+  webpack(config, { dev, isServer }) {
     if (dev && !isServer) {
       config.optimization.splitChunks = {
         chunks: 'all',
@@ -68,26 +66,14 @@ const nextConfig: NextConfig = {
       {
         source: '/(.*)',
         headers: [
-          {
-            key: 'X-Frame-Options',
-            value: 'DENY',
-          },
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'origin-when-cross-origin',
-          },
-          {
-            key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=()',
-          },
+          { key: 'X-Frame-Options', value: 'DENY' },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Referrer-Policy', value: 'origin-when-cross-origin' },
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
         ],
       },
     ];
   },
 };
 
-export default withBundleAnalyzer(nextConfig);
+export default withBundleAnalyzer({ enabled: isAnalyze })(nextConfig);

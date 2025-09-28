@@ -1,0 +1,11 @@
+{
+  "name": "@worksight/assets",
+  "version": "0.1.0",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint . --ext .ts,.tsx,.js,.jsx"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

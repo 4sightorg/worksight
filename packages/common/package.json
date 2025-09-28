@@ -7,8 +7,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "dev": "tsc -w",
-    "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
-    "lint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --fix",
+    "lint": "eslint src --ext .ts,.tsx,.js,.jsx",
+    "lint:fix": "eslint src --ext .ts,.tsx,.js,.jsx --fix",
     "lint:strict": "eslint --max-warnings 30 \"src/**/*.{ts,tsx}\"",
     "prettier": "prettier --write \"**/*.{js,ts,tsx,md,json,css}\"",
     "prettier:check": "prettier --check \"**/*.{js,ts,tsx,md,json,css}\"",

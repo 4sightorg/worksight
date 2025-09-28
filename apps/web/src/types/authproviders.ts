@@ -1,14 +1,14 @@
 import { IconType } from 'react-icons/lib';
-import { SiGoogle, SiGithub, SiDiscord, SiFacebook } from 'react-icons/si';
+import { SiDiscord, SiFacebook, SiGithub, SiGoogle } from 'react-icons/si';
 
-type Provider = {
+export type OAuthProvider = {
   name: 'google' | 'github' | 'discord' | 'facebook';
   displayName: string;
   icon: IconType;
   url?: string;
 };
 
-export const providers: Provider[] = [
+export const OAuthProviders: OAuthProvider[] = [
   { name: 'google', displayName: 'Google', icon: SiGoogle },
   { name: 'github', displayName: 'GitHub', icon: SiGithub },
   { name: 'discord', displayName: 'Discord', icon: SiDiscord },

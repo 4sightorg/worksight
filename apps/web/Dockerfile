@@ -14,7 +14,7 @@ COPY package.json turbo.json ./
 COPY apps/web/package.json apps/web/
 
 # Install all dependencies (dev + prod) for build
-RUN npm install --workspace=apps/web --legacy-peer-deps
+RUN npm install --workspace=@worksight/web --legacy-peer-deps
 
 # ---- Build ----
 FROM deps AS build

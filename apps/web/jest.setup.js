@@ -1,4 +1,4 @@
-require('@testing-library/jest-dom');
+import * as jest from '@testing-library/jest-dom';
 
 // Mock Next.js router
 jest.mock('next/router', () => ({
