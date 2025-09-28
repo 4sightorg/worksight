@@ -12,17 +12,16 @@
     "quality": "echo 'npm quality doesnt exist, give up.' ",
     "clean": "rimraf .next dist .turbo"
   },
-  "devDependencies": {
-    "@types/node": "^24.5.2",
-    "typescript": "^5.9.2",
-    "vitepress": "^1.6.4",
-    "vue": "^3.5.21",
-    "vue-tsc": "^3.0.7"
-  },
   "dependencies": {
     "@catppuccin/vitepress": "^0.1.2",
     "esbuild": "^0.25.10",
-    "react": "18",
-    "react-dom": "18"
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.2",
+    "vitepress": "^1.6.4",
+    "vue": "^3.5.22",
+    "vue-tsc": "^3.1.0"
   }
 }
