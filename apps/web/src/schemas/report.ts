@@ -13,8 +13,8 @@ export const ReportType = z.enum([
 
 // Time period schema
 export const TimePeriodSchema = z.object({
-  start: z.datetime('Invalid start date'),
-  end: z.datetime('Invalid end date'),
+  start: z.string().datetime('Invalid start date'),
+  end: z.string().datetime('Invalid end date'),
   period: z.enum(['daily', 'weekly', 'monthly', 'quarterly', 'yearly']),
 });
 
@@ -76,15 +76,15 @@ export const ReportSchema = z.object({
   description: z.string().max(1000, 'Description too long').optional(),
   type: ReportType,
   createdBy: z.string().min(1, 'Creator ID is required'),
-  createdAt: z.datetime('Invalid creation date'),
-  updatedAt: z.datetime('Invalid update date'),
+  createdAt: z.string().datetime('Invalid creation date'),
+  updatedAt: z.string().datetime('Invalid update date'),
   timePeriod: TimePeriodSchema,
   filters: ReportFilterSchema,
   sections: z.array(ReportSectionSchema).min(1, 'Report must have at least one section'),
   status: z.enum(['generating', 'completed', 'failed']).default('generating'),
-  downloadUrl: z.url().optional(),
+  downloadUrl: z.string().url().optional(),
   scheduledRefresh: z.boolean().default(false),
-  lastRefreshed: z.datetime().optional(),
+  lastRefreshed: z.string().datetime().optional(),
 });
 
 // Report creation schema
@@ -115,8 +115,8 @@ export const ReportFiltersSchema = z.object({
   createdBy: z.string().max(50, 'Creator filter too long').default('all'),
   dateRange: z
     .object({
-      from: z.datetime().optional(),
-      to: z.datetime().optional(),
+      from: z.string().datetime().optional(),
+      to: z.string().datetime().optional(),
     })
     .optional(),
 });
@@ -137,7 +137,7 @@ export const BurnoutAnalyticsSchema = z.object({
   ),
   trendData: z.array(
     z.object({
-      date: z.datetime(),
+      date: z.string().datetime(),
       averageScore: z.number().min(0).max(10),
     })
   ),

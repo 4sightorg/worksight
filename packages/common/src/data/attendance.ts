@@ -1,4 +1,4 @@
-import { AttendanceRecord } from '@/types/attendance';
+import { AttendanceRecord } from '@worksight/common/types/attendance';
 
 // Generate sample attendance data for the past week
 export const Attendance: AttendanceRecord[] = [

@@ -1,4 +1,4 @@
-import { SurveyQuestion, Survey, SurveyResponse } from '../types/survey';
+import { SurveyQuestion, Survey, SurveyResponse } from '@worksight/common/types/survey';
 
 // --- Survey questions
 export const SURVEY_QUESTIONS: SurveyQuestion[] = [
