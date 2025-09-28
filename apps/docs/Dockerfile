@@ -7,13 +7,13 @@ COPY package.json turbo.json ./
 COPY apps/docs/package.json apps/docs/
 
 # Install dependencies for the docs workspace
-RUN npm install --workspace=apps/docs --legacy-peer-deps
+RUN npm install --workspace=@worksight/docs --legacy-peer-deps
 
 # Copy the rest of the project
 COPY . .
 
 # Build VitePress site for production
-RUN npm --workspace=apps/docs run build
+RUN npm --workspace=@worksight/docs run build
 
 # ---- Runtime stage ----
 FROM nginx:mainline-alpine
