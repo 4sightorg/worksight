@@ -1,164 +1,229 @@
-// Survey questions for WorkSight - with 4sight meta commentary!
-import { SURVEY_DIMENSIONS, SurveyQuestion } from '../types/survey';
+import { SurveyQuestion, Survey, SurveyResponse } from '../types/survey';
 
+// --- Survey questions
 export const SURVEY_QUESTIONS: SurveyQuestion[] = [
-  // Workload questions
+  // Workload
   {
     id: 1,
-    text: 'How would you rate your current workload?',
-    dimension: SURVEY_DIMENSIONS.WORKLOAD,
+    survey_id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+    question_text: 'How would you rate your current workload?',
+    dimension: 'workload',
     type: 'scale',
     required: true,
+    reverseScore: false,
+    min_value: 1,
+    max_value: 5,
+    min_label: 'Very Light',
+    max_label: 'Overwhelming',
   },
   {
     id: 2,
-    text: 'Do you feel you have enough time to complete your tasks effectively?',
-    dimension: SURVEY_DIMENSIONS.WORKLOAD,
+    survey_id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+    question_text: 'Do you feel you have enough time to complete your tasks effectively?',
+    dimension: 'workload',
     type: 'scale',
     required: true,
+    reverseScore: false,
+    min_value: 1,
+    max_value: 5,
+    min_label: 'Very Light',
+    max_label: 'Overwhelming',
   },
 
-  // Stress level questions
+  // Stress
   {
     id: 3,
-    text: 'How stressed do you feel at work on a typical day?',
-    dimension: SURVEY_DIMENSIONS.STRESS,
+    survey_id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+    question_text: 'How stressed do you feel at work on a typical day?',
+    dimension: 'stress',
     type: 'scale',
     required: true,
+    reverseScore: false,
+    min_value: 1,
+    max_value: 5,
+    min_label: 'Not Stressed',
+    max_label: 'Extremely Stressed',
   },
   {
     id: 4,
-    text: 'How often do you feel overwhelmed by your responsibilities?',
-    dimension: SURVEY_DIMENSIONS.STRESS,
+    survey_id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+    question_text: 'How often do you feel overwhelmed by your responsibilities?',
+    dimension: 'stress',
     type: 'scale',
     required: true,
+    reverseScore: false,
+    min_value: 1,
+    max_value: 5,
+    min_label: 'Not Stressed',
+    max_label: 'Extremely Stressed',
   },
 
   // Job satisfaction
   {
     id: 5,
-    text: 'How satisfied are you with your current role and responsibilities?',
-    dimension: SURVEY_DIMENSIONS.SATISFACTION,
+    survey_id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+    question_text: 'How satisfied are you with your current role and responsibilities?',
+    dimension: 'satisfaction',
     type: 'scale',
     required: true,
+    reverseScore: false,
+    min_value: 1,
+    max_value: 5,
+    min_label: 'Very Poor',
+    max_label: 'Excellent',
   },
   {
     id: 6,
-    text: 'Do you find your work meaningful and engaging?',
-    dimension: SURVEY_DIMENSIONS.SATISFACTION,
+    survey_id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+    question_text: 'Do you find your work meaningful and engaging?',
+    dimension: 'satisfaction',
     type: 'scale',
     required: true,
+    reverseScore: false,
+    min_value: 1,
+    max_value: 5,
+    min_label: 'Very Poor',
+    max_label: 'Excellent',
   },
 
   // Work-life balance
   {
     id: 7,
-    text: 'How well are you able to maintain a healthy work-life balance?',
-    dimension: SURVEY_DIMENSIONS.WORK_LIFE_BALANCE,
+    survey_id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+    question_text: 'How well are you able to maintain a healthy work-life balance?',
+    dimension: 'work_life_balance',
     type: 'scale',
     required: true,
+    reverseScore: false,
+    min_value: 1,
+    max_value: 5,
+    min_label: 'Very Poor',
+    max_label: 'Excellent',
   },
   {
     id: 8,
-    text: 'How often do you work outside of normal business hours?',
-    dimension: SURVEY_DIMENSIONS.WORK_LIFE_BALANCE,
+    survey_id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+    question_text: 'How often do you work outside of normal business hours?',
+    dimension: 'work_life_balance',
     type: 'scale',
     required: true,
+    reverseScore: true,
+    min_value: 1,
+    max_value: 5,
+    min_label: 'Very Poor',
+    max_label: 'Excellent',
   },
 
   // Team collaboration
   {
     id: 9,
-    text: 'How effectively does your team collaborate and communicate?',
-    dimension: SURVEY_DIMENSIONS.TEAM_COLLABORATION,
+    survey_id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+    question_text: 'How effectively does your team collaborate and communicate?',
+    dimension: 'team_collaboration',
     type: 'scale',
     required: true,
+    reverseScore: false,
+    min_value: 1,
+    max_value: 5,
+    min_label: 'Very Poor',
+    max_label: 'Excellent',
   },
   {
     id: 10,
-    text: 'Do you feel supported by your colleagues and manager?',
-    dimension: SURVEY_DIMENSIONS.TEAM_COLLABORATION,
+    survey_id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+    question_text: 'Do you feel supported by your colleagues and manager?',
+    dimension: 'team_collaboration',
     type: 'scale',
     required: true,
+    reverseScore: false,
+    min_value: 1,
+    max_value: 5,
+    min_label: 'Very Poor',
+    max_label: 'Excellent',
   },
 
-  // Burnout risk assessment
+  // Burnout risk
   {
     id: 11,
-    text: 'How often do you feel emotionally exhausted from your work?',
-    dimension: SURVEY_DIMENSIONS.BURNOUT_RISK,
+    survey_id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+    question_text: 'How often do you feel emotionally exhausted from your work?',
+    dimension: 'burnout_risk',
     type: 'scale',
     required: true,
+    reverseScore: false,
+    min_value: 1,
+    max_value: 5,
+    min_label: 'Very Poor',
+    max_label: 'Excellent',
   },
   {
     id: 12,
-    text: 'Do you feel energized and motivated about your work?',
-    dimension: SURVEY_DIMENSIONS.BURNOUT_RISK,
+    survey_id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+    question_text: 'Do you feel energized and motivated about your work?',
+    dimension: 'burnout_risk',
     type: 'scale',
     required: true,
+    reverseScore: true,
+    min_value: 1,
+    max_value: 5,
+    min_label: 'Very Poor',
+    max_label: 'Excellent',
   },
 
-  // 4sight Meta Questions - Breaking the 4th wall! 🎭
+  // Meta-awareness
   {
     id: 13,
-    text: "How do you feel about being surveyed by a system you're building to survey people?",
-    dimension: SURVEY_DIMENSIONS.META_AWARENESS,
+    survey_id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+    question_text: "How do you feel about being surveyed by a system you're building to survey people?",
+    dimension: 'meta_awareness',
     type: 'scale',
     required: true,
+    reverseScore: false,
+    min_value: 1,
+    max_value: 5,
+    min_label: 'Not Meta At All',
+    max_label: 'MAXIMUM META 🚀',
   },
   {
     id: 14,
-    text: 'On a scale of 1-5, how meta is this experience right now?',
-    dimension: SURVEY_DIMENSIONS.META_AWARENESS,
+    survey_id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+    question_text: 'On a scale of 1-5, how meta is this experience right now?',
+    dimension: 'meta_awareness',
     type: 'scale',
     required: true,
+    reverseScore: false,
+    min_value: 1,
+    max_value: 5,
+    min_label: 'Not Meta At All',
+    max_label: 'MAXIMUM META 🚀',
   },
   {
     id: 15,
-    text: 'Any additional thoughts on building WorkSight while being WorkSighted?',
-    dimension: SURVEY_DIMENSIONS.META_AWARENESS,
+    survey_id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+    question_text: 'Any additional thoughts on building WorkSight while being WorkSighted?',
+    dimension: 'meta_awareness',
     type: 'text',
     required: false,
+    reverseScore: false,
   },
 ];
 
-// Scale labels for better UX
-export const SCALE_LABELS = {
-  1: 'Very Poor',
-  2: 'Poor',
-  3: 'Average',
-  4: 'Good',
-  5: 'Excellent',
+// --- Survey template
+export const Surveys: Survey = {
+  id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+  created_by: '7f1fcc2a-4025-49e3-9090-bf0ff9fee898',
+  created_at: new Date('2025-09-28T12:00:00.000Z'),
+  num_questions: 15,
 };
 
-// Dimension-specific scale labels
-export const DIMENSION_SCALE_LABELS: Record<string, Record<number, string>> = {
-  [SURVEY_DIMENSIONS.STRESS]: {
-    1: 'Not Stressed',
-    2: 'Slightly Stressed',
-    3: 'Moderately Stressed',
-    4: 'Very Stressed',
-    5: 'Extremely Stressed',
-  },
-  [SURVEY_DIMENSIONS.WORKLOAD]: {
-    1: 'Very Light',
-    2: 'Light',
-    3: 'Moderate',
-    4: 'Heavy',
-    5: 'Overwhelming',
-  },
-  [SURVEY_DIMENSIONS.WORK_LIFE_BALANCE]: {
-    1: 'Very Poor',
-    2: 'Poor',
-    3: 'Balanced',
-    4: 'Good',
-    5: 'Excellent',
-  },
-  [SURVEY_DIMENSIONS.META_AWARENESS]: {
-    1: 'Not Meta At All',
-    2: 'Slightly Meta',
-    3: 'Moderately Meta',
-    4: 'Very Meta',
-    5: 'MAXIMUM META 🚀',
-  },
-};
+// --- Sample SurveyResponses
+export const SURVEY_RESPONSES: SurveyResponse[] = SURVEY_QUESTIONS.map((q) => ({
+  id: crypto.randomUUID(), // or any UUID generator
+  response_meta_id: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', // placeholder response metadata ID
+  question_id: q.id,
+  response:
+    q.type === 'scale'
+      ? Math.floor(Math.random() * (q.max_value! - q.min_value! + 1)) + q.min_value! // random scale 1-5
+      : 'Sample answer', // default text for text questions
+  created_at: new Date(),
+}));
