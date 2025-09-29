@@ -1,18 +1,18 @@
 'use client';
 
-import { useAuth } from '@worksight/web/auth';
-import { isOfflineMode } from '@worksight/web/auth/offline';
-import { SurveyResultsCard } from '@worksight/web/components/dashboard/survey-results-card';
-import { Badge } from '@worksight/web/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@worksight/web/components/ui/card';
-import { Employees } from '@worksight/web/data/employees';
+import { useAuth } from '@/auth';
+import { isOfflineMode } from '@/auth/offline';
+import { SurveyResultsCard } from '@/components/dashboard/survey-results-card';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Employees } from '@/data/employees';
 import {
-  getAfterHoursActivities,
-  getDataSourceUsageStats,
-  getEmployeeProductivityStats,
-  getTeamMetaStats,
-  getWeekendActivities,
-} from '@worksight/web/data/work-tracking';
+    getAfterHoursActivities,
+    getDataSourceUsageStats,
+    getEmployeeProductivityStats,
+    getTeamMetaStats,
+    getWeekendActivities,
+} from '@/data/work-tracking';
 import { useEffect, useState } from 'react';
 
 export function DashboardStats() {

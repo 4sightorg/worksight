@@ -3,13 +3,25 @@
   "compilerOptions": {
     "outDir": "dist",
     "noEmit": true,
+    "target": "es5",
+    "skipLibCheck": true,
+    "strict": false,
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "module": "esnext",
     "jsx": "preserve",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "incremental": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "plugins": [{ "name": "next" }]
+    "plugins": [{ "name": "next" }],
+    "paths": {
+      "@worksight/assets": ["../../packages/assets/src"],
+      "@worksight/common": ["../../packages/common/src"],
+      "@/*": ["./src/*"]
+    },
+    "baseUrl": "."
   },
   "include": ["next-env.d.ts", "src/**/*", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]

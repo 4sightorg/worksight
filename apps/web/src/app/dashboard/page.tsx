@@ -1,17 +1,17 @@
 'use client';
 
-import { useAuth } from '@worksight/web/auth';
-import { ProtectedRoute } from '@worksight/web/components/auth/protected-route';
-import { ClientOnly } from '@worksight/web/components/core';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@worksight/web/components/ui/card';
+import { useAuth } from '@/auth';
+import { ProtectedRoute } from '@/components/auth/protected-route';
+import { ClientOnly } from '@/components/core';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from '@worksight/web/components/ui/chart';
-import { CollapsibleSection } from '@worksight/web/components/ui/collapsible-section';
-import { SidebarInset, SidebarProvider } from '@worksight/web/components/ui/sidebar';
+    ChartConfig,
+    ChartContainer,
+    ChartTooltip,
+    ChartTooltipContent,
+} from '@/components/ui/chart';
+import { CollapsibleSection } from '@/components/ui/collapsible-section';
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { Activity, Check, CheckSquare, Clock, ListChecks, Target, TrendingUp, User, X } from 'lucide-react';
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';

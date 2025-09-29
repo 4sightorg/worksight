@@ -12,6 +12,7 @@ export const Departments = [
   'sysadmin',
   'guest',
   'business',
+  'engineering',
   '',
 ] as const;
 

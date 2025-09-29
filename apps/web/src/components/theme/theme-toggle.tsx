@@ -4,8 +4,8 @@ import { Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import * as React from 'react';
 
-import { Button } from '@worksight/web/components/ui/button';
-import { useMetaColor } from '@worksight/web/hooks/use-meta-color';
+import { Button } from '@/components/ui/button';
+import { useMetaColor } from '@/hooks/use-meta-color';
 
 export function ModeToggle() {
   const { setTheme, resolvedTheme } = useTheme();

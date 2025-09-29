@@ -1,14 +1,14 @@
 'use client';
 
-import { ProtectedRoute } from '@worksight/web/components/auth/protected-route';
-import { ClientOnly } from '@worksight/web/components/core';
-import { DashboardSubNav } from '@worksight/web/components/dashboard/sub-nav';
-import { EmptyState } from '@worksight/web/components/empty/empty-state';
-import { Badge } from '@worksight/web/components/ui/badge';
-import { Button } from '@worksight/web/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@worksight/web/components/ui/card';
-import { CollapsibleSection } from '@worksight/web/components/ui/collapsible-section';
-import { Progress } from '@worksight/web/components/ui/progress';
+import { ProtectedRoute } from '@/components/auth/protected-route';
+import { ClientOnly } from '@/components/core';
+import { DashboardSubNav } from '@/components/dashboard/sub-nav';
+import { EmptyState } from '@/components/empty/empty-state';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CollapsibleSection } from '@/components/ui/collapsible-section';
+import { Progress } from '@/components/ui/progress';
 import { Activity, Calendar, FolderPlus, TrendingUp, Users } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';

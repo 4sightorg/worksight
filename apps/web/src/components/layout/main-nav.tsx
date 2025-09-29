@@ -1,19 +1,19 @@
 'use client';
 
-import { Button } from '@worksight/web/components/ui';
+import { Button } from '@/components/ui';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import * as React from 'react';
 
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@worksight/web/components/ui/dropdown-menu';
-import { SidebarMenuButton } from '@worksight/web/components/ui/sidebar';
-import { siteConfig } from '@worksight/web/config/site';
-import { cn } from '@worksight/web/lib/utils';
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { SidebarMenuButton } from '@/components/ui/sidebar';
+import { siteConfig } from '@/config/site';
+import { cn } from '@/lib/utils';
 import { Check, ChevronsUpDown, GalleryVerticalEnd } from 'lucide-react';
 import Image from 'next/image';
 

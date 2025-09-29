@@ -1,57 +1,57 @@
 'use client';
 
+import { ProtectedRoute } from '@/components/auth/protected-route';
+import { ClientOnly } from '@/components/core';
+import { DashboardSubNav } from '@/components/dashboard/sub-nav';
+import { EmptyState } from '@/components/empty/empty-state';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
 import {
-  DndContext,
-  DragEndEvent,
-  DragOverlay,
-  DragStartEvent,
-  PointerSensor,
-  closestCenter,
-  useSensor,
-  useSensors,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
+import { Textarea } from '@/components/ui/textarea';
+import {
+    DndContext,
+    DragEndEvent,
+    DragOverlay,
+    DragStartEvent,
+    PointerSensor,
+    closestCenter,
+    useSensor,
+    useSensors,
 } from '@dnd-kit/core';
 import {
-  SortableContext,
-  arrayMove,
-  useSortable,
-  verticalListSortingStrategy,
+    SortableContext,
+    arrayMove,
+    useSortable,
+    verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { ProtectedRoute } from '@worksight/web/components/auth/protected-route';
-import { ClientOnly } from '@worksight/web/components/core';
-import { DashboardSubNav } from '@worksight/web/components/dashboard/sub-nav';
-import { EmptyState } from '@worksight/web/components/empty/empty-state';
-import { Badge } from '@worksight/web/components/ui/badge';
-import { Button } from '@worksight/web/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@worksight/web/components/ui/card';
-import { Checkbox } from '@worksight/web/components/ui/checkbox';
-import { Input } from '@worksight/web/components/ui/input';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@worksight/web/components/ui/select';
-import { SidebarInset, SidebarProvider } from '@worksight/web/components/ui/sidebar';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@worksight/web/components/ui/table';
-import { Textarea } from '@worksight/web/components/ui/textarea';
-import {
-  AlertCircle,
-  CheckCircle,
-  Clock,
-  Flag,
-  GripVertical,
-  LayoutGrid,
-  List,
-  Plus,
+    AlertCircle,
+    CheckCircle,
+    Clock,
+    Flag,
+    GripVertical,
+    LayoutGrid,
+    List,
+    Plus,
 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';

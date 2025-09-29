@@ -1,9 +1,9 @@
 'use client';
 
-import { ProtectedRoute } from '@worksight/web/components/auth/protected-route';
-import { ClientOnly } from '@worksight/web/components/core';
-import { DashboardSubNav } from '@worksight/web/components/dashboard/sub-nav';
-import { EmptyState } from '@worksight/web/components/empty/empty-state';
+import { ProtectedRoute } from '@/components/auth/protected-route';
+import { ClientOnly } from '@/components/core';
+import { DashboardSubNav } from '@/components/dashboard/sub-nav';
+import { EmptyState } from '@/components/empty/empty-state';
 import { BarChart3 } from 'lucide-react';
 
 export default function ReportsPage() {

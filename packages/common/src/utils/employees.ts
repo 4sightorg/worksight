@@ -1,11 +1,11 @@
 import {
   Departments,
   EmployeeProfile,
+  EmployeeProfileSchema,
   Roles,
   Team,
-  EmployeeProfileSchema,
   TeamSchema,
-} from '@worksight/common/types/employees';
+} from '@worksight/common/types';
 import { Employees } from '../data/employees';
 import { BaseLookup } from './base';
 

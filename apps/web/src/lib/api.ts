@@ -1,11 +1,11 @@
-import { isOfflineMode } from '@worksight/web/auth/offline';
-import { Employees } from '@worksight/web/data/employees';
+import { isOfflineMode } from '@/auth/offline';
+import { Employees } from '@/data/employees';
 import {
-  supabase,
-  type Employee,
-  type SurveyResponse,
-  type Task,
-  type UserSettings,
+    supabase,
+    type Employee,
+    type SurveyResponse,
+    type Task,
+    type UserSettings,
 } from './supabase';
 
 // Employee API

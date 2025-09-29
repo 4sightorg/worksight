@@ -1,9 +1,9 @@
 'use client';
 
-import { useAuth } from '@worksight/web/auth';
-import { getStoredSession, isSessionExpiringSoon } from '@worksight/web/auth/client';
-import { AUTH_CONFIG } from '@worksight/web/auth/identity';
-import { Button } from '@worksight/web/components/ui/button';
+import { useAuth } from '@/auth';
+import { getStoredSession, isSessionExpiringSoon } from '@/auth/client';
+import { AUTH_CONFIG } from '@/auth/identity';
+import { Button } from '@/components/ui/button';
 import { AlertCircle, Clock } from 'lucide-react';
 import { useEffect, useState } from 'react';
 

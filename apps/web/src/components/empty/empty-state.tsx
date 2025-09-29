@@ -1,6 +1,6 @@
 "use client";
-import { Button } from '@worksight/web/components/ui/button';
-import { cn } from '@worksight/web/lib/utils';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { ReactNode } from 'react';
 

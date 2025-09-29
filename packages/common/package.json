@@ -1,17 +1,42 @@
 {
   "name": "@worksight/common",
   "version": "1.0.0",
-  "private": true,
   "main": "dist/index.js",
+  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "import": "./dist/utils/index.mjs",
+      "require": "./dist/utils/index.js"
+    },
+    "./data": {
+      "types": "./dist/data/index.d.ts",
+      "import": "./dist/data/index.mjs",
+      "require": "./dist/data/index.js"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/types/index.mjs",
+      "require": "./dist/types/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc",
     "dev": "tsc -w",
-    "lint": "eslint src --ext .ts,.tsx,.js,.jsx",
-    "lint:fix": "eslint src --ext .ts,.tsx,.js,.jsx --fix",
-    "lint:strict": "eslint --max-warnings 30 \"src/**/*.{ts,tsx}\"",
-    "prettier": "prettier --write \"**/*.{js,ts,tsx,md,json,css}\"",
-    "prettier:check": "prettier --check \"**/*.{js,ts,tsx,md,json,css}\"",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "lint:strict": "eslint --max-warnings 30 \"src/**/*.ts\"",
+    "prettier": "prettier --write \"**/*.{js,ts,md}\"",
+    "prettier:check": "prettier --check \"**/*.{js,ts,md}\"",
     "format": "run-s prettier lint:fix stylelint",
     "format:check": "run-s prettier:check lint:strict  stylelint:check",
     "type-check": "tsc --noEmit",
@@ -19,5 +44,9 @@
   },
   "peerDependencies": {
     "zod": "^4.1.11"
+  },
+  "devDependencies": {
+    "tsc-alias": "^1.8.16",
+    "typescript": "^5.9.2"
   }
 }

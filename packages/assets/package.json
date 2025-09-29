@@ -1,11 +1,28 @@
 {
   "name": "@worksight/assets",
   "version": "0.1.0",
-  "private": true,
-  "main": "index.js",
-  "scripts": {
-    "lint": "eslint . --ext .ts,.tsx,.js,.jsx"
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
   },
-  "dependencies": {},
-  "devDependencies": {}
+  "files": [
+    "dist",
+    "logos",
+    "screenshots"
+  ],
+  "scripts": {
+    "build": "tsc && cp -r src/logos dist/ && cp -r src/screenshots dist/",
+    "dev": "tsc --watch",
+    "clean": "rimraf dist",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2"
+  }
 }

@@ -1,5 +1,5 @@
 "use client";
-import { cn } from '@worksight/web/lib/utils';
+import { cn } from '@/lib/utils';
 import { Loader2, Search } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';

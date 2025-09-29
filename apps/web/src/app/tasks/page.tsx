@@ -1,48 +1,48 @@
 'use client';
 
+import { useAuth } from '@/auth';
+import { ProtectedRoute } from '@/components/auth/protected-route';
+import { SessionTimer } from '@/components/features';
+import { AppSidebar } from '@/components/main/sidebar';
+import { Badge } from '@/components/ui/badge';
 import {
-  closestCenter,
-  DndContext,
-  DragEndEvent,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { sections } from '@/data/sections';
+import {
+    closestCenter,
+    DndContext,
+    DragEndEvent,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
 } from '@dnd-kit/core';
 import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  useSortable,
-  verticalListSortingStrategy,
+    arrayMove,
+    SortableContext,
+    sortableKeyboardCoordinates,
+    useSortable,
+    verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { useAuth } from '@worksight/web/auth';
-import { ProtectedRoute } from '@worksight/web/components/auth/protected-route';
-import { SessionTimer } from '@worksight/web/components/features';
-import { AppSidebar } from '@worksight/web/components/main/sidebar';
-import { Badge } from '@worksight/web/components/ui/badge';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@worksight/web/components/ui/breadcrumb';
-import { Button } from '@worksight/web/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@worksight/web/components/ui/card';
-import { Input } from '@worksight/web/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@worksight/web/components/ui/select';
-import { Separator } from '@worksight/web/components/ui/separator';
-import { SidebarInset, SidebarProvider, SidebarTrigger } from '@worksight/web/components/ui/sidebar';
-import { sections } from '@worksight/web/data/sections';
 import { AlertCircle, CheckSquare, Clock, GripVertical, LogOut, Plus, Search } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 

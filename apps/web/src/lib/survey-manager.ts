@@ -1,8 +1,8 @@
 // In-memory survey management for offline mode
 'use client';
 
-import { SURVEY_QUESTIONS } from '@worksight/web/data/survey-questions';
-import { Survey, SurveyResponse, SurveyState } from '@worksight/web/types/survey';
+import { SURVEY_QUESTIONS } from '@/data/survey-questions';
+import { Survey, SurveyResponse, SurveyState } from '@/types/survey';
 
 // In-memory storage for current session
 let currentSurveyState: SurveyState = {

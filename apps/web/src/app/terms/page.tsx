@@ -1,7 +1,7 @@
 'use client';
 
-import { Button } from '@worksight/web/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@worksight/web/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function TermsOfService() {
   return (

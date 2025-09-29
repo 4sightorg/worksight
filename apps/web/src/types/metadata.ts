@@ -1,5 +1,8 @@
-import { favicon, icon } from '@worksight/assets';
+import { getBrandingPath } from '@worksight/assets';
 import { Metadata } from 'next';
+
+const favicon = getBrandingPath("svg");
+const icon = favicon;
 
 // FIX: Renamed SiteMetadata to avoid confusion, it's just a shape for MetadataRecord now.
 export interface CustomSiteMetadataShape {
@@ -26,8 +29,8 @@ export class MetadataRecord implements CustomSiteMetadataShape {
   constructor(
     title: string,
     description: string,
-    iconUrl: string = favicon.src,
-    ogImage: string = icon.src,
+    iconUrl: string = favicon,
+    ogImage: string = icon,
     baseUrl: string = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
   ) {
     this.title = title;

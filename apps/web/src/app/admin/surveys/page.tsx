@@ -1,43 +1,43 @@
 'use client';
 
-import { useAuth } from '@worksight/web/auth';
-import { AdminRoute } from '@worksight/web/components/admin';
-import { SessionTimer } from '@worksight/web/components/features';
-import { AppSidebar } from '@worksight/web/components/main/sidebar';
-import { Badge } from '@worksight/web/components/ui/badge';
+import { useAuth } from '@/auth';
+import { AdminRoute } from '@/components/admin';
+import { SessionTimer } from '@/components/features';
+import { AppSidebar } from '@/components/main/sidebar';
+import { Badge } from '@/components/ui/badge';
 import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@worksight/web/components/ui/breadcrumb';
-import { Button } from '@worksight/web/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@worksight/web/components/ui/card';
-import { Input } from '@worksight/web/components/ui/input';
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@worksight/web/components/ui/select';
-import { Separator } from '@worksight/web/components/ui/separator';
-import { SidebarInset, SidebarProvider, SidebarTrigger } from '@worksight/web/components/ui/sidebar';
-import { sections } from '@worksight/web/data/sections';
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { sections } from '@/data/sections';
 import {
-  BarChart3,
-  Copy,
-  Edit3,
-  Eye,
-  FileText,
-  LogOut,
-  Play,
-  Plus,
-  Search,
-  Settings,
-  Users,
+    BarChart3,
+    Copy,
+    Edit3,
+    Eye,
+    FileText,
+    LogOut,
+    Play,
+    Plus,
+    Search,
+    Settings,
+    Users,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';

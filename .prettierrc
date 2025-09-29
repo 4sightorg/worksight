@@ -9,27 +9,20 @@
   "trailingComma": "es5",
   "bracketSpacing": true,
   "bracketSameLine": false,
-  "arrowParens": "always",
+  "arrowParens": "avoid",
   "endOfLine": "lf",
   "embeddedLanguageFormatting": "auto",
-  "plugins": [
-    "prettier-plugin-tailwindcss"
-  ],
+  "plugins": ["prettier-plugin-tailwindcss"],
   "overrides": [
     {
-      "files": [
-        "*.md",
-        "*.mdx"
-      ],
+      "files": ["*.md", "*.mdx"],
       "options": {
         "printWidth": 80,
         "proseWrap": "always"
       }
     },
     {
-      "files": [
-        "*.json"
-      ],
+      "files": ["*.json"],
       "options": {
         "printWidth": 120
       }

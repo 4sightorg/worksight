@@ -1,4 +1,4 @@
-import { SurveyQuestionnaire, SurveyResponseList, SurveyResponses, Surveys } from '@worksight/common/data/survey';
+import { SurveyQuestionnaire, SurveyResponseList, SurveyResponses, Surveys } from '@worksight/common/data';
 import {
   Survey,
   SurveyQuestion,
@@ -14,7 +14,7 @@ import {
   SurveyResponseStats,
   SurveySchema,
   SurveyStats
-} from '@worksight/common/types/survey';
+} from '@worksight/common/types';
 import { BaseLookup } from './base';
 
 /**

@@ -1,4 +1,4 @@
-import { Survey, SurveyQuestion, SurveyResponse, SurveyResponseMetadata } from '@worksight/common/types/survey';
+import { Survey, SurveyQuestion, SurveyResponse, SurveyResponseMetadata } from '@worksight/common/types';
 
 export const SurveyQuestionnaire: SurveyQuestion[] = [
   // Part 1: Workload & Job Demands

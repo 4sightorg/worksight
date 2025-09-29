@@ -1,21 +1,21 @@
 'use client';
 
-import { useAuth } from '@worksight/web/auth';
-import { ProtectedRoute } from '@worksight/web/components/auth/protected-route';
-import { ClientOnly } from '@worksight/web/components/core';
-import { Button } from '@worksight/web/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@worksight/web/components/ui/card';
-import { Label } from '@worksight/web/components/ui/label';
+import { useAuth } from '@/auth';
+import { ProtectedRoute } from '@/components/auth/protected-route';
+import { ClientOnly } from '@/components/core';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@worksight/web/components/ui/select';
-import { Switch } from '@worksight/web/components/ui/switch';
-import { settingsApi } from '@worksight/web/lib/api';
-import { UserSettings } from '@worksight/web/lib/supabase';
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { settingsApi } from '@/lib/api';
+import { UserSettings } from '@/lib/supabase';
 import { Bell, Sun, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';

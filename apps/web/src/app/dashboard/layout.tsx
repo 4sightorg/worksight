@@ -1,20 +1,20 @@
 'use client';
 
-import { useAuth } from '@worksight/web/auth';
-import { isOfflineMode } from '@worksight/web/auth/offline';
-import { CommandPalette } from '@worksight/web/components/command-palette/command-palette';
-import { Badge } from '@worksight/web/components/ui/badge';
-import { Button } from '@worksight/web/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@worksight/web/components/ui/card';
+import { useAuth } from '@/auth';
+import { isOfflineMode } from '@/auth/offline';
+import { CommandPalette } from '@/components/command-palette/command-palette';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-  Activity,
-  BarChart3,
-  CheckSquare,
-  FileText,
-  Info,
-  Settings,
-  Shield,
-  User,
+    Activity,
+    BarChart3,
+    CheckSquare,
+    FileText,
+    Info,
+    Settings,
+    Shield,
+    User,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';

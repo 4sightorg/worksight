@@ -1,21 +1,21 @@
 'use client';
 
-import { useAuth } from '@worksight/web/auth';
-import { ProtectedRoute } from '@worksight/web/components/auth/protected-route';
-import { AppSidebar } from '@worksight/web/components/main/sidebar';
-import { SurveyComponent } from '@worksight/web/components/survey/survey-form';
+import { useAuth } from '@/auth';
+import { ProtectedRoute } from '@/components/auth/protected-route';
+import { AppSidebar } from '@/components/main/sidebar';
+import { SurveyComponent } from '@/components/survey/survey-form';
 import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@worksight/web/components/ui/breadcrumb';
-import { Button } from '@worksight/web/components/ui/button';
-import { Separator } from '@worksight/web/components/ui/separator';
-import { SidebarInset, SidebarProvider, SidebarTrigger } from '@worksight/web/components/ui/sidebar';
-import { sections } from '@worksight/web/data/sections';
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { sections } from '@/data/sections';
 import { LogOut } from 'lucide-react';
 
 function WellnessSurveyContent() {

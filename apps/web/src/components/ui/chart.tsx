@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@worksight/web/lib/utils';
+import { cn } from '@/lib/utils';
 import * as React from 'react';
 import type { LegendPayload, LegendProps } from 'recharts';
 import * as RechartsPrimitive from 'recharts';
@@ -288,11 +288,11 @@ function getPayloadConfigFromPayload(config: ChartConfig, payload: unknown, key:
 // ------------------ Exports ------------------
 
 export {
-  ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
-  ChartStyle,
-  ChartTooltip,
-  ChartTooltipContent
+    ChartContainer,
+    ChartLegend,
+    ChartLegendContent,
+    ChartStyle,
+    ChartTooltip,
+    ChartTooltipContent
 };
 

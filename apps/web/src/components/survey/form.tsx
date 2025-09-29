@@ -1,9 +1,9 @@
 'use client';
 
-import { Button } from '@worksight/web/components/ui/button';
-import { Card, CardContent } from '@worksight/web/components/ui/card';
-import { Input } from '@worksight/web/components/ui/input';
-import { Kbd } from '@worksight/web/components/ui/kbd';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Kbd } from '@/components/ui/kbd';
 import { ChevronLeft, ChevronRight, Home } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -334,15 +334,16 @@ export function SurveyForm({ questions, onComplete, onProgress }: SurveyFormProp
           }
           break;
 
-        case 'radio':
+        case 'radio': {
           const radioIndex = parseInt(e.key) - 1;
           if (radioIndex >= 0 && radioIndex < (question.options?.length || 0)) {
             e.preventDefault();
             updateRadioResponse(question.id, question.options![radioIndex]);
           }
           break;
+        }
 
-        case 'scale':
+        case 'scale': {
           const scaleValue = parseInt(e.key);
           const minValue = question.min || 1;
           const maxValue = question.max || 5;
@@ -352,6 +353,7 @@ export function SurveyForm({ questions, onComplete, onProgress }: SurveyFormProp
             updateScaleResponse(question.id, scaleValue);
           }
           break;
+        }
       }
     },
     [currentResponse, updateResponse, updateScaleResponse, updateRadioResponse]
@@ -460,11 +462,11 @@ export function SurveyForm({ questions, onComplete, onProgress }: SurveyFormProp
           </div>
         );
 
-      case 'scale':
+      case 'scale':{
         const min = currentQuestion.min || 1;
         const max = currentQuestion.max || 5;
         const scaleOptions = Array.from({ length: max - min + 1 }, (_, i) => min + i);
-
+        
         return (
           <div className="space-y-4">
             <div className="space-y-3">
@@ -497,6 +499,7 @@ export function SurveyForm({ questions, onComplete, onProgress }: SurveyFormProp
             </div>
           </div>
         );
+      }
 
       default:
         return null;
@@ -579,7 +582,7 @@ export function SurveyForm({ questions, onComplete, onProgress }: SurveyFormProp
               <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-2">
                 {/* Question Section - Left Side */}
                 <div className="animate-in fade-in slide-in-from-left-4 space-y-3 duration-500">
-                  <h2 className="text-xl leading-tight font-semibold lg:text-2xl">
+                  <h2 className="text-xl font-semibold leading-tight lg:text-2xl">
                     {currentQuestion.title}
                     {currentQuestion.required && <span className="text-destructive ml-1">*</span>}
                   </h2>
@@ -597,7 +600,7 @@ export function SurveyForm({ questions, onComplete, onProgress }: SurveyFormProp
               </div>
 
               {/* Navigation */}
-              <div className="animate-in fade-in slide-in-from-bottom-4 border-border flex items-center justify-between border-t pt-4 delay-300 duration-500">
+              <div className="border-border animate-in fade-in slide-in-from-bottom-4 flex items-center justify-between border-t pt-4 delay-300 duration-500">
                 <Button
                   variant="ghost"
                   onClick={currentIndex === 0 ? handleGoBack : previousQuestion}
@@ -659,7 +662,7 @@ export function SurveyForm({ questions, onComplete, onProgress }: SurveyFormProp
           {(Object.keys(responses).length > 0 || currentIndex > 0) && (
             <button
               onClick={clearProgress}
-              className="animate-in fade-in mt-2 text-xs text-red-500 underline transition-colors delay-700 duration-200 hover:text-red-600"
+              className="text-red-500 hover:text-red-600 animate-in fade-in mt-2 text-xs underline transition-colors delay-700 duration-200"
             >
               Clear all progress
             </button>
@@ -668,7 +671,7 @@ export function SurveyForm({ questions, onComplete, onProgress }: SurveyFormProp
       </div>
 
       {/* Sticky Progress bar at bottom */}
-      <div className="bg-background/95 border-border animate-in slide-in-from-bottom-4 fixed right-0 bottom-0 left-0 z-50 border-t p-4 backdrop-blur-sm delay-300 duration-700">
+      <div className="bg-background/95 border-border animate-in slide-in-from-bottom-4 fixed bottom-0 left-0 right-0 z-50 border-t p-4 backdrop-blur-sm delay-300 duration-700">
         <div className="mx-auto max-w-6xl">
           <div className="text-muted-foreground mb-2 flex justify-between text-sm">
             <span className="transition-all duration-300">

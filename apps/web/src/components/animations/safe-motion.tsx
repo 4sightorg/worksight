@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@worksight/web/lib/utils';
+import { cn } from '@/lib/utils';
 import { ReactNode, useEffect, useRef, useState } from 'react';
 
 interface SafeMotionProps {

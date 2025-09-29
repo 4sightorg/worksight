@@ -1,21 +1,21 @@
 'use client';
 
-import { useAuth } from '@worksight/web/auth';
-import { ProtectedRoute } from '@worksight/web/components/auth/protected-route';
-import { ClientOnly } from '@worksight/web/components/core';
-import { Badge } from '@worksight/web/components/ui/badge';
-import { Button } from '@worksight/web/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@worksight/web/components/ui/card';
+import { useAuth } from '@/auth';
+import { ProtectedRoute } from '@/components/auth/protected-route';
+import { ClientOnly } from '@/components/core';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@worksight/web/components/ui/table';
-import { employeeApi } from '@worksight/web/lib/api';
-import { Employee } from '@worksight/web/lib/supabase';
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
+import { employeeApi } from '@/lib/api';
+import { Employee } from '@/lib/supabase';
 import { Database, Settings, Shield, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';

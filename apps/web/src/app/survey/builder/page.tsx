@@ -1,7 +1,7 @@
 'use client';
 
-import { SurveyBuilder } from '@worksight/web/components/survey/builder';
-import { SurveyQuestion } from '@worksight/web/components/survey/form';
+import { SurveyBuilder } from '@/components/survey/builder';
+import { SurveyQuestion } from '@/components/survey/form';
 
 export default function SurveyBuilderPage() {
   const handleSaveSurvey = (questions: SurveyQuestion[]) => {

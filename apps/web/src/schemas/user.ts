@@ -1,4 +1,4 @@
-import { UserRole } from '@worksight/web/auth/types';
+import { UserRole } from '@/auth/types';
 import { z } from 'zod';
 
 // User schema for validation

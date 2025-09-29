@@ -1,9 +1,11 @@
 import withBundleAnalyzer from '@next/bundle-analyzer';
 import { NextConfig } from 'next';
+import path from 'path';
 
 const isAnalyze = process.env.ANALYZE === 'true';
 
 const nextConfig: NextConfig = {
+  transpilePackages: ['@worksight/common', '@worksight/assets'],
   // Performance optimizations
   experimental: {
     optimizePackageImports: ['@radix-ui/react-icons', 'lucide-react', '@dnd-kit/core'],
@@ -56,6 +58,12 @@ const nextConfig: NextConfig = {
           },
         },
       };
+    }
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': path.resolve(__dirname, 'src'),
+      '@worksight/assets': path.resolve(__dirname, '../../packages/assets/dist'),
+      '@worksight/common': path.resolve(__dirname, '../../packages/common/dist')
     }
     return config;
   },

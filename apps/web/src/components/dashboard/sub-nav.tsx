@@ -1,6 +1,6 @@
 "use client";
-import { Separator } from '@worksight/web/components/ui/separator';
-import { cn } from '@worksight/web/lib/utils';
+import { Separator } from '@/components/ui/separator';
+import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 

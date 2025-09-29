@@ -1,4 +1,4 @@
-import { EmployeeProfile } from '@worksight/common/types/employees';
+import { EmployeeProfile, Team } from '@worksight/common/types';
 
 export const Employees: EmployeeProfile[] = [
   // Team members under John Carlo Santos (Infra Manager)
@@ -143,7 +143,7 @@ export const Employees: EmployeeProfile[] = [
   },
 ];
 
-export const Team = [
+export const Teams: Team[] = [
   {
     id: "11111111-1111-1111-1111-111111111111",
     name: "Engineering",
@@ -152,8 +152,8 @@ export const Team = [
     manager_id: "7f1fcc2a-4025-49e3-9090-bf0ff9fee898",
     member_ids: [],
     parent_team_id: null,
-    created_at: "2025-09-28T12:00:00.000Z",
-    updated_at: "2025-09-28T12:00:00.000Z"
+    created_at: new Date("2025-09-28T12:00:00.000Z"),
+    updated_at: new Date("2025-09-28T12:00:00.000Z")
   },
   {
     id: "22222222-2222-2222-2222-222222222222",
@@ -166,8 +166,8 @@ export const Team = [
       "f6b2c3d4-e5f6-g7h8-i9j0-k1l2m3n4o5p6"
     ],
     parent_team_id: "11111111-1111-1111-1111-111111111111",
-    created_at: "2025-09-28T12:00:00.000Z",
-    updated_at: "2025-09-28T12:00:00.000Z"
+    created_at: new Date("2025-09-28T12:00:00.000Z"),
+    updated_at: new Date("2025-09-28T12:00:00.000Z")
   },
   {
     id: "33333333-3333-3333-3333-333333333333",
@@ -181,8 +181,8 @@ export const Team = [
       "i9e5f6g7-h8i9-j0k1-l2m3-n4o5p6q7r8s9"
     ],
     parent_team_id: "11111111-1111-1111-1111-111111111111",
-    created_at: "2025-09-28T12:00:00.000Z",
-    updated_at: "2025-09-28T12:00:00.000Z"
+    created_at: new Date("2025-09-28T12:00:00.000Z"),
+    updated_at: new Date("2025-09-28T12:00:00.000Z")
   },
   {
     id: "44444444-4444-4444-4444-444444444444",
@@ -195,8 +195,8 @@ export const Team = [
       "k1g7h8i9-j0k1-l2m3-n4o5-p6q7r8s9t0u1"
     ],
     parent_team_id: "11111111-1111-1111-1111-111111111111",
-    created_at: "2025-09-28T12:00:00.000Z",
-    updated_at: "2025-09-28T12:00:00.000Z"
+    created_at: new Date("2025-09-28T12:00:00.000Z"),
+    updated_at: new Date("2025-09-28T12:00:00.000Z")
   },
   {
     id: "55555555-5555-5555-5555-555555555555",
@@ -208,7 +208,7 @@ export const Team = [
       "l2h8i9j0-k1l2-m3n4-o5p6-q7r8s9t0u1v2"
     ],
     parent_team_id: "11111111-1111-1111-1111-111111111111",
-    created_at: "2025-09-28T12:00:00.000Z",
-    updated_at: "2025-09-28T12:00:00.000Z"
+    created_at: new Date("2025-09-28T12:00:00.000Z"),
+    updated_at: new Date("2025-09-28T12:00:00.000Z")
   }
 ];

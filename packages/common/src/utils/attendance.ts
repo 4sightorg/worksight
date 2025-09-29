@@ -1,9 +1,9 @@
-import { Attendance } from '@worksight/common/data/attendance';
+import { Attendance } from '@worksight/common/data';
 import {
   AttendanceRecord,
   AttendanceSchema,
   AttendanceStats
-} from '@worksight/common/types/attendance';
+} from '@worksight/common/types';
 import { BaseLookup } from './base';
 
 /**

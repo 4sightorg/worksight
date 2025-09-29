@@ -1,5 +1,5 @@
 "use client";
-import { cn } from '@worksight/web/lib/utils';
+import { cn } from '@/lib/utils';
 import { ChevronDown } from 'lucide-react';
 import { ReactNode, useId, useState } from 'react';
 

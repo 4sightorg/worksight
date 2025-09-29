@@ -1,14 +1,24 @@
 {
   "compilerOptions": {
     "target": "ES2023",
-    "module": "esnext",
-    "moduleResolution": "node",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
     "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "preserve",
+    "incremental": true,
     "baseUrl": ".",
     "paths": {
+      "@/*": ["./src/*"],
       "@worksight/common/*": ["packages/common/src/*"],
       "@worksight/assets/*": ["packages/assets/*"],
       "@worksight/api/*": ["apps/api/src/*"],
@@ -16,11 +26,7 @@
       "@worksight/web/*": ["apps/web/src/*"]
     }
   },
+  "plugins": [{ "name": "next" }],
   "include": [],
-  "references": [
-    { "path": "packages/common" },
-    { "path": "apps/api" },
-    { "path": "apps/docs" },
-    { "path": "apps/web" }
-  ]
+  "references": [{ "path": "packages/common" }, { "path": "apps/api" }, { "path": "apps/docs" }, { "path": "apps/web" }]
 }
