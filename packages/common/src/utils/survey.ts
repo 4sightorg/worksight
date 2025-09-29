@@ -1,20 +1,20 @@
-import { SurveyQuestionnaire, SurveyResponseList, SurveyResponses, Surveys } from '@worksight/common/data';
+import { SurveyQuestionnaire, SurveyResponseList, SurveyResponses, Surveys } from '../data';
 import {
-  Survey,
-  SurveyQuestion,
-  SurveyQuestionSchema,
-  SurveyQuestionStats,
-  SurveyQuestionType,
-  SurveyQuestionTypeSchema,
-  SurveyResponse,
-  SurveyResponseMetadata,
-  SurveyResponseMetadataSchema,
-  SurveyResponseMetadataStats,
-  SurveyResponseSchema,
-  SurveyResponseStats,
-  SurveySchema,
-  SurveyStats
-} from '@worksight/common/types';
+    Survey,
+    SurveyQuestion,
+    SurveyQuestionSchema,
+    SurveyQuestionStats,
+    SurveyQuestionType,
+    SurveyQuestionTypeSchema,
+    SurveyResponse,
+    SurveyResponseMetadata,
+    SurveyResponseMetadataSchema,
+    SurveyResponseMetadataStats,
+    SurveyResponseSchema,
+    SurveyResponseStats,
+    SurveySchema,
+    SurveyStats
+} from '../types';
 import { BaseLookup } from './base';
 
 /**

@@ -3,7 +3,7 @@
     "target": "ES2023",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "allowJs": true,
-    "skipLibCheck": true,
+    // "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
@@ -20,6 +20,7 @@
     "paths": {
       "@/*": ["./src/*"],
       "@worksight/common/*": ["packages/common/src/*"],
+      "@worksight/common": ["packages/common/src"],
       "@worksight/assets/*": ["packages/assets/*"],
       "@worksight/api/*": ["apps/api/src/*"],
       "@worksight/docs/*": ["apps/docs/src/*"],
@@ -27,6 +28,6 @@
     }
   },
   "plugins": [{ "name": "next" }],
-  "include": [],
-  "references": [{ "path": "packages/common" }, { "path": "apps/api" }, { "path": "apps/docs" }, { "path": "apps/web" }]
+  "include": ["apps", "packages"]
+  // "references": [{ "path": "packages/common" }, { "path": "apps/api" }, { "path": "apps/docs" }, { "path": "apps/web" }]
 }

@@ -1,11 +1,11 @@
-import { DataSources } from '@worksight/common/data';
+import { DataSources } from '../data';
 import {
-  DataSource,
-  DataSourceSchema,
-  DataSourceStats,
-  DataSourceTypes,
-  DataSourceTypesSchema
-} from '@worksight/common/types';
+    DataSource,
+    DataSourceSchema,
+    DataSourceStats,
+    DataSourceTypes,
+    DataSourceTypesSchema
+} from '../types';
 import { BaseLookup } from './base';
 
 /**

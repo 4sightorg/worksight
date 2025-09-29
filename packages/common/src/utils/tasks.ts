@@ -1,6 +1,6 @@
-import { Activities, Assignments } from '@worksight/common/data';
-import { Activity, ActivitySchema, AssignmentSchema } from '@worksight/common/types';
 import z from 'zod';
+import { Activities, Assignments } from '../data';
+import { Activity, ActivitySchema, AssignmentSchema } from '../types';
 import { BaseLookup } from './base';
 
 /**

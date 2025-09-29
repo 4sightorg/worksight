@@ -1,4 +1,4 @@
-import { EmployeeProfile, Team } from '@worksight/common/types';
+import { EmployeeProfile, Team } from '../types';
 
 export const Employees: EmployeeProfile[] = [
   // Team members under John Carlo Santos (Infra Manager)

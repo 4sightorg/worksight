@@ -1,3 +1,4 @@
+import { Employees } from '../data/employees';
 import {
   Departments,
   EmployeeProfile,
@@ -5,8 +6,7 @@ import {
   Roles,
   Team,
   TeamSchema,
-} from '@worksight/common/types';
-import { Employees } from '../data/employees';
+} from '../types';
 import { BaseLookup } from './base';
 
 type UUID = string;

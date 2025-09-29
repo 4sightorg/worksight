@@ -1,4 +1,4 @@
-import { type Activity, type Assignment } from '@worksight/common/types';
+import { type Activity, type Assignment } from '../types';
 
 // 🎬 4sight WorkSight Assignments - Breaking the 4th Wall!
 export const Assignments: Assignment[] = [

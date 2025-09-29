@@ -1,6 +1,6 @@
 // Data Sources - Integration points for WorkSight
 
-import { DataSource } from "@worksight/common/types";
+import { DataSource } from "../types";
 
 // 🔗 4sight WorkSight Data Sources - Our Integration Arsenal
 export const DataSources: DataSource[] = [

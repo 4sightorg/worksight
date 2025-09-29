@@ -53,7 +53,9 @@ export const EmployeeProfileSchema = z.object({
   created_at: z.date(),
   updated_at: z.date(),
 });
+export const EmployeeRecordSchema = z.array(EmployeeProfileSchema);
 export type EmployeeProfile = z.infer<typeof EmployeeProfileSchema>;
+export type EmployeeRecord = z.infer<typeof EmployeeRecordSchema>;
 
 /** ----------------- */
 /** Employee Credentials */

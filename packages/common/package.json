@@ -1,36 +1,33 @@
 {
   "name": "@worksight/common",
   "version": "1.0.0",
+  "type": "module",
   "main": "dist/index.js",
-  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
+      "import": "./dist/index.js",
       "require": "./dist/index.js"
-    },
-    "./utils": {
-      "types": "./dist/utils/index.d.ts",
-      "import": "./dist/utils/index.mjs",
-      "require": "./dist/utils/index.js"
     },
     "./data": {
       "types": "./dist/data/index.d.ts",
-      "import": "./dist/data/index.mjs",
-      "require": "./dist/data/index.js"
+      "import": "./dist/data/index.js"
     },
     "./types": {
       "types": "./dist/types/index.d.ts",
-      "import": "./dist/types/index.mjs",
-      "require": "./dist/types/index.js"
+      "import": "./dist/types/index.js"
+    },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "import": "./dist/utils/index.js"
     }
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -b",
     "dev": "tsc -w",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
@@ -40,13 +37,20 @@
     "format": "run-s prettier lint:fix stylelint",
     "format:check": "run-s prettier:check lint:strict  stylelint:check",
     "type-check": "tsc --noEmit",
-    "clean": "rimraf .next dist .turbo"
+    "clean": "rimraf .next dist .turbo tsconfig.tsbuildinfo"
   },
   "peerDependencies": {
     "zod": "^4.1.11"
   },
   "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/babel__core": "^7.20.5",
+    "@types/babel__generator": "^7.27.0",
+    "@types/babel__template": "^7.4.4",
+    "@types/babel__traverse": "^7.28.0",
+    "csstype": "^3.1.3",
     "tsc-alias": "^1.8.16",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "undici-types": "^7.16.0"
   }
 }
