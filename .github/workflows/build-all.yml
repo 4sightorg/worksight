@@ -13,6 +13,7 @@ on:
 
 env:
   NODE_VERSION: "20"
+  PNPM_VERSION: "10"
 
 jobs:
   changes:
@@ -51,17 +52,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
+          cache: "pnpm"
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Lint
-        run: npm run lint --workspace=@worksight/${{ matrix.app }}
+        run: pnpm --filter @worksight/${{ matrix.app }} lint
 
       - name: Build Docker image
         run: |

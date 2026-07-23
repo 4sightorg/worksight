@@ -2,27 +2,23 @@
 FROM node:24-alpine AS builder
 WORKDIR /app
 
-# Copy root manifests (required for monorepo install)
-COPY package.json turbo.json ./
+RUN corepack enable && corepack prepare pnpm@10.33.0 --activate
+
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml turbo.json ./
 COPY apps/docs/package.json apps/docs/
 
-# Install dependencies for the docs workspace
-RUN npm install --workspace=@worksight/docs --legacy-peer-deps
+RUN pnpm install --frozen-lockfile --filter @worksight/docs...
 
-# Copy the rest of the project
 COPY . .
 
-# Build VitePress site for production
-RUN npm --workspace=@worksight/docs run build
+RUN pnpm --filter @worksight/docs build
 
 # ---- Runtime stage ----
 FROM nginx:mainline-alpine
 WORKDIR /usr/share/nginx/html
 
-# Clean default nginx content
 RUN rm -rf ./*
 
-# Copy built site
 COPY --from=builder /app/apps/docs/.vitepress/dist ./
 
 EXPOSE 80

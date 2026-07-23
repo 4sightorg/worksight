@@ -1,23 +1,41 @@
-import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+import { createClient as createSupabaseClient, type SupabaseClient } from '@supabase/supabase-js';
 import { AUTH_CONFIG } from './identity';
 import { AuthResponse, SessionData, User } from './types';
 import { generateMockToken, isOffline, isSessionExpired, storage } from './utils';
 
-// Client-side Supabase instance for auth (only if not offline)
-const supabase = !isOffline()
-  ? (() => {
-      if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
-        throw new Error('NEXT_PUBLIC_SUPABASE_URL environment variable is not set');
-      }
-      if (!process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) {
-        throw new Error('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY environment variable is not set');
-      }
-      return createSupabaseClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL,
-        process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
-      );
-    })()
-  : null;
+const PLACEHOLDER_SUPABASE_URL = 'https://placeholder.supabase.co';
+const PLACEHOLDER_SUPABASE_KEY = 'placeholder-key';
+
+let supabaseClient: SupabaseClient | null | undefined;
+
+function getSupabaseClient(): SupabaseClient | null {
+  if (isOffline()) {
+    return null;
+  }
+
+  if (supabaseClient !== undefined) {
+    return supabaseClient;
+  }
+
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  const isBuild =
+    process.env.NEXT_PHASE === 'phase-production-build' || process.env.npm_lifecycle_event === 'build';
+
+  if (!url || !key) {
+    if (isBuild || process.env.NODE_ENV === 'production') {
+      // Allow next build / missing env without failing module evaluation
+      supabaseClient = createSupabaseClient(PLACEHOLDER_SUPABASE_URL, PLACEHOLDER_SUPABASE_KEY);
+      return supabaseClient;
+    }
+    throw new Error(
+      'NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY environment variables are required'
+    );
+  }
+
+  supabaseClient = createSupabaseClient(url, key);
+  return supabaseClient;
+}
 
 // Store session data with timestamp
 const storeSession = (user: User, accessToken: string, saveLogin: boolean): void => {
@@ -149,6 +167,7 @@ export async function signIn(
   }
 
   // Online mode with Supabase
+  const supabase = getSupabaseClient();
   if (supabase) {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
@@ -210,6 +229,7 @@ export async function signUp(
   }
 
   // Online mode with Supabase
+  const supabase = getSupabaseClient();
   if (supabase) {
     try {
       // First, sign up the user
@@ -273,6 +293,7 @@ export async function signInWithOAuth(provider: 'google' | 'github' | 'discord' 
     };
   }
 
+  const supabase = getSupabaseClient();
   if (supabase) {
     try {
       // Set up OAuth with custom redirect URL that includes account validation
@@ -338,6 +359,7 @@ export async function getCurrentUser(): Promise<User | null> {
   }
 
   // Check Supabase session if not offline
+  const supabase = getSupabaseClient();
   if (!isOffline() && supabase) {
     try {
       const {
@@ -369,6 +391,7 @@ export async function getCurrentUser(): Promise<User | null> {
 export async function signOut(): Promise<void> {
   clearSession();
 
+  const supabase = getSupabaseClient();
   if (!isOffline() && supabase) {
     await supabase.auth.signOut();
   }

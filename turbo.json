@@ -4,13 +4,15 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "build/**", "docs/.vitepress/dist/**", "dist/**"],
+      "outputs": [".next/**", "!.next/cache/**", "build/**", ".vitepress/dist/**", "dist/**"],
       "env": [
         "NEXT_PUBLIC_SUPABASE_URL",
         "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+        "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
         "NEXT_PUBLIC_APP_NAME",
         "NEXT_PUBLIC_APP_DESCRIPTION",
         "NEXT_PUBLIC_APP_URL",
+        "NEXT_PUBLIC_IS_OFFLINE",
         "IS_OFFLINE"
       ]
     },
@@ -29,6 +31,9 @@
       "outputs": ["coverage/**"]
     },
     "type-check": {
+      "dependsOn": ["^build"]
+    },
+    "quality": {
       "dependsOn": ["^build"]
     },
     "clean": {

@@ -2,53 +2,49 @@
 FROM node:24-alpine AS base
 WORKDIR /app
 
-# Enable Corepack (optional, mainly for yarn/pnpm)
-RUN corepack enable
+RUN corepack enable && corepack prepare pnpm@10.33.0 --activate
 
 # ---- Dependencies (dev + prod for build) ----
 FROM base AS deps
 WORKDIR /app
 
-# Copy manifests
-COPY package.json turbo.json ./
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml turbo.json ./
 COPY apps/web/package.json apps/web/
+COPY packages/assets/package.json packages/assets/
+COPY packages/common/package.json packages/common/
 
-# Install all dependencies (dev + prod) for build
-RUN npm install --workspace=@worksight/web --legacy-peer-deps
+RUN pnpm install --frozen-lockfile --filter @worksight/web...
 
 # ---- Build ----
 FROM deps AS build
 WORKDIR /app
 
-# Copy full source code
 COPY . .
 
-# Set dummy environment variables for build
 ENV NEXT_PUBLIC_SUPABASE_URL="http://localhost:54321"
 ENV NEXT_PUBLIC_SUPABASE_ANON_KEY="dummy_anon_key"
 ENV NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="dummy_key"
 ENV NEXT_PUBLIC_IS_OFFLINE=false
 
-# Build only the web app workspace
-RUN npm --workspace=apps/web run build
+RUN pnpm --filter @worksight/web build
 
 # ---- Runtime (production only) ----
 FROM node:24-alpine AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
 
-# Copy package manifests
-COPY package.json turbo.json ./
+RUN corepack enable && corepack prepare pnpm@10.33.0 --activate
+
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml turbo.json ./
 COPY apps/web/package.json apps/web/
+COPY packages/assets/package.json packages/assets/
+COPY packages/common/package.json packages/common/
 
-# Install only production dependencies for the web workspace
-RUN npm install --workspace=apps/web --omit=dev --legacy-peer-deps
+RUN pnpm install --frozen-lockfile --prod --filter @worksight/web...
 
-# Copy build artifacts
 COPY --from=build /app/apps/web/.next /app/apps/web/.next
 COPY --from=build /app/apps/web/public /app/apps/web/public
 
 EXPOSE 3000
 
-# Start the app
-CMD ["npm", "--workspace=apps/web", "start"]
+CMD ["pnpm", "--filter", "@worksight/web", "start"]

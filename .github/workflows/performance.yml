@@ -10,6 +10,7 @@ on:
 
 env:
   NODE_VERSION: '20'
+  PNPM_VERSION: '10'
   NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
   NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
   NEXT_PUBLIC_IS_OFFLINE: ${{ vars.NEXT_PUBLIC_IS_OFFLINE || 'false' }}
@@ -23,22 +24,27 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Build web app
-        run: npm run build --workspace=@worksight/web
+        run: pnpm --filter @worksight/web build
 
       - name: Start application
         run: |
           cd apps/web
-          npm start &
+          pnpm start &
           echo $! > server.pid
         shell: bash
 
@@ -47,7 +53,7 @@ jobs:
 
       - name: Run Lighthouse CI
         run: |
-          npx lhci autorun --upload.target=temporary-public-storage
+          pnpm dlx @lhci/cli autorun --upload.target=temporary-public-storage
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -66,17 +72,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Analyze bundle
-        run: npm run build:analyze --workspace=@worksight/web
+        run: pnpm --filter @worksight/web build:analyze
 
       - name: Upload bundle analysis
         uses: actions/upload-artifact@v4
