@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "installCommand": "npm install",
-  "buildCommand": "npm run build --workspace=@worksight/docs",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm --filter @worksight/docs build",
   "outputDirectory": ".vitepress/dist",
   "framework": "vitepress",
   "build": {
