@@ -24,8 +24,8 @@ describe('UsersService', () => {
     await expect(service.findById('does-not-exist')).resolves.toBeNull();
   });
 
-  it('computes stats over the shared fixtures', () => {
-    const stats = service.getStats();
+  it('computes stats over the shared fixtures', async () => {
+    const stats = await service.getStats();
     expect(stats.totalEmployees).toBe(Employees.length);
     const employeeRole = stats.roles.find(r => r.role === 'employee');
     expect(employeeRole?.count).toBe(Employees.filter(e => e.role === 'employee').length);

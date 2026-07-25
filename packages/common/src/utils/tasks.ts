@@ -48,8 +48,11 @@ export class AssignmentLookup extends BaseLookup<typeof AssignmentSchema> {
     return this.filter({ employee_id, ...filters });
   }
 
-  /** Compute stats for a given employee across tasks and activities */
-  getStats(employee_id: string) {
+  /**
+   * Compute stats for a given employee across tasks and activities.
+   * @param activities activity set to aggregate; defaults to the fixture data
+   */
+  getStats(employee_id: string, activities: Activity[] = Activities) {
     const employeeAssignments = this.filter({ employee_id });
     const completedAssignments = employeeAssignments.filter({ status: 'completed' });
 
@@ -57,7 +60,7 @@ export class AssignmentLookup extends BaseLookup<typeof AssignmentSchema> {
     const completedStoryPoints = completedAssignments.all().reduce((sum, t) => sum + (t.points ?? 0), 0);
 
     // Activities stats
-    const employeeActivities = Activities.filter((a) => a.employee_id === employee_id);
+    const employeeActivities = activities.filter((a) => a.employee_id === employee_id);
     const afterHours = employeeActivities.filter((a) => a.is_after_hours).length;
     const weekend = employeeActivities.filter((a) => a.is_weekend).length;
     const urgent = employeeActivities.filter((a) => a.is_urgent).length;

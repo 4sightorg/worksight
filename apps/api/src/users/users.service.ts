@@ -23,9 +23,11 @@ export class UsersService {
     return this.employees.getById(id);
   }
 
-  getStats(): ReturnType<EmployeeLookup['getStats']> {
-    // Stats still come from the in-memory lookup util; Postgres path returns the
-    // same shape over the loaded fixture until a SQL aggregate lands.
+  async getStats(): Promise<ReturnType<EmployeeLookup['getStats']>> {
+    if (this.repo.enabled) {
+      // Same lookup math, hydrated from Postgres instead of the fixtures.
+      return new EmployeeLookup(await this.repo.listEmployees()).getStats();
+    }
     return this.employees.getStats();
   }
 

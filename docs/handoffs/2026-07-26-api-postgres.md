@@ -73,6 +73,14 @@ the same fixtures the offline demo uses.
 - `EmployeeProfile.manager_id` is nullable; `Assignment.employee_id` /
   `source_id` are UUIDs.
 
+## DB-backed stats (follow-up branch `feat/api-db-stats`)
+
+- `GET /users/stats` and `GET /tasks/stats/:employeeId` now hydrate the
+  `@worksight/common` lookup helpers from Postgres in DB mode, so stats
+  reflect live rows instead of always echoing fixtures.
+  `AssignmentLookup.getStats` gained an optional `activities` parameter
+  (defaults to the fixture set, so web callers are unaffected).
+
 ## Surveys (follow-up branch `feat/api-surveys`)
 
 - Survey fixtures repaired: `SURVEY-123` → the real survey UUID, `EMP-001` →
