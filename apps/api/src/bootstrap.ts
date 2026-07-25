@@ -2,7 +2,6 @@ import { ClassSerializerInterceptor, type INestApplication, Logger } from '@nest
 import { NestFactory, Reflector } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { apiReference } from '@scalar/nestjs-api-reference';
 import express, { type Express, type Request, type Response } from 'express';
 import { AppModule } from './app.module';
 
@@ -50,8 +49,9 @@ export async function createApp(): Promise<BootstrappedApp> {
 /**
  * Docs on Vercel serverless:
  * Nest's default Swagger UI ships local swagger-ui-dist assets that never make
- * it into the function bundle (HTML 200, CSS/JS 404). Serve OpenAPI JSON
- * ourselves, Scalar as the primary UI, and a CDN-backed Swagger UI fallback.
+ * it into the function bundle (HTML 200, CSS/JS 404). @scalar/nestjs-api-reference
+ * is ESM-only and crashes Nest's CJS build with ERR_REQUIRE_ESM. Serve OpenAPI
+ * JSON ourselves and load Scalar / Swagger UI from CDN.
  */
 function setupApiDocs(app: INestApplication, server: Express): void {
   const config = new DocumentBuilder()
@@ -69,21 +69,40 @@ function setupApiDocs(app: INestApplication, server: Express): void {
   // Back-compat with Nest's previous `/api-json` URL.
   server.get('/api-json', sendOpenApi);
 
-  const scalar = apiReference({
-    content: document,
-    pageTitle: 'WorkSight API',
-  });
   // `/api` is the URL people already open; Scalar replaces the broken Swagger UI.
-  app.use('/api', scalar);
-  app.use('/reference', scalar);
+  server.get(['/api', '/reference'], (_req: Request, res: Response) => {
+    res.type('html').send(cdnScalarHtml('/openapi.json'));
+  });
 
   server.get('/swagger', (_req: Request, res: Response) => {
     res.type('html').send(cdnSwaggerHtml('/openapi.json'));
   });
 }
 
+function cdnScalarHtml(specUrl: string): string {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WorkSight API</title>
+</head>
+<body>
+  <script
+    id="api-reference"
+    data-url=${JSON.stringify(specUrl)}
+    data-configuration=${JSON.stringify({
+      theme: 'default',
+      hideModels: false,
+      metaData: { title: 'WorkSight API' },
+    })}
+  ></script>
+  <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@1.38.1/dist/browser/standalone.min.js" crossorigin></script>
+</body>
+</html>`;
+}
+
 function cdnSwaggerHtml(specUrl: string): string {
-  // Classic Swagger UI from CDN — no local swagger-ui-dist files required.
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
