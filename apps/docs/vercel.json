@@ -1,10 +1,7 @@
 {
-  "version": 2,
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "vitepress",
   "installCommand": "pnpm install --frozen-lockfile",
   "buildCommand": "pnpm --filter @worksight/docs build",
-  "outputDirectory": ".vitepress/dist",
-  "framework": "vitepress",
-  "build": {
-    "env": {}
-  }
+  "outputDirectory": ".vitepress/dist"
 }

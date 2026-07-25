@@ -136,24 +136,32 @@ pnpm preview          # Preview production build
 
 ### Production Environments
 
-- **Web Application**: [worksight.vercel.app](https://worksight.vercel.app)
-- **Documentation**: [worksight.github.io](https://worksight.github.io)
+- **Web Application** (`@worksight/web`): Vercel —
+  [worksight.vercel.app](https://worksight.vercel.app)
+- **Documentation** (`@worksight/docs`): GitHub Pages (optionally Vercel)
+- **API** (`@worksight/api`): Docker (`docker-compose.yml` + `nginx/`)
 
 ### Deployment Process
 
-1. **Automatic Deployment**:
-   - Push to `main` branch triggers production deployment
-   - Pull requests create preview deployments (web app only)
+This is a Turborepo + pnpm monorepo, so each app deploys as its **own** Vercel
+project (or non-Vercel target). Vercel loads a single `vercel.json` per project
+based on its dashboard **Root Directory** setting:
 
-2. **Manual Deployment**:
+- **Web** (`worksight`): Root Directory `apps/web` → `apps/web/vercel.json`.
+- **API** (`worksight-api`): Root Directory `apps/api` → `apps/api/vercel.json`
+  (still needs a serverless handler; Docker is the working path today).
+- **Docs** (`worksight-docs`): Root Directory `apps/docs` →
+  `apps/docs/vercel.json`.
 
-   ```bash
-   # Trigger GitHub Actions workflow
-   gh workflow run deploy.yml
-   ```
+All three share `pnpm install --frozen-lockfile`, a
+`pnpm --filter @worksight/<app> build` command, production branch `canary`, and
+skip-unaffected-project deploys. No environment values are committed to
+`vercel.json`.
 
-See [Deployment Guide](./apps/docs/guide/deployment.md) for detailed
-instructions.
+Dashboard-only steps (creating projects, setting Root Directory, adding env
+vars) cannot be performed by repo files. See the
+[Deployment Guide](./doc/DEPLOYMENT.md) for the full setup, including the
+required Vercel dashboard configuration.
 
 ## 🧪 Testing
 
