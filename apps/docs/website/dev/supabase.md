@@ -32,7 +32,7 @@ Nest `/users`, `/teams`, `/tasks`, `/activities` read **Postgres via
 `@worksight/common` fixtures when unset. They do **not** use the Supabase JS
 client.
 
-See [`docs/handoffs/2026-07-26-api-postgres.md`](../../handoffs/2026-07-26-api-postgres.md).
+See [`docs/handoffs/2026-07-26-api-postgres.md`](https://github.com/4sightorg/worksight/blob/canary/docs/handoffs/2026-07-26-api-postgres.md).
 
 ## Further reading
 
