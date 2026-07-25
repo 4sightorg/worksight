@@ -8,44 +8,46 @@ import { AppSidebar } from '@/components/main/sidebar';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { sections } from '@/data/sections';
 import {
-    UserFilters,
-    UserWithMetrics,
-    validateUserArray,
-    validateUserFilters,
+  UserFilters,
+  UserWithMetrics,
+  validateUserArray,
+  validateUserFilters,
 } from '@/schemas/user';
+import { fetchUsersWithMetricsFromApi } from '@/lib/mvp-api-bridge';
 import { getUsersWithMetrics } from '@/lib/mvp-data';
+import { isApiDataMode } from '@/lib/worksight-api';
 import {
-    AlertTriangle,
-    CheckCircle,
-    Clock,
-    Edit3,
-    LogOut,
-    MoreHorizontal,
-    Plus,
-    Search,
-    Shield,
-    Users,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  Edit3,
+  LogOut,
+  MoreHorizontal,
+  Plus,
+  Search,
+  Shield,
+  Users,
 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -57,26 +59,49 @@ function UserManagementContent() {
   const [riskFilter, setRiskFilter] = useState<string>('all');
   const [isLoading, setIsLoading] = useState(true);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [dataSource, setDataSource] = useState<'api' | 'fixtures'>('fixtures');
 
   useEffect(() => {
-    // Load employees from @worksight/common fixtures
-    const fixtureUsers = getUsersWithMetrics();
-    const validationResult = validateUserArray(fixtureUsers);
+    let cancelled = false;
 
-    if (!validationResult.allValid) {
-      const errors = validationResult.invalid.map(
-        (item) =>
-          `User at index ${item.index}: ${item.errors?.map((e: { message: string }) => e.message).join(', ')}`
-      );
-      setValidationErrors(errors);
-    }
+    const applyUsers = (rawUsers: UserWithMetrics[], source: 'api' | 'fixtures') => {
+      const validationResult = validateUserArray(rawUsers);
 
-    if (validationResult.valid.length === 0 && fixtureUsers.length > 0) {
-      throw new Error('Common employee fixtures failed validation; refusing empty fallback');
-    }
+      if (!validationResult.allValid) {
+        const errors = validationResult.invalid.map(
+          item =>
+            `User at index ${item.index}: ${item.errors?.map((e: { message: string }) => e.message).join(', ')}`
+        );
+        setValidationErrors(errors);
+      }
 
-    setUsers(validationResult.valid.map((item) => item.data!));
-    setIsLoading(false);
+      if (validationResult.valid.length === 0 && rawUsers.length > 0) {
+        throw new Error('Employee payloads failed validation; refusing empty fallback');
+      }
+
+      if (!cancelled) {
+        setDataSource(source);
+        setUsers(validationResult.valid.map(item => item.data!));
+        setIsLoading(false);
+      }
+    };
+
+    (async () => {
+      if (isApiDataMode()) {
+        try {
+          const apiUsers = await fetchUsersWithMetricsFromApi();
+          applyUsers(apiUsers, 'api');
+          return;
+        } catch (err) {
+          console.warn('API user load failed; falling back to fixtures', err);
+        }
+      }
+      applyUsers(getUsersWithMetrics(), 'fixtures');
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Validate filters when they change
@@ -112,7 +137,7 @@ function UserManagementContent() {
   };
 
   const filteredUsers = useMemo(() => {
-    return users.filter((user) => {
+    return users.filter(user => {
       const matchesSearch =
         user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -126,7 +151,7 @@ function UserManagementContent() {
   }, [users, searchTerm, departmentFilter, riskFilter]);
 
   const departments = useMemo(() => {
-    const depts = Array.from(new Set(users.map((u) => u.department)));
+    const depts = Array.from(new Set(users.map(u => u.department)));
     return depts.sort();
   }, [users]);
 
@@ -177,7 +202,12 @@ function UserManagementContent() {
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
                   <Users className="h-6 w-6 text-blue-600" />
-                  <h1 className="text-3xl font-bold tracking-tight">User Management</h1>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h1 className="text-3xl font-bold tracking-tight">User Management</h1>
+                    <Badge variant="outline">
+                      data: {dataSource === 'api' ? 'Nest API' : 'common fixtures'}
+                    </Badge>
+                  </div>
                 </div>
                 <p className="text-muted-foreground">
                   Manage user accounts, roles, and monitor burnout metrics
@@ -229,7 +259,7 @@ function UserManagementContent() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-red-600">
-                    {users.filter((u) => u.riskLevel === 'high').length}
+                    {users.filter(u => u.riskLevel === 'high').length}
                   </div>
                 </CardContent>
               </Card>
@@ -241,7 +271,7 @@ function UserManagementContent() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-green-600">
-                    {users.filter((u) => u.surveyCompleted).length}
+                    {users.filter(u => u.surveyCompleted).length}
                   </div>
                 </CardContent>
               </Card>
@@ -272,7 +302,7 @@ function UserManagementContent() {
                     <Input
                       placeholder="Search users by name, email, or department..."
                       value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
+                      onChange={e => setSearchTerm(e.target.value)}
                       className="pl-10"
                     />
                   </div>
@@ -282,7 +312,7 @@ function UserManagementContent() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Departments</SelectItem>
-                      {departments.map((dept) => (
+                      {departments.map(dept => (
                         <SelectItem key={dept} value={dept}>
                           {dept}
                         </SelectItem>
@@ -328,7 +358,7 @@ function UserManagementContent() {
                           <AvatarFallback>
                             {user.name
                               ?.split(' ')
-                              .map((n) => n[0])
+                              .map(n => n[0])
                               .join('') || 'U'}
                           </AvatarFallback>
                         </Avatar>

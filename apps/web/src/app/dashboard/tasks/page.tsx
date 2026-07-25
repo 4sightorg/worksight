@@ -10,52 +10,54 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
 import {
-    DndContext,
-    DragEndEvent,
-    DragOverlay,
-    DragStartEvent,
-    PointerSensor,
-    closestCenter,
-    useSensor,
-    useSensors,
+  DndContext,
+  DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
 } from '@dnd-kit/core';
 import {
-    SortableContext,
-    arrayMove,
-    useSortable,
-    verticalListSortingStrategy,
+  SortableContext,
+  arrayMove,
+  useSortable,
+  verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import {
-    AlertCircle,
-    CheckCircle,
-    Clock,
-    Flag,
-    GripVertical,
-    LayoutGrid,
-    List,
-    Plus,
+  AlertCircle,
+  CheckCircle,
+  Clock,
+  Flag,
+  GripVertical,
+  LayoutGrid,
+  List,
+  Plus,
 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { fetchDashboardTasksFromApi } from '@/lib/mvp-api-bridge';
 import { assignmentLookup } from '@/lib/mvp-data';
+import { isApiDataMode } from '@/lib/worksight-api';
 import type { Assignment } from '@worksight/common/types';
 
 interface Task {
@@ -87,7 +89,7 @@ function getInitialTasksFromCommon(): Task[] {
   if (assignments.length === 0) {
     throw new Error('Common assignment fixtures empty; refusing silent empty fallback');
   }
-  return assignments.map((assignment) => ({
+  return assignments.map(assignment => ({
     id: assignment.id,
     title: assignment.title ?? assignment.external_id ?? 'Untitled task',
     description: [assignment.epic, assignment.sprint, assignment.type].filter(Boolean).join(' · '),
@@ -119,10 +121,29 @@ const statusOrder: Task['status'][] = ['pending', 'in-progress', 'completed'];
 
 export default function TasksPage() {
   const [viewMode, setViewMode] = useState<ViewMode>('kanban');
-  const [tasks, setTasks] = useState<Task[]>(() => getInitialTasksFromCommon());
+  const [tasks, setTasks] = useState<Task[]>(() =>
+    isApiDataMode() ? [] : getInitialTasksFromCommon()
+  );
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [showNewTaskDialog, setShowNewTaskDialog] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isApiDataMode()) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const apiTasks = await fetchDashboardTasksFromApi();
+        if (!cancelled) setTasks(apiTasks);
+      } catch (err) {
+        console.warn('API dashboard tasks failed; falling back to fixtures', err);
+        if (!cancelled) setTasks(getInitialTasksFromCommon());
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Get current user's stats if they're an employee
 
@@ -134,14 +155,14 @@ export default function TasksPage() {
     })
   );
 
-  const completedTasks = tasks.filter((task) => task.status === 'completed');
-  const inProgressTasks = tasks.filter((task) => task.status === 'in-progress');
+  const completedTasks = tasks.filter(task => task.status === 'completed');
+  const inProgressTasks = tasks.filter(task => task.status === 'in-progress');
 
   const totalStoryPoints = tasks.reduce((sum, task) => sum + task.storyPoints, 0);
   const completedStoryPoints = completedTasks.reduce((sum, task) => sum + task.storyPoints, 0);
 
   const handleDragStart = (event: DragStartEvent) => {
-    const task = tasks.find((t) => t.id === event.active.id);
+    const task = tasks.find(t => t.id === event.active.id);
     setActiveTask(task || null);
   };
 
@@ -153,7 +174,7 @@ export default function TasksPage() {
       return;
     }
 
-    const activeTask = tasks.find((t) => t.id === active.id);
+    const activeTask = tasks.find(t => t.id === active.id);
     if (!activeTask) {
       setActiveTask(null);
       return;
@@ -163,25 +184,25 @@ export default function TasksPage() {
     if (over.id === 'pending' || over.id === 'in-progress' || over.id === 'completed') {
       const newStatus = over.id as Task['status'];
       if (activeTask.status !== newStatus) {
-        setTasks((prev) =>
-          prev.map((task) => (task.id === activeTask.id ? { ...task, status: newStatus } : task))
+        setTasks(prev =>
+          prev.map(task => (task.id === activeTask.id ? { ...task, status: newStatus } : task))
         );
       }
     } else {
       // Reordering within same status or between tasks
       const overId = over.id as string;
-      const overTask = tasks.find((t) => t.id === overId);
+      const overTask = tasks.find(t => t.id === overId);
 
       if (overTask && activeTask.id !== overTask.id) {
-        setTasks((prev) => {
-          const oldIndex = prev.findIndex((t) => t.id === activeTask.id);
-          const newIndex = prev.findIndex((t) => t.id === overTask.id);
+        setTasks(prev => {
+          const oldIndex = prev.findIndex(t => t.id === activeTask.id);
+          const newIndex = prev.findIndex(t => t.id === overTask.id);
 
           const updatedTasks = arrayMove(prev, oldIndex, newIndex);
 
           // If moving to a different status group, update the status
           if (activeTask.status !== overTask.status) {
-            return updatedTasks.map((task) =>
+            return updatedTasks.map(task =>
               task.id === activeTask.id ? { ...task, status: overTask.status } : task
             );
           }
@@ -195,8 +216,8 @@ export default function TasksPage() {
   };
 
   const toggleTaskStatus = (taskId: string) => {
-    setTasks((prev) =>
-      prev.map((task) => {
+    setTasks(prev =>
+      prev.map(task => {
         if (task.id === taskId) {
           const currentIndex = statusOrder.indexOf(task.status);
           const nextIndex = (currentIndex + 1) % statusOrder.length;
@@ -212,12 +233,12 @@ export default function TasksPage() {
       ...newTask,
       id: Date.now().toString(), // Simple ID generation
     };
-    setTasks((prev) => [...prev, task]);
+    setTasks(prev => [...prev, task]);
     setShowNewTaskDialog(false);
   };
 
   const updateTask = (taskId: string, updates: Partial<Task>) => {
-    setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, ...updates } : task)));
+    setTasks(prev => prev.map(task => (task.id === taskId ? { ...task, ...updates } : task)));
   };
 
   return (
@@ -286,94 +307,128 @@ export default function TasksPage() {
                     label: 'Learn about tasks',
                     href: '/help',
                   }}
-                  illustration={<svg aria-hidden="true" className="mx-auto mt-6 h-32 w-32 opacity-30" viewBox="0 0 200 200">
-                    <circle cx="100" cy="100" r="90" className="fill-primary/5" />
-                    <rect x="55" y="60" width="90" height="12" rx="3" className="fill-primary/10" />
-                    <rect x="55" y="86" width="70" height="12" rx="3" className="fill-primary/10" />
-                    <rect x="55" y="112" width="80" height="12" rx="3" className="fill-primary/10" />
-                    <rect x="55" y="138" width="50" height="12" rx="3" className="fill-primary/10" />
-                  </svg>}
+                  illustration={
+                    <svg
+                      aria-hidden="true"
+                      className="mx-auto mt-6 h-32 w-32 opacity-30"
+                      viewBox="0 0 200 200"
+                    >
+                      <circle cx="100" cy="100" r="90" className="fill-primary/5" />
+                      <rect
+                        x="55"
+                        y="60"
+                        width="90"
+                        height="12"
+                        rx="3"
+                        className="fill-primary/10"
+                      />
+                      <rect
+                        x="55"
+                        y="86"
+                        width="70"
+                        height="12"
+                        rx="3"
+                        className="fill-primary/10"
+                      />
+                      <rect
+                        x="55"
+                        y="112"
+                        width="80"
+                        height="12"
+                        rx="3"
+                        className="fill-primary/10"
+                      />
+                      <rect
+                        x="55"
+                        y="138"
+                        width="50"
+                        height="12"
+                        rx="3"
+                        className="fill-primary/10"
+                      />
+                    </svg>
+                  }
                 />
               ) : (
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Total Tasks</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">{tasks.length}</div>
-                    <p className="text-muted-foreground text-xs">
-                      {totalStoryPoints} story points total
-                    </p>
-                  </CardContent>
-                </Card>
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                  <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">Total Tasks</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">{tasks.length}</div>
+                      <p className="text-muted-foreground text-xs">
+                        {totalStoryPoints} story points total
+                      </p>
+                    </CardContent>
+                  </Card>
 
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Completed</CardTitle>
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">{completedTasks.length}</div>
-                    <p className="text-muted-foreground text-xs">
-                      {completedStoryPoints} story points
-                    </p>
-                  </CardContent>
-                </Card>
+                  <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">Completed</CardTitle>
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">{completedTasks.length}</div>
+                      <p className="text-muted-foreground text-xs">
+                        {completedStoryPoints} story points
+                      </p>
+                    </CardContent>
+                  </Card>
 
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">In Progress</CardTitle>
-                    <AlertCircle className="h-4 w-4 text-blue-500" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">{inProgressTasks.length}</div>
-                    <p className="text-muted-foreground text-xs">Active work items</p>
-                  </CardContent>
-                </Card>
+                  <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">In Progress</CardTitle>
+                      <AlertCircle className="h-4 w-4 text-blue-500" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">{inProgressTasks.length}</div>
+                      <p className="text-muted-foreground text-xs">Active work items</p>
+                    </CardContent>
+                  </Card>
 
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Completion Rate</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">
-                      {Math.round((completedTasks.length / tasks.length) * 100)}%
-                    </div>
-                    <p className="text-muted-foreground text-xs">Task completion rate</p>
-                  </CardContent>
-                </Card>
-              </div>
+                  <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">Completion Rate</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">
+                        {Math.round((completedTasks.length / tasks.length) * 100)}%
+                      </div>
+                      <p className="text-muted-foreground text-xs">Task completion rate</p>
+                    </CardContent>
+                  </Card>
+                </div>
               )}
 
               {/* Task Views */}
               {tasks.length > 0 && (
-              <DndContext
-                sensors={sensors}
-                onDragStart={handleDragStart}
-                onDragEnd={handleDragEnd}
-                collisionDetection={closestCenter}
-                autoScroll={{
-                  enabled: false,
-                }}
-              >
-                {viewMode === 'kanban' ? (
-                  <KanbanView tasks={tasks} onToggleStatus={toggleTaskStatus} />
-                ) : (
-                  <TableView
-                    tasks={tasks}
-                    onToggleStatus={toggleTaskStatus}
-                    onUpdateTask={updateTask}
-                    editingTaskId={editingTaskId}
-                    setEditingTaskId={setEditingTaskId}
-                    isDragging={!!activeTask}
-                  />
-                )}
+                <DndContext
+                  sensors={sensors}
+                  onDragStart={handleDragStart}
+                  onDragEnd={handleDragEnd}
+                  collisionDetection={closestCenter}
+                  autoScroll={{
+                    enabled: false,
+                  }}
+                >
+                  {viewMode === 'kanban' ? (
+                    <KanbanView tasks={tasks} onToggleStatus={toggleTaskStatus} />
+                  ) : (
+                    <TableView
+                      tasks={tasks}
+                      onToggleStatus={toggleTaskStatus}
+                      onUpdateTask={updateTask}
+                      editingTaskId={editingTaskId}
+                      setEditingTaskId={setEditingTaskId}
+                      isDragging={!!activeTask}
+                    />
+                  )}
 
-                <DragOverlay>
-                  {activeTask ? <TaskCard task={activeTask} isDragging /> : null}
-                </DragOverlay>
-              </DndContext>
+                  <DragOverlay>
+                    {activeTask ? <TaskCard task={activeTask} isDragging /> : null}
+                  </DragOverlay>
+                </DndContext>
               )}
 
               {/* New Task Dialog */}
@@ -399,15 +454,15 @@ function KanbanView({
   onToggleStatus: (taskId: string) => void;
 }) {
   const tasksByStatus = {
-    pending: tasks.filter((task) => task.status === 'pending'),
-    'in-progress': tasks.filter((task) => task.status === 'in-progress'),
-    completed: tasks.filter((task) => task.status === 'completed'),
+    pending: tasks.filter(task => task.status === 'pending'),
+    'in-progress': tasks.filter(task => task.status === 'in-progress'),
+    completed: tasks.filter(task => task.status === 'completed'),
   };
 
   return (
     <div className="w-full overflow-hidden">
       <div className="grid gap-6 overflow-hidden lg:grid-cols-3">
-        {statusOrder.map((status) => {
+        {statusOrder.map(status => {
           const statusInfo = statusConfig[status];
           const StatusIcon = statusInfo.icon;
           const statusTasks = tasksByStatus[status];
@@ -458,11 +513,8 @@ function KanbanColumn({
         ref={setNodeRef}
         className="border-muted-foreground/25 max-h-[600px] min-h-[200px] space-y-3 overflow-y-auto rounded-lg border-2 border-dashed p-4"
       >
-        <SortableContext
-          items={tasks.map((task) => task.id)}
-          strategy={verticalListSortingStrategy}
-        >
-          {tasks.map((task) => (
+        <SortableContext items={tasks.map(task => task.id)} strategy={verticalListSortingStrategy}>
+          {tasks.map(task => (
             <SortableTaskCard key={task.id} task={task} onToggleStatus={onToggleStatus} />
           ))}
         </SortableContext>
@@ -493,10 +545,7 @@ function TableView({
         <CardTitle>Tasks Table</CardTitle>
       </CardHeader>
       <CardContent>
-        <SortableContext
-          items={tasks.map((task) => task.id)}
-          strategy={verticalListSortingStrategy}
-        >
+        <SortableContext items={tasks.map(task => task.id)} strategy={verticalListSortingStrategy}>
           <Table>
             <TableHeader>
               <TableRow>
@@ -510,14 +559,14 @@ function TableView({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {tasks.map((task) => (
+              {tasks.map(task => (
                 <SortableTableRow
                   key={task.id}
                   task={task}
                   onToggleStatus={onToggleStatus}
                   onUpdateTask={onUpdateTask}
                   isEditing={editingTaskId === task.id}
-                  setEditing={(editing) => setEditingTaskId(editing ? task.id : null)}
+                  setEditing={editing => setEditingTaskId(editing ? task.id : null)}
                   disabled={isDragging}
                 />
               ))}
@@ -630,13 +679,13 @@ function SortableTableRow({
           <div className="space-y-2">
             <Input
               value={editValues.title}
-              onChange={(e) => setEditValues({ ...editValues, title: e.target.value })}
+              onChange={e => setEditValues({ ...editValues, title: e.target.value })}
               placeholder="Task title"
               className="font-medium"
             />
             <Textarea
               value={editValues.description}
-              onChange={(e) => setEditValues({ ...editValues, description: e.target.value })}
+              onChange={e => setEditValues({ ...editValues, description: e.target.value })}
               placeholder="Task description"
               className="text-sm"
               rows={2}
@@ -645,7 +694,12 @@ function SortableTableRow({
               <Button size="sm" onClick={handleSave} aria-label="Save task changes">
                 Save Task
               </Button>
-              <Button size="sm" variant="outline" onClick={handleCancel} aria-label="Cancel editing task">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleCancel}
+                aria-label="Cancel editing task"
+              >
                 Cancel Edit
               </Button>
             </div>
@@ -661,7 +715,7 @@ function SortableTableRow({
         {isEditing ? (
           <Select
             value={editValues.status}
-            onValueChange={(value) =>
+            onValueChange={value =>
               setEditValues({ ...editValues, status: value as Task['status'] })
             }
           >
@@ -682,7 +736,7 @@ function SortableTableRow({
         {isEditing ? (
           <Select
             value={editValues.priority}
-            onValueChange={(value) =>
+            onValueChange={value =>
               setEditValues({ ...editValues, priority: value as Task['priority'] })
             }
           >
@@ -704,7 +758,7 @@ function SortableTableRow({
           <Input
             type="date"
             value={editValues.dueDate}
-            onChange={(e) => setEditValues({ ...editValues, dueDate: e.target.value })}
+            onChange={e => setEditValues({ ...editValues, dueDate: e.target.value })}
           />
         ) : (
           new Date(task.dueDate).toLocaleDateString()
@@ -715,7 +769,7 @@ function SortableTableRow({
           <Input
             type="number"
             value={editValues.storyPoints}
-            onChange={(e) =>
+            onChange={e =>
               setEditValues({ ...editValues, storyPoints: parseInt(e.target.value) || 0 })
             }
             min="0"
@@ -753,7 +807,7 @@ function TaskCard({
               <Checkbox
                 checked={task.status === 'completed'}
                 onCheckedChange={() => onToggleStatus(task.id)}
-                onClick={(e) => e.stopPropagation()}
+                onClick={e => e.stopPropagation()}
               />
             )}
             <div>
@@ -852,24 +906,30 @@ function NewTaskDialog({
     });
     // Make background inert (basic implementation)
     const rootChildren = Array.from(document.body.children).filter(
-      (el) => !el.id.startsWith('task-dialog-portal')
+      el => !el.id.startsWith('task-dialog-portal')
     );
-    rootChildren.forEach((el) => {
+    rootChildren.forEach(el => {
       if (el.getAttribute('aria-hidden') === 'true') return;
       el.setAttribute('aria-hidden', 'true');
     });
     return () => {
       document.removeEventListener('keydown', onKeyDown);
       cancelAnimationFrame(timer);
-      rootChildren.forEach((el) => el.removeAttribute('aria-hidden'));
+      rootChildren.forEach(el => el.removeAttribute('aria-hidden'));
       previouslyFocusedRef.current?.focus();
     };
   }, [open, onKeyDown]);
 
   const validate = () => {
     const v: { id: string; message: string; field?: string }[] = [];
-    if (!newTask.title.trim()) v.push({ id: 'title', message: 'Title is required.', field: 'task-title-input' });
-    if (newTask.storyPoints < 1) v.push({ id: 'storyPoints', message: 'Story points must be at least 1.', field: 'task-story-points' });
+    if (!newTask.title.trim())
+      v.push({ id: 'title', message: 'Title is required.', field: 'task-title-input' });
+    if (newTask.storyPoints < 1)
+      v.push({
+        id: 'storyPoints',
+        message: 'Story points must be at least 1.',
+        field: 'task-story-points',
+      });
     return v;
   };
 
@@ -930,7 +990,7 @@ function NewTaskDialog({
           >
             <p className="font-medium text-destructive mb-1">Please correct the following:</p>
             <ul className="list-disc pl-5 space-y-0.5">
-              {errors.map((e) => (
+              {errors.map(e => (
                 <li key={e.id}>{e.message}</li>
               ))}
             </ul>
@@ -939,23 +999,27 @@ function NewTaskDialog({
 
         <div className="space-y-4">
           <div>
-            <label className="text-sm font-medium" htmlFor="task-title-input">Title</label>
+            <label className="text-sm font-medium" htmlFor="task-title-input">
+              Title
+            </label>
             <Input
               id="task-title-input"
               ref={firstFieldRef}
               value={newTask.title}
-              onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+              onChange={e => setNewTask({ ...newTask, title: e.target.value })}
               placeholder="Enter task title"
               aria-required="true"
-              aria-invalid={errors.some((e) => e.id === 'title') || undefined}
-              aria-describedby={[
-                errors.some((e) => e.id === 'title') && 'task-title-error',
-                errors.length > 0 && 'new-task-error-summary',
-              ]
-                .filter(Boolean)
-                .join(' ') || undefined}
+              aria-invalid={errors.some(e => e.id === 'title') || undefined}
+              aria-describedby={
+                [
+                  errors.some(e => e.id === 'title') && 'task-title-error',
+                  errors.length > 0 && 'new-task-error-summary',
+                ]
+                  .filter(Boolean)
+                  .join(' ') || undefined
+              }
             />
-            {errors.some((e) => e.id === 'title') && (
+            {errors.some(e => e.id === 'title') && (
               <p id="task-title-error" className="mt-1 text-xs text-destructive">
                 Title is required.
               </p>
@@ -963,11 +1027,13 @@ function NewTaskDialog({
           </div>
 
           <div>
-            <label className="text-sm font-medium" htmlFor="task-desc-input">Description</label>
+            <label className="text-sm font-medium" htmlFor="task-desc-input">
+              Description
+            </label>
             <Textarea
               id="task-desc-input"
               value={newTask.description}
-              onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
+              onChange={e => setNewTask({ ...newTask, description: e.target.value })}
               placeholder="Enter task description"
               rows={3}
               aria-describedby={errors.length > 0 ? 'new-task-error-summary' : undefined}
@@ -976,12 +1042,12 @@ function NewTaskDialog({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium" htmlFor="task-status-select">Status</label>
+              <label className="text-sm font-medium" htmlFor="task-status-select">
+                Status
+              </label>
               <Select
                 value={newTask.status}
-                onValueChange={(value) =>
-                  setNewTask({ ...newTask, status: value as Task['status'] })
-                }
+                onValueChange={value => setNewTask({ ...newTask, status: value as Task['status'] })}
               >
                 <SelectTrigger id="task-status-select">
                   <SelectValue />
@@ -995,10 +1061,12 @@ function NewTaskDialog({
             </div>
 
             <div>
-              <label className="text-sm font-medium" htmlFor="task-priority-select">Priority</label>
+              <label className="text-sm font-medium" htmlFor="task-priority-select">
+                Priority
+              </label>
               <Select
                 value={newTask.priority}
-                onValueChange={(value) =>
+                onValueChange={value =>
                   setNewTask({ ...newTask, priority: value as Task['priority'] })
                 }
               >
@@ -1016,35 +1084,41 @@ function NewTaskDialog({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium" htmlFor="task-due-date">Due Date</label>
+              <label className="text-sm font-medium" htmlFor="task-due-date">
+                Due Date
+              </label>
               <Input
                 id="task-due-date"
                 type="date"
                 value={newTask.dueDate}
-                onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
+                onChange={e => setNewTask({ ...newTask, dueDate: e.target.value })}
                 aria-describedby={errors.length > 0 ? 'new-task-error-summary' : undefined}
               />
             </div>
 
             <div>
-              <label className="text-sm font-medium" htmlFor="task-story-points">Story Points</label>
+              <label className="text-sm font-medium" htmlFor="task-story-points">
+                Story Points
+              </label>
               <Input
                 id="task-story-points"
                 type="number"
                 value={newTask.storyPoints}
-                onChange={(e) =>
+                onChange={e =>
                   setNewTask({ ...newTask, storyPoints: parseInt(e.target.value) || 1 })
                 }
                 min="1"
-                aria-invalid={errors.some((e) => e.id === 'storyPoints') || undefined}
-                aria-describedby={[
-                  errors.some((e) => e.id === 'storyPoints') && 'task-story-points-error',
-                  errors.length > 0 && 'new-task-error-summary',
-                ]
-                  .filter(Boolean)
-                  .join(' ') || undefined}
+                aria-invalid={errors.some(e => e.id === 'storyPoints') || undefined}
+                aria-describedby={
+                  [
+                    errors.some(e => e.id === 'storyPoints') && 'task-story-points-error',
+                    errors.length > 0 && 'new-task-error-summary',
+                  ]
+                    .filter(Boolean)
+                    .join(' ') || undefined
+                }
               />
-              {errors.some((e) => e.id === 'storyPoints') && (
+              {errors.some(e => e.id === 'storyPoints') && (
                 <p id="task-story-points-error" className="mt-1 text-xs text-destructive">
                   Story points must be at least 1.
                 </p>
@@ -1054,11 +1128,7 @@ function NewTaskDialog({
         </div>
 
         <div className="mt-6 flex justify-end gap-3">
-          <Button
-            variant="outline"
-            onClick={onClose}
-            aria-label="Cancel creating new task dialog"
-          >
+          <Button variant="outline" onClick={onClose} aria-label="Cancel creating new task dialog">
             Cancel Creation
           </Button>
           <Button
@@ -1071,18 +1141,14 @@ function NewTaskDialog({
         </div>
         <button
           type="button"
-            className="absolute right-3 top-3 rounded p-1 text-muted-foreground hover:text-foreground focus-visible:outline-none"
-            aria-label="Close dialog"
-            onClick={onClose}
+          className="absolute right-3 top-3 rounded p-1 text-muted-foreground hover:text-foreground focus-visible:outline-none"
+          aria-label="Close dialog"
+          onClick={onClose}
         >
           <span aria-hidden="true">×</span>
         </button>
       </div>
-      <div
-        className="bg-black/50 fixed inset-0 -z-10"
-        aria-hidden="true"
-        onClick={onClose}
-      />
+      <div className="bg-black/50 fixed inset-0 -z-10" aria-hidden="true" onClick={onClose} />
     </div>
   );
 

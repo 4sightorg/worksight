@@ -13,7 +13,9 @@
         "NEXT_PUBLIC_APP_DESCRIPTION",
         "NEXT_PUBLIC_APP_URL",
         "NEXT_PUBLIC_IS_OFFLINE",
-        "IS_OFFLINE"
+        "IS_OFFLINE",
+        "NEXT_PUBLIC_USE_API",
+        "NEXT_PUBLIC_API_URL"
       ]
     },
     "dev": {

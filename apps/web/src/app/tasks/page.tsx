@@ -6,46 +6,48 @@ import { SessionTimer } from '@/components/features';
 import { AppSidebar } from '@/components/main/sidebar';
 import { Badge } from '@/components/ui/badge';
 import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { sections } from '@/data/sections';
 import {
-    closestCenter,
-    DndContext,
-    DragEndEvent,
-    KeyboardSensor,
-    PointerSensor,
-    useSensor,
-    useSensors,
+  closestCenter,
+  DndContext,
+  DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
 } from '@dnd-kit/core';
 import {
-    arrayMove,
-    SortableContext,
-    sortableKeyboardCoordinates,
-    useSortable,
-    verticalListSortingStrategy,
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { AlertCircle, CheckSquare, Clock, GripVertical, LogOut, Plus, Search } from 'lucide-react';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { fetchMvpTasksFromApi } from '@/lib/mvp-api-bridge';
 import { getMvpTasks, type MvpTask } from '@/lib/mvp-data';
+import { isApiDataMode } from '@/lib/worksight-api';
 
 type Task = MvpTask;
 
@@ -116,8 +118,8 @@ function SortableTask({ task, onTaskUpdate }: SortableTaskProps) {
             {isEditing === 'title' ? (
               <Input
                 defaultValue={task.title}
-                onBlur={(e) => handleFieldUpdate('title', e.target.value)}
-                onKeyDown={(e) => {
+                onBlur={e => handleFieldUpdate('title', e.target.value)}
+                onKeyDown={e => {
                   if (e.key === 'Enter') {
                     handleFieldUpdate('title', e.currentTarget.value);
                   }
@@ -142,8 +144,8 @@ function SortableTask({ task, onTaskUpdate }: SortableTaskProps) {
           {isEditing === 'description' ? (
             <Input
               defaultValue={task.description}
-              onBlur={(e) => handleFieldUpdate('description', e.target.value)}
-              onKeyDown={(e) => {
+              onBlur={e => handleFieldUpdate('description', e.target.value)}
+              onKeyDown={e => {
                 if (e.key === 'Enter') {
                   handleFieldUpdate('description', e.currentTarget.value);
                 }
@@ -168,7 +170,7 @@ function SortableTask({ task, onTaskUpdate }: SortableTaskProps) {
             <div className="flex items-center gap-2">
               <Select
                 value={task.status}
-                onValueChange={(value) => handleFieldUpdate('status', value)}
+                onValueChange={value => handleFieldUpdate('status', value)}
               >
                 <SelectTrigger className="h-7 w-32 text-xs">
                   <SelectValue />
@@ -182,7 +184,7 @@ function SortableTask({ task, onTaskUpdate }: SortableTaskProps) {
 
               <Select
                 value={task.priority}
-                onValueChange={(value) => handleFieldUpdate('priority', value)}
+                onValueChange={value => handleFieldUpdate('priority', value)}
               >
                 <SelectTrigger className="h-7 w-24 text-xs">
                   <SelectValue />
@@ -210,12 +212,34 @@ function TasksContent() {
   const { user, logout } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [tasks, setTasks] = useState<Task[]>(() => {
+    if (isApiDataMode()) return [];
     const fixtureTasks = getMvpTasks();
     if (fixtureTasks.length === 0) {
       throw new Error('Common assignment fixtures empty; refusing silent empty fallback');
     }
     return [...fixtureTasks].sort((a, b) => a.order - b.order);
   });
+
+  useEffect(() => {
+    if (!isApiDataMode()) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const apiTasks = await fetchMvpTasksFromApi();
+        if (!cancelled) {
+          setTasks([...apiTasks].sort((a, b) => a.order - b.order));
+        }
+      } catch (err) {
+        console.warn('API task load failed; falling back to fixtures', err);
+        if (!cancelled) {
+          setTasks([...getMvpTasks()].sort((a, b) => a.order - b.order));
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -229,16 +253,16 @@ function TasksContent() {
   };
 
   const handleTaskUpdate = useCallback((id: string, updates: Partial<Task>) => {
-    setTasks((tasks) => tasks.map((task) => (task.id === id ? { ...task, ...updates } : task)));
+    setTasks(tasks => tasks.map(task => (task.id === id ? { ...task, ...updates } : task)));
   }, []);
 
   const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;
 
     if (active.id !== over?.id) {
-      setTasks((tasks) => {
-        const oldIndex = tasks.findIndex((task) => task.id === active.id);
-        const newIndex = tasks.findIndex((task) => task.id === over?.id);
+      setTasks(tasks => {
+        const oldIndex = tasks.findIndex(task => task.id === active.id);
+        const newIndex = tasks.findIndex(task => task.id === over?.id);
 
         const newTasks = arrayMove(tasks, oldIndex, newIndex);
         // Update order property
@@ -250,7 +274,7 @@ function TasksContent() {
   const filteredTasks = useMemo(
     () =>
       tasks.filter(
-        (task) =>
+        task =>
           task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
           task.description.toLowerCase().includes(searchTerm.toLowerCase())
       ),
@@ -259,9 +283,9 @@ function TasksContent() {
 
   const tasksByStatus = useMemo(
     () => ({
-      todo: filteredTasks.filter((t) => t.status === 'todo'),
-      'in-progress': filteredTasks.filter((t) => t.status === 'in-progress'),
-      completed: filteredTasks.filter((t) => t.status === 'completed'),
+      todo: filteredTasks.filter(t => t.status === 'todo'),
+      'in-progress': filteredTasks.filter(t => t.status === 'in-progress'),
+      completed: filteredTasks.filter(t => t.status === 'completed'),
     }),
     [filteredTasks]
   );
@@ -313,7 +337,7 @@ function TasksContent() {
             <Input
               placeholder="Search tasks..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
               className="pl-10"
             />
           </div>
@@ -370,14 +394,14 @@ function TasksContent() {
                 onDragEnd={handleDragEnd}
               >
                 <SortableContext
-                  items={filteredTasks.map((task) => task.id)}
+                  items={filteredTasks.map(task => task.id)}
                   strategy={verticalListSortingStrategy}
                 >
                   <div className="space-y-3">
                     {filteredTasks.length === 0 ? (
                       <p className="text-muted-foreground py-8 text-center">No tasks found</p>
                     ) : (
-                      filteredTasks.map((task) => (
+                      filteredTasks.map(task => (
                         <SortableTask key={task.id} task={task} onTaskUpdate={handleTaskUpdate} />
                       ))
                     )}
