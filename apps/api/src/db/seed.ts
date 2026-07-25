@@ -5,7 +5,7 @@
  *
  * Idempotent: truncates core tables then reloads. Requires 001_core.sql applied.
  */
-import { Activities, Assignments, Employees, Teams } from '@worksight/common';
+import { Activities, Assignments, Attendance, Employees, Teams } from '@worksight/common';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { Pool } from 'pg';
@@ -20,12 +20,14 @@ async function main() {
   const client = await pool.connect();
 
   try {
-    const schemaSql = readFileSync(join(__dirname, '..', '..', 'sql', '001_core.sql'), 'utf8');
-    await client.query(schemaSql);
+    for (const file of ['001_core.sql', '002_attendance.sql']) {
+      const schemaSql = readFileSync(join(__dirname, '..', '..', 'sql', file), 'utf8');
+      await client.query(schemaSql);
+    }
 
     await client.query('BEGIN');
     await client.query(
-      `TRUNCATE activities, assignments, teams, employees RESTART IDENTITY CASCADE`
+      `TRUNCATE attendance, activities, assignments, teams, employees RESTART IDENTITY CASCADE`
     );
 
     // Insert managers before reports so manager_id FKs resolve.
@@ -123,6 +125,23 @@ async function main() {
       );
     }
 
+    for (const record of Attendance) {
+      await client.query(
+        `INSERT INTO attendance
+           (system_id, employee_id, date, check_in, check_out, hours_worked, created_at)
+         VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+        [
+          record.system_id,
+          record.employee_id,
+          record.date,
+          record.check_in,
+          record.check_out,
+          record.hours_worked,
+          record.created_at,
+        ]
+      );
+    }
+
     await client.query('COMMIT');
 
     const counts = await client.query(
@@ -130,7 +149,8 @@ async function main() {
          (SELECT count(*)::int FROM employees) AS employees,
          (SELECT count(*)::int FROM teams) AS teams,
          (SELECT count(*)::int FROM assignments) AS assignments,
-         (SELECT count(*)::int FROM activities) AS activities`
+         (SELECT count(*)::int FROM activities) AS activities,
+         (SELECT count(*)::int FROM attendance) AS attendance`
     );
     console.log('Seeded', counts.rows[0]);
   } catch (error) {

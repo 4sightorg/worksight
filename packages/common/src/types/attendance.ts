@@ -10,7 +10,7 @@ export const AttendanceSchema = z.object({
   system_id: z.uuid(),
 
   /** Unique identifier of the employee */
-  employee_id: z.string(),
+  employee_id: z.uuid(),
 
   /** Date of the attendance */
   date: z.date(),

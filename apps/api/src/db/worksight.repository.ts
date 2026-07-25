@@ -1,5 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import type { Activity, Assignment, EmployeeProfile, Team } from '@worksight/common';
+import type {
+  Activity,
+  Assignment,
+  AttendanceRecord,
+  AttendanceStats,
+  EmployeeProfile,
+  Team,
+} from '@worksight/common';
 import { DatabaseService } from './database.service';
 
 type EmployeeRow = {
@@ -42,6 +49,23 @@ type AssignmentRow = {
   priority: Assignment['priority'];
   created_at: Date;
   updated_at: Date;
+};
+
+type AttendanceRow = {
+  system_id: string;
+  employee_id: string;
+  date: Date;
+  check_in: Date | null;
+  check_out: Date | null;
+  // NUMERIC arrives as a string from node-postgres.
+  hours_worked: string | null;
+  created_at: Date;
+};
+
+type AttendanceStatsRow = {
+  total_records: number;
+  total_hours: number;
+  days_present: number;
 };
 
 type ActivityRow = {
@@ -122,6 +146,35 @@ export class WorksightRepository {
         );
     return rows.map(toActivity);
   }
+
+  async listAttendance(employeeId?: string): Promise<AttendanceRecord[]> {
+    const { rows } = employeeId
+      ? await this.db.query<AttendanceRow>(
+          `SELECT * FROM attendance WHERE employee_id = $1 ORDER BY date DESC`,
+          [employeeId]
+        )
+      : await this.db.query<AttendanceRow>(`SELECT * FROM attendance ORDER BY date DESC`);
+    return rows.map(toAttendance);
+  }
+
+  async getAttendanceStats(employeeId: string): Promise<AttendanceStats> {
+    const { rows } = await this.db.query<AttendanceStatsRow>(
+      `SELECT count(*)::int              AS total_records,
+              COALESCE(sum(hours_worked), 0)::float AS total_hours,
+              count(check_in)::int       AS days_present
+         FROM attendance
+        WHERE employee_id = $1`,
+      [employeeId]
+    );
+    const { total_records, total_hours, days_present } = rows[0];
+    const average = days_present > 0 ? total_hours / days_present : 0;
+    return {
+      totalRecords: total_records,
+      totalHours: Math.round(total_hours * 100) / 100,
+      daysPresent: days_present,
+      averageHours: Math.round(average * 100) / 100,
+    };
+  }
 }
 
 function toEmployee(row: EmployeeRow): EmployeeProfile {
@@ -169,6 +222,18 @@ function toAssignment(row: AssignmentRow): Assignment {
     priority: row.priority,
     created_at: new Date(row.created_at),
     updated_at: new Date(row.updated_at),
+  };
+}
+
+function toAttendance(row: AttendanceRow): AttendanceRecord {
+  return {
+    system_id: row.system_id,
+    employee_id: row.employee_id,
+    date: new Date(row.date),
+    check_in: row.check_in ? new Date(row.check_in) : null,
+    check_out: row.check_out ? new Date(row.check_out) : null,
+    hours_worked: row.hours_worked === null ? null : Number(row.hours_worked),
+    created_at: new Date(row.created_at),
   };
 }
 
