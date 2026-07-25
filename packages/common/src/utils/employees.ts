@@ -24,17 +24,20 @@ export class EmployeeLookup extends BaseLookup<typeof EmployeeProfileSchema> {
 
   /** Summary statistics about employees */
   public getStats() {
-    const roles = Roles.map((role) => ({
+    const roles = Roles.map(role => ({
       role,
       count: this.filter({ role }).count(),
     }));
 
-    const departments = Departments.map((department) => ({
+    const departments = Departments.map(department => ({
       department,
-      count: this.filter({ department }).count(),
+      // `department` is an array field, so match by membership
+      count: this.filter({
+        department: (d: unknown) => Array.isArray(d) && d.includes(department),
+      }).count(),
     }));
 
-    const adminCount = this.entries.filter((e) => !e.manager_id).length;
+    const adminCount = this.entries.filter(e => !e.manager_id).length;
 
     return {
       totalEmployees: this.entries.length,
@@ -95,7 +98,7 @@ export class TeamLookup extends BaseLookup<typeof TeamSchema> {
     const avgMembers = totalTeams ? totalMembers / totalTeams : 0;
 
     const departmentCounts: Record<string, number> = {};
-    allTeams.forEach((t) => {
+    allTeams.forEach(t => {
       departmentCounts[t.department] = (departmentCounts[t.department] || 0) + 1;
     });
 
