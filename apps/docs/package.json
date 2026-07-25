@@ -4,14 +4,15 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vitepress dev",
-    "build": "vitepress build",
+    "sync:assets": "node ./scripts/sync-public-assets.mjs",
+    "dev": "pnpm sync:assets && vitepress dev",
+    "build": "pnpm sync:assets && vitepress build",
     "preview": "vitepress preview",
     "serve": "vitepress serve",
     "lint": "echo 'Linting skipped for docs, VitePress handles this during build'",
     "type-check": "echo 'Type checking skipped for docs - VitePress handles this during build'",
     "quality": "echo 'npm quality doesnt exist, give up.' ",
-    "clean": "rimraf .next dist .turbo"
+    "clean": "rm -rf .vitepress/dist .turbo"
   },
   "dependencies": {
     "@catppuccin/vitepress": "^0.1.2",
