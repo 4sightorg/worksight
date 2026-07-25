@@ -59,12 +59,16 @@ const nextConfig: NextConfig = {
         },
       };
     }
+    const commonDist = path.resolve(__dirname, '../../packages/common/dist');
     config.resolve.alias = {
       ...config.resolve.alias,
       '@': path.resolve(__dirname, 'src'),
       '@worksight/assets': path.resolve(__dirname, '../../packages/assets/dist'),
-      '@worksight/common': path.resolve(__dirname, '../../packages/common/dist')
-    }
+      '@worksight/common/data': path.resolve(commonDist, 'data'),
+      '@worksight/common/types': path.resolve(commonDist, 'types'),
+      '@worksight/common/utils': path.resolve(commonDist, 'utils'),
+      '@worksight/common': commonDist,
+    };
     return config;
   },
 
