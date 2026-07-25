@@ -2,12 +2,15 @@ import { createServerClient as createSSRClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import type { Database } from './types';
 
-// Environment variables with validation
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const PLACEHOLDER_SUPABASE_URL = 'https://placeholder.supabase.co';
+const PLACEHOLDER_SUPABASE_KEY = 'placeholder-anon-key';
 
-if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-  throw new Error('Missing required Supabase environment variables');
+function getSupabaseUrl(): string {
+  return process.env.NEXT_PUBLIC_SUPABASE_URL || PLACEHOLDER_SUPABASE_URL;
+}
+
+function getSupabaseAnonKey(): string {
+  return process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || PLACEHOLDER_SUPABASE_KEY;
 }
 
 /**
@@ -17,7 +20,7 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
 export async function createServerClient() {
   const cookieStore = await cookies();
 
-  return createSSRClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  return createSSRClient<Database>(getSupabaseUrl(), getSupabaseAnonKey(), {
     cookies: {
       get(name: string) {
         return cookieStore.get(name)?.value;

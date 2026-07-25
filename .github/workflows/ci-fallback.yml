@@ -6,33 +6,35 @@ on:
   pull_request:
     branches: [main, dev]
 
-# This workflow uses npm as a fallback if pnpm issues persist
 jobs:
-  quality-npm:
-    name: Quality Checks (npm)
+  quality:
+    name: Quality Checks
     runs-on: ubuntu-latest
-    if: false # Disabled by default, enable if pnpm CI fails
+    if: false # Disabled by default
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Type check
-        run: npm run type-check
+        run: pnpm type-check
 
       - name: Lint check
-        run: npm run lint
+        run: pnpm lint
 
       - name: Build application
-        run: npm run build
+        run: pnpm build
         env:
           NEXT_TELEMETRY_DISABLED: 1

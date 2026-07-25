@@ -45,7 +45,7 @@ export default function DashboardPage() {
       setTasksStarted(tasksCreated > 0);
       const allDone = profileComplete && !!survey && tasksCreated > 0;
       setShowGettingStarted(!dismissed && !allDone);
-    } catch (e) {
+    } catch {
       // Fail open (do not block UI)
       setShowGettingStarted(false);
     }

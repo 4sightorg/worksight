@@ -5,14 +5,15 @@ import { isOfflineMode } from '@/auth/offline';
 import { SurveyResultsCard } from '@/components/dashboard/survey-results-card';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Employees } from '@/data/employees';
 import {
+    findEmployeeByEmail,
     getAfterHoursActivities,
     getDataSourceUsageStats,
+    getEmployeeCount,
     getEmployeeProductivityStats,
     getTeamMetaStats,
     getWeekendActivities,
-} from '@/data/work-tracking';
+} from '@/lib/mvp-data';
 import { useEffect, useState } from 'react';
 
 export function DashboardStats() {
@@ -24,12 +25,10 @@ export function DashboardStats() {
     setIsOffline(isOfflineMode());
   }, []);
 
-  // Get current user's stats if they're an employee
-  const currentEmployee = user
-    ? Object.entries(Employees).find(([_, emp]) => emp.email === user.email)
-    : null;
+  // Get current user's stats if they're an employee (common fixtures)
+  const currentEmployee = user?.email ? findEmployeeByEmail(user.email) : null;
   const currentEmployeeStats = currentEmployee
-    ? getEmployeeProductivityStats(currentEmployee[0])
+    ? getEmployeeProductivityStats(currentEmployee.id)
     : null;
 
   const teamMetaStats = getTeamMetaStats();
@@ -121,7 +120,7 @@ export function DashboardStats() {
               <CardTitle className="text-sm font-medium">Team Members</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{Object.keys(Employees).length}</div>
+              <div className="text-2xl font-bold">{getEmployeeCount()}</div>
               <p className="text-muted-foreground text-xs">4sight employees</p>
             </CardContent>
           </Card>

@@ -1,103 +1,99 @@
 # Getting Started
 
-Welcome to WorkSight! This guide will help you get up and running quickly.
+Welcome to WorkSight. This guide gets the monorepo running locally for the MVP
+slice.
 
 ## What is WorkSight?
 
-WorkSight is a comprehensive wellness and task management platform designed to
-help organizations monitor employee well-being while managing productivity
-effectively.
+WorkSight is an employee well-being and task analytics platform. The monorepo
+includes:
 
-## Quick Start
+- **`@worksight/web`** — Next.js 15 app (dashboards, surveys UI, admin)
+- **`@worksight/api`** — NestJS API
+- **`@worksight/docs`** — this VitePress site
+- **`@worksight/common`** — shared types, fixtures, and lookup utilities
 
-### Prerequisites
+For the MVP, **populated dashboard / API data comes from `@worksight/common`
+fixtures**, not from a live database. Supabase is optional for web auth / online
+mode.
 
-- Node.js 18+ and pnpm
-- Supabase account (for online features)
-- Modern web browser
+## Prerequisites
 
-### Installation
+- Node.js 18+ (20+ recommended)
+- pnpm 9+ (repo pins pnpm 10 via `packageManager`)
+- Git
+- Optional: Supabase project (only if you leave offline mode off)
 
-1. Clone the repository:
+## Install
 
 ```bash
 git clone https://github.com/4sightorg/worksight.git
 cd worksight
-```
-
-2. Install dependencies:
-
-```bash
 pnpm install
 ```
 
-3. Set up environment variables:
+## Environment (web)
 
 ```bash
-cp apps/web/.env.example apps/web/.env.local
+cp apps/web/env.example apps/web/.env.local
 ```
 
-4. Configure your Supabase credentials in `.env.local`:
+Minimal offline-friendly settings:
 
-```env
+```bash
+NEXT_PUBLIC_IS_OFFLINE=true
+IS_OFFLINE=true
+```
+
+For online Supabase auth, set (names match `env.example`):
+
+```bash
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your_supabase_anon_key
+NEXT_PUBLIC_IS_OFFLINE=false
 ```
 
-5. Start the development server:
+## Run locally
+
+Build shared packages when you need API/web against compiled common:
 
 ```bash
-pnpm run dev
+pnpm --filter @worksight/common build
 ```
 
-### First Login
+```bash
+# Web → http://localhost:3000
+pnpm dev:web
 
-WorkSight supports both online and offline modes. For testing, you can use these
-credentials:
+# Docs → http://localhost:5173 (VitePress default)
+pnpm dev:docs
 
-**Executives:**
+# API (defaults to PORT 3000 — pick another if web is running)
+PORT=3123 pnpm --filter @worksight/api dev
+```
 
-- Email: `test@worksight.app`
-- Password: `testuser`
+Or `pnpm dev` to start all Turbo `dev` tasks.
 
-**Employees:**
+## MVP data you should see
 
-- Email: `jane.doe@worksight.com`
-- Password: `testuser`
+Once web is wired to common fixtures, dashboards/admin/tasks views use employee,
+team, assignment, and activity fixtures from `@worksight/common`. The Nest API
+exposes the same shapes on:
 
-**Admin:**
+- `GET /users`, `/users/:id`, `/users/stats`
+- `GET /teams`, `/teams/:id`
+- `GET /tasks` (`?employee_id=`), `/tasks/:id`, `/tasks/stats/:employeeId`
+- `GET /activities`
+- `GET /`, `/ping`, `/health`
 
-- Email: `admin@worksight.com`
-- Password: `testuser`
+There is **no** Supabase-backed persistence for those API routes yet, and the
+API has **no** Vercel serverless handler (`app.listen` only) — use Docker for a
+deployed API. See [Deployment](/guide/deployment).
 
-## Core Features
+## Next steps
 
-### 🏠 Dashboard
-
-Role-based dashboards showing:
-
-- Burnout level tracking
-- Task summaries
-- Team analytics (for managers/executives)
-- Quick actions
-
-### 📋 Task Management
-
-- Kanban board with drag-and-drop
-- Table view with inline editing
-- Priority and status management
-- Story point estimation
-
-### 🧘 Wellness Tracking
-
-- Burnout assessment surveys
-- Progress tracking over time
-- Personalized recommendations
-- Risk level monitoring
-
-### ⚙️ Settings
-
-- User preferences
-- Notification settings
-- Theme customization
-- Admin controls
+- [Installation](./installation.md) — environments and Docker notes
+- [Configuration](./configuration.md) — real env vars only
+- [API overview](/dev/api/overview) — Nest fixture endpoints
+- [MVP plan](https://github.com/4sightorg/worksight/blob/feat/mvp-stabilize/docs/mvp/README.md)
+  (epic #14)

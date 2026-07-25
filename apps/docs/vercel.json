@@ -1,10 +1,7 @@
 {
-  "version": 2,
-  "installCommand": "npm install",
-  "buildCommand": "npm run build --workspace=@worksight/docs",
-  "outputDirectory": ".vitepress/dist",
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "vitepress",
-  "build": {
-    "env": {}
-  }
+  "installCommand": "pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm turbo run build --filter=@worksight/docs",
+  "outputDirectory": ".vitepress/dist"
 }

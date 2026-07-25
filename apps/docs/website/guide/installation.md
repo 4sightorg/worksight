@@ -1,198 +1,122 @@
 # Installation
 
-This guide provides detailed instructions for installing and setting up
-WorkSight in different environments.
+Install and run the WorkSight monorepo (pnpm + Turbo).
 
-## Development Environment
+## Prerequisites
 
-### Prerequisites
+- **Node.js** 18+ (20+ recommended)
+- **pnpm** 9+ (lockfile expects pnpm 10 — see root `packageManager`)
+- **Git**
+- Optional: **Docker** / Docker Compose for the Nest API
 
-Ensure you have the following installed on your system:
+## Native (recommended for development)
 
-- **Node.js**: Version 20.0.0 or higher
-- **pnpm**: Version 8.0.0 or higher (recommended package manager)
-- **Git**: For version control
-
-### System Requirements
-
-- **Operating System**: Windows 10+, macOS 10.15+, or Linux
-- **Memory**: 502MB RAM minimum (1GB recommended)
-- **Storage**: 256MB free disk space
-
-### Step-by-Step Installation
-
-#### Docker Installation
-
-```bash
-docker run -rm -it ghcr.io:4sight/worksight/web:latest
-```
-
-#### Docker Compose Installation
-
-```bash
-docker compose up -d
-```
-
-#### Native Installation
-
-1. **Clone the Repository**
+1. **Clone**
 
    ```bash
    git clone https://github.com/4sightorg/worksight.git
    cd worksight
    ```
 
-2. **Install Dependencies**
+2. **Install**
 
    ```bash
-   # Install pnpm if you haven't already
-   npm install -g pnpm
-
-   # Install project dependencies
+   corepack enable
    pnpm install
    ```
 
-3. **Environment Configuration**
+3. **Web env**
 
    ```bash
-   # Copy environment template
-   cp .env.example .env.local
+   cp apps/web/env.example apps/web/.env.local
    ```
 
-4. **Configure Environment Variables**
-
-   Edit `.env.local` with your configuration:
-
-   ```env
-   # Database
-   DATABASE_URL="your-database-url"
-
-   # Authentication
-   NEXTAUTH_URL="http://localhost:3000"
-   NEXTAUTH_SECRET="your-secret-key"
-
-   # Supabase
-   NEXT_PUBLIC_SUPABASE_URL="your-supabase-url"
-   NEXT_PUBLIC_SUPABASE_ANON_KEY="your-supabase-anon-key"
-   ```
-
-5. **Database Setup**
+   Edit `apps/web/.env.local`. For fixture / offline MVP work:
 
    ```bash
-   # Run database migrations
-   pnpm db:migrate
-
-   # Seed initial data (optional)
-   pnpm db:seed
+   NEXT_PUBLIC_IS_OFFLINE=true
+   IS_OFFLINE=true
    ```
 
-6. **Start Development Server**
+   There is no root `.env.example`, no `pnpm db:migrate` / `pnpm db:seed`, and
+   no NextAuth-required setup for the MVP slice.
+
+4. **Build shared package**
 
    ```bash
-   pnpm dev
+   pnpm --filter @worksight/common build
    ```
 
-   The application will be available at `http://localhost:3000`
-
-## Production Deployment
-
-### Using Vercel (Recommended)
-
-1. **Deploy to Vercel**
+5. **Start apps**
 
    ```bash
-   # Install Vercel CLI
-   npm install -g vercel
-
-   # Deploy
-   vercel
+   pnpm dev:web                                          # :3000
+   pnpm dev:docs                                         # VitePress
+   PORT=3123 pnpm --filter @worksight/api dev            # Nest
    ```
 
-2. **Configure Environment Variables**
+## Docker Compose
 
-   Set the following in your Vercel dashboard:
-   - `DATABASE_URL`
-   - `NEXTAUTH_URL`
-   - `NEXTAUTH_SECRET`
-   - `NEXT_PUBLIC_SUPABASE_URL`
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+From the repo root (API-oriented path; see `docker-compose.yml`):
 
-### Using Docker
+```bash
+docker compose up -d --build
+```
 
-1. **Build Docker Image**
+Prefer this for a **running Nest API**. The Vercel API project builds `dist/`
+but does not yet expose a serverless handler.
 
-   ```bash
-   docker build -t worksight .
-   ```
+## Production builds (local)
 
-2. **Run Container**
+```bash
+pnpm --filter @worksight/common build
+pnpm --filter @worksight/web build
+pnpm --filter @worksight/api build
+pnpm --filter @worksight/docs build
+```
 
-   ```bash
-   docker run -p 3000:3000 --env-file .env.local worksight
-   ```
+Or `pnpm build` via Turbo.
 
-### Manual Deployment
+## Vercel (hosted)
 
-1. **Build for Production**
+WorkSight uses **three** Vercel projects with per-app Root Directories — not a
+single root `vercel.json`:
 
-   ```bash
-   pnpm build
-   ```
+| Project          | Root Directory |
+| ---------------- | -------------- |
+| `worksight`      | `apps/web`     |
+| `worksight-api`  | `apps/api`     |
+| `worksight-docs` | `apps/docs`    |
 
-2. **Start Production Server**
-
-   ```bash
-   pnpm start
-   ```
-
-## Database Setup
-
-### Supabase (Recommended)
-
-1. Create a new project at [supabase.com](https://supabase.com)
-2. Copy your project URL and anon key
-3. Run the database migrations provided in `/supabase/migrations`
-
-### Self-hosted PostgreSQL
-
-1. Install PostgreSQL 14+
-2. Create a new database
-3. Run the SQL schema from `/database/schema.sql`
+Details: [Deployment](./deployment.md) and repo
+[`doc/DEPLOYMENT.md`](https://github.com/4sightorg/worksight/blob/feat/mvp-stabilize/doc/DEPLOYMENT.md).
 
 ## Troubleshooting
 
-### Common Issues
-
-**Port 3000 already in use**
+**Port 3000 in use**
 
 ```bash
-# Kill process using port 3000
-lsof -ti:3000 | xargs kill -9
-
-# Or use a different port
-PORT=3001 pnpm dev
+PORT=3001 pnpm --filter @worksight/web dev
+# or free the port, then retry
 ```
 
-**Database connection errors**
-
-- Verify your `DATABASE_URL` is correct
-- Check if your database server is running
-- Ensure network connectivity to your database
-
-**Build errors**
+**Empty / stale `@worksight/common`**
 
 ```bash
-# Clear cache and reinstall
+pnpm --filter @worksight/common build
+```
+
+**Reinstall**
+
+```bash
+pnpm clean
 rm -rf node_modules
-rm pnpm-lock.yaml
 pnpm install
 ```
 
-### Getting Help
+Do **not** delete `pnpm-lock.yaml` unless you intend to regenerate the lockfile.
 
-If you encounter issues:
+## Getting help
 
-1. Check the [troubleshooting section]
-2. Search existing
-   [GitHub issues](https://github.com/4sightorg/worksight/issues)
-3. Create a new issue with detailed information
+- [GitHub issues](https://github.com/4sightorg/worksight/issues)
+- [MVP plan](https://github.com/4sightorg/worksight/blob/feat/mvp-stabilize/docs/mvp/README.md)
