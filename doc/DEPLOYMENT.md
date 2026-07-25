@@ -1,36 +1,92 @@
 # 🚀 WorkSight Deployment Guide
 
-## Quick Deploy to Vercel
+WorkSight is a **Turborepo + pnpm workspace** monorepo. There is no single
+deploy artifact — each app ships on the platform that fits it:
 
-### One-Click Deploy
+| App         | Package           | Vercel project   | Root Directory | Config source of truth  |
+| ----------- | ----------------- | ---------------- | -------------- | ----------------------- |
+| `apps/web`  | `@worksight/web`  | `worksight`      | `apps/web`     | `apps/web/vercel.json`  |
+| `apps/api`  | `@worksight/api`  | `worksight-api`  | `apps/api`     | `apps/api/vercel.json`  |
+| `apps/docs` | `@worksight/docs` | `worksight-docs` | `apps/docs`    | `apps/docs/vercel.json` |
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/4sightorg/worksight)
+All three Vercel projects are connected to the same GitHub repository
+(`4sightorg/worksight`) with production branch **`canary`**, share
+`pnpm install --frozen-lockfile`, and have **Include source files outside of the
+Root Directory** plus **skip unaffected projects** enabled. The API can
+alternatively run under Docker (`docker-compose.yml` + `nginx/`).
 
-### Manual Deployment
+> ⚠️ **What repo config can and cannot do.** A `vercel.json` file only
+> configures build/routing behavior. It **cannot** create Vercel projects, set a
+> project's **Root Directory**, add environment variables to the dashboard, or
+> link a Git repo. Those are dashboard/CLI actions — they are called out
+> explicitly under
+> [Vercel dashboard setup](#vercel-dashboard-setup-one-time-per-project).
 
-1. **Install Vercel CLI**
+## How Vercel resolves config in this monorepo
 
-   ```bash
-   pnpm add -g vercel
-   ```
+Vercel reads **exactly one** `vercel.json` per project: the one located at the
+project's **Root Directory** (a dashboard setting). It does **not** merge a root
+`vercel.json` with a nested one. Consequences:
 
-2. **Login to Vercel**
+- One Vercel project builds one output, so web, api, and docs need **separate**
+  projects. A single root `vercel.json` cannot govern all three.
+- "Centralized" here means **uniform, per-app configs** committed next to each
+  app, all using the same workspace-level primitives — not one shared file.
+- Each project's Root Directory therefore points at its app, and that app's
+  `vercel.json` is the only file Vercel loads for it.
 
-   ```bash
-   vercel login
-   ```
+Every app config uses the same primitives, so behavior is consistent:
 
-3. **Deploy Preview**
+- Install: `pnpm install --frozen-lockfile`
+- Build: `pnpm --filter @worksight/<app> build` (pnpm runs the workspace build
+  script; Turbo's `dependsOn: ["^build"]` graph builds workspace dependencies
+  such as `@worksight/common` and `@worksight/assets` first).
+- Output: framework default for Next.js; explicit for docs (`.vitepress/dist`)
+  and api (`dist`).
 
-   ```bash
-   pnpm run deploy:preview
-   ```
+Secrets and environment values live in the **dashboard**, not in `vercel.json`.
 
-4. **Deploy Production**
+## Vercel dashboard setup (one-time, per project)
 
-   ```bash
-   pnpm run deploy
-   ```
+These steps **must** be done in the Vercel dashboard or CLI — no repo file can
+perform them.
+
+### Web project (`@worksight/web`)
+
+1. Import the `4sightorg/worksight` repo as a new Vercel project.
+2. **Root Directory → `apps/web`**, so Vercel loads `apps/web/vercel.json`.
+3. Leave **"Include source files outside of the Root Directory in the Build
+   Step"** enabled so the shared `packages/*` and the workspace lockfile are
+   available.
+4. Framework Preset / Install / Build come from `apps/web/vercel.json`; do not
+   override them in the dashboard.
+5. Add environment variables per environment (see
+   [Environment Variables](#environment-variables)). Nothing sensitive is
+   committed to `vercel.json`.
+
+### Docs project (`@worksight/docs`) — optional on Vercel
+
+1. Create a **separate** Vercel project from the same repo.
+2. **Root Directory → `apps/docs`** so Vercel loads `apps/docs/vercel.json`.
+3. Keep "Include source files outside of the Root Directory" enabled.
+
+Docs are otherwise published to GitHub Pages; the Vercel path is optional.
+
+### API project (`@worksight/api`)
+
+`apps/api/vercel.json` now uses zero-config build settings (`pnpm --filter`
+build into `dist`) instead of the legacy `builds`/`routes` block, which silently
+disabled Vercel's install and build steps.
+
+**This is still not a functioning serverless API.** `main.ts` calls
+`app.listen()` rather than exporting a handler, so a Vercel deployment produces
+no invocable function. Wiring it properly requires adding a serverless entry
+(e.g. `api/index.ts` exporting the bootstrapped Nest app). Until then, deploy
+the API with Docker:
+
+```bash
+docker compose up -d --build
+```
 
 ## Environment Variables
 
@@ -59,13 +115,19 @@ NEXT_PUBLIC_IS_OFFLINE="true"
 
 ## Vercel Configuration
 
-The `vercel.json` file includes:
+`apps/web/vercel.json` (loaded by the `worksight` project) declares:
 
-- **Optimized builds** with Next.js
-- **Security headers** for production
-- **API route configuration**
-- **Redirects and rewrites**
-- **CORS headers** for API endpoints
+- `framework: nextjs` — output directory left to the framework default
+- `installCommand: pnpm install --frozen-lockfile`
+- `buildCommand: pnpm --filter @worksight/web build`
+- `NEXT_TELEMETRY_DISABLED=1` for the build step
+
+`apps/api/vercel.json` and `apps/docs/vercel.json` mirror the same shape with
+their own filter and output directory. No environment values are committed —
+they are set per environment in the dashboard.
+
+Security headers, redirects, and CORS are **not** currently configured in
+`vercel.json`; add them here if/when needed rather than assuming they exist.
 
 ## Code Quality Checks
 
