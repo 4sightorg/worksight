@@ -38,7 +38,7 @@ project's **Root Directory** (a dashboard setting). It does **not** merge a root
 Every app config uses the same primitives, so behavior is consistent:
 
 - Install: `pnpm install --frozen-lockfile`
-- Build: `pnpm --filter @worksight/<app> build` (pnpm runs the workspace build
+- Build: `pnpm turbo run build --filter=@worksight/<app>` (Turbo runs the build
   script; Turbo's `dependsOn: ["^build"]` graph builds workspace dependencies
   such as `@worksight/common` and `@worksight/assets` first).
 - Output: framework default for Next.js; explicit for docs (`.vitepress/dist`)
@@ -141,7 +141,7 @@ Copy from `apps/web/env.example` for local web setup.
 
 - `framework: nextjs` — output directory left to the framework default
 - `installCommand: pnpm install --frozen-lockfile`
-- `buildCommand: pnpm --filter @worksight/web build`
+- `buildCommand: pnpm turbo run build --filter=@worksight/web`
 - `NEXT_TELEMETRY_DISABLED=1` for the build step
 
 `apps/api/vercel.json` and `apps/docs/vercel.json` mirror the same shape with

@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "installCommand": "pnpm install --frozen-lockfile",
-  "buildCommand": "pnpm --filter @worksight/api build",
+  "buildCommand": "pnpm turbo run build --filter=@worksight/api",
   "outputDirectory": "dist"
 }

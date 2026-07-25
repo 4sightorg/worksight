@@ -145,7 +145,8 @@ nested ones):
 
 - Production branch: **`canary`**
 - Install: `pnpm install --frozen-lockfile`
-- Build: `pnpm --filter @worksight/<app> build`
+- Build: `pnpm turbo run build --filter=@worksight/<app>` (Turbo builds
+  workspace dependencies such as `@worksight/common` first)
 - Env vars live in the **Vercel dashboard**, not in committed `vercel.json`
 
 **API on Vercel:** the Nest `main.ts` still calls `app.listen()` — there is no
@@ -172,7 +173,7 @@ based on its dashboard **Root Directory** setting:
   `apps/docs/vercel.json`.
 
 All three share `pnpm install --frozen-lockfile`, a
-`pnpm --filter @worksight/<app> build` command, production branch `canary`, and
+`pnpm turbo run build --filter=@worksight/<app>` command, production branch `canary`, and
 skip-unaffected-project deploys. No environment values are committed to
 `vercel.json`.
 
