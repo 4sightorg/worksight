@@ -4,10 +4,12 @@ const mainguide = [
   {
     text: 'Getting Started',
     items: [
+      { text: 'Overview', link: '/guide/overview' },
       { text: 'Introduction', link: '/guide/introduction' },
       { text: 'Quick Start', link: '/guide/getting-started' },
       { text: 'Installation', link: '/guide/installation' },
       { text: 'Configuration', link: '/guide/configuration' },
+      { text: 'Deployment', link: '/guide/deployment' },
     ],
   },
   {
@@ -17,6 +19,7 @@ const mainguide = [
       { text: 'Burnout Assessment', link: '/features/burnout-assessment' },
       { text: 'Admin Dashboard', link: '/features/admin-dashboard' },
       { text: 'Reporting', link: '/features/reporting' },
+      { text: 'Task Management', link: '/features/task-management' },
     ],
   },
 ];
@@ -54,7 +57,6 @@ const dev = [
         items: [
           { text: 'Overview', link: '/dev/api/overview' },
           { text: 'Authentication', link: '/dev/api/authentication' },
-          { text: 'Survey Endpoints', link: '/dev/api/survey-endpoints' },
           { text: 'User Management', link: '/dev/api/user-management' },
         ],
       },

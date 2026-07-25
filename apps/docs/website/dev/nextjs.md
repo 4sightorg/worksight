@@ -1,39 +1,43 @@
-# Next.js Guide
+# Next.js (web app)
 
-## What is Next.js?
+The web package is **`@worksight/web`** under `apps/web`, using the **App
+Router** on **Next.js 15** (React 19).
 
-Next.js is a React framework for building full-stack web apps with server-side
-rendering, API routes, and more.
+## Layout
 
-## How to Use
+```text
+apps/web/src/
+├── app/            # App Router routes
+├── components/     # UI
+├── lib/            # helpers (incl. MVP common bridges when wired)
+├── auth/           # auth helpers
+└── __tests__/      # Jest tests (excluded from app type-check)
+```
 
-1. **Pages and Routing**
-   - Files in `pages/` become routes automatically.
-   - Example: `pages/about.tsx` → `/about`
+## Data for MVP
 
-2. **API Routes**
-   - Place serverless functions in `pages/api/`.
-   - Example:
+Dashboard / admin / tasks views should consume `@worksight/common` fixtures via
+a thin bridge (e.g. `src/lib/mvp-data.ts` on the wire-web workstream). That is
+**not** the same as calling Nest or Supabase for those lists yet.
 
-     ```typescript
-     // pages/api/hello.ts
-     export default function handler(req, res) {
-       res.status(200).json({ message: 'Hello World' });
-     }
-     ```
+## Dev / build
 
-3. **Data Fetching**
-   - Use `getServerSideProps`, `getStaticProps`, or React Server Components for
-     data fetching.
+```bash
+pnpm --filter @worksight/common build
+pnpm --filter @worksight/web dev
+pnpm --filter @worksight/web build
+pnpm --filter @worksight/web type-check
+```
 
-4. **Styling**
-   - Use Tailwind CSS, CSS Modules, or any CSS-in-JS solution.
+Or from the repo root: `pnpm dev:web` / `pnpm build:web`.
 
-5. **Deployment**
-   - Deploy easily to Vercel or any Node.js host.
+## Deploy
 
-## Tips
+Vercel project **`worksight`**, Root Directory **`apps/web`**, config
+`apps/web/vercel.json`. See [Deployment](/guide/deployment).
 
-- Use the App Router (`app/`) for new features (Next.js 13+).
-- Leverage API routes for backend logic.
-- Use environment variables for secrets.
+## Notes
+
+- Prefer App Router (`app/`), not the legacy `pages/` router.
+- Backend HTTP for the monorepo lives in Nest (`apps/api`), not Next `pages/api`
+  route handlers as the primary API.

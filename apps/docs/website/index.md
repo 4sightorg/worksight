@@ -47,8 +47,8 @@ features:
       UI.
 
   - icon: ⚡
-    title: Real-time Sync
+    title: Shared data layer
     details:
-      Supabase integration with offline-first architecture for reliable
-      performance.
+      MVP dashboards and Nest routes use `@worksight/common` fixtures; optional
+      Supabase auth when online mode is enabled.
 ---

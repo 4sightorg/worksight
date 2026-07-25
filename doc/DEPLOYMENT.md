@@ -1,4 +1,4 @@
-# 🚀 WorkSight Deployment Guide
+# WorkSight Deployment Guide
 
 WorkSight is a **Turborepo + pnpm workspace** monorepo. There is no single
 deploy artifact — each app ships on the platform that fits it:
@@ -88,32 +88,54 @@ the API with Docker:
 docker compose up -d --build
 ```
 
-## Environment Variables
+1. Import `4sightorg/worksight` as a Vercel project.
+2. Set **Root Directory** to `apps/web`.
+3. Keep **Include source files outside of the Root Directory** enabled.
+4. Prefer install/build from `apps/web/vercel.json`; avoid dashboard overrides.
+5. Add env vars per environment (see below).
 
-### Required for Production
+### Docs (`worksight-docs` → `apps/docs`)
+
+1. Separate Vercel project from the same repo.
+2. **Root Directory** → `apps/docs`.
+3. Keep outside-Root-Directory sources enabled.
+
+Docs may also publish via GitHub Pages; Vercel is optional.
+
+### API (`worksight-api` → `apps/api`)
+
+`apps/api/vercel.json` uses zero-config-style install/build into `dist` (no
+legacy `builds`/`routes` block that skipped Vercel's install step).
+
+**This is still not a functioning serverless API.** `main.ts` calls
+`app.listen()` rather than exporting a handler, so a Vercel deployment produces
+no invocable function. Until a serverless entry exists, deploy the API with
+Docker:
 
 ```bash
-# App Configuration
+docker compose up -d --build
+```
+
+## Environment variables
+
+Set in the **Vercel dashboard** (or local `apps/web/.env.local`). Nothing
+sensitive belongs in committed `vercel.json`.
+
+```bash
+# Web app
 NEXT_PUBLIC_APP_NAME="WorkSight"
 NEXT_PUBLIC_APP_DESCRIPTION="Employee Well-being Analytics Platform"
 NEXT_PUBLIC_APP_URL="https://your-domain.vercel.app"
 
-# Supabase (if using online auth)
+# Supabase (optional; skip when offline)
 NEXT_PUBLIC_SUPABASE_URL="your-supabase-url"
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="your-supabase-key"
 
-# Optional: Analytics
-NEXT_PUBLIC_VERCEL_ANALYTICS_ID="your-analytics-id"
-NEXT_PUBLIC_GOOGLE_ANALYTICS="your-ga-id"
-```
-
-### Optional for Offline Mode
-
-```bash
+# Offline / fixture-friendly local mode
 NEXT_PUBLIC_IS_OFFLINE="true"
 ```
 
-## Vercel Configuration
+Copy from `apps/web/env.example` for local web setup.
 
 `apps/web/vercel.json` (loaded by the `worksight` project) declares:
 
@@ -129,186 +151,65 @@ they are set per environment in the dashboard.
 Security headers, redirects, and CORS are **not** currently configured in
 `vercel.json`; add them here if/when needed rather than assuming they exist.
 
-## Code Quality Checks
+Security headers, redirects, and CORS are **not** assumed to be present in
+`vercel.json` — add them when needed.
 
-Before deploying, run quality checks:
-
-```bash
-# Full quality check
-pnpm run quality
-
-# Individual checks
-pnpm run type-check      # TypeScript validation
-pnpm run lint:strict     # ESLint with zero warnings
-pnpm run prettier:check  # Code formatting
-pnpm run stylelint:check # CSS/SCSS linting
-```
-
-## Automated Deployment
-
-### GitHub Actions
-
-- **CI/CD pipeline** runs on every push/PR
-- **Code quality gates** prevent bad code from deploying
-- **Automatic Vercel deployment** for production and previews
-
-### Quality Gates
-
-1. ✅ TypeScript compilation
-2. ✅ ESLint (zero warnings)
-3. ✅ Prettier formatting
-4. ✅ Stylelint CSS validation
-5. ✅ Successful build
-
-## Performance Optimization
-
-### Bundle Analysis
+## Pre-deploy checks
 
 ```bash
-# Analyze bundle size before deployment
-pnpm run analyze
+pnpm install
+pnpm --filter @worksight/common build
+pnpm type-check
+pnpm lint
+pnpm format:check
+pnpm --filter @worksight/web build
+pnpm --filter @worksight/docs build
+# API compile (local / Docker path)
+pnpm --filter @worksight/api build
 ```
 
-### Build Optimization
+Use the scripts that actually exist at the repo root (`type-check`, `lint`,
+`format:check`, `quality`). There is no root `deploy.yml` workflow and no
+`pnpm deploy` / `pnpm analyze` script.
 
-- Tree-shaking enabled
-- Automatic code splitting
-- Image optimization
-- Static generation where possible
+## Automated deployment
 
-## Monitoring & Analytics
+- **GitHub Actions** run CI (type-check, lint, build gates) on push/PR.
+- **Production/preview deploys** for web/docs/api are driven by the linked
+  **Vercel Git integration** for each project (branch `canary` for production),
+  not by a root `deploy.yml`.
+- Do not expect a single `VERCEL_PROJECT_ID` secret to cover all three apps.
 
-### Vercel Analytics
+## MVP data honesty
 
-Automatically enabled with environment variable:
-
-```bash
-NEXT_PUBLIC_VERCEL_ANALYTICS_ID="your-id"
-```
-
-### Web Vitals
-
-Built-in Core Web Vitals monitoring:
-
-- Largest Contentful Paint (LCP)
-- First Input Delay (FID) / Interaction to Next Paint (INP)
-- Cumulative Layout Shift (CLS)
-
-### Error Monitoring
-
-Error boundaries implemented for graceful error handling.
-
-## Domain Configuration
-
-### Custom Domain
-
-1. Add domain in Vercel dashboard
-2. Configure DNS records
-3. Update environment variables with new domain
-
-### SSL Certificate
-
-Automatically provisioned by Vercel for all domains.
-
-## Security
-
-### Headers
-
-- X-Frame-Options: DENY
-- X-Content-Type-Options: nosniff
-- Referrer-Policy: origin-when-cross-origin
-- Permissions-Policy: restrictive
-
-### Environment Security
-
-- Never commit `.env.local` files
-- Use Vercel environment variables for secrets
-- Rotate API keys regularly
+- Web MVP views and Nest list/detail endpoints are backed by
+  **`@worksight/common` fixtures**.
+- There is **no** live Supabase persistence for those API endpoints yet.
+- Do not document production API keys, webhooks, or hosted `api.worksight.com`
+  as if they exist.
 
 ## Troubleshooting
 
-### Common Issues
+1. **Build failures** — run `pnpm type-check` and rebuild `@worksight/common`
+   before web/api.
+2. **Supabase during build** — set placeholders or `NEXT_PUBLIC_IS_OFFLINE=true`
+   in `.env.local` / Vercel env.
+3. **Wrong app built** — confirm the Vercel project's Root Directory matches
+   `apps/web`, `apps/api`, or `apps/docs`.
+4. **API "deployed" but dead on Vercel** — expected until a serverless handler
+   exists; use Docker.
 
-1. **Build Failures**
+## Checklist
 
-   ```bash
-   # Check code quality locally
-   pnpm run quality
-   ```
+- [ ] `pnpm type-check` / lint / relevant package builds pass
+- [ ] Vercel Root Directory correct per project
+- [ ] Dashboard env vars set (no secrets in git)
+- [ ] Web preview deploys from `apps/web`
+- [ ] API runtime path chosen (Docker today)
+- [ ] Docs build (`pnpm --filter @worksight/docs build`) succeeds
 
-2. **Supabase Build Errors**
-   - If you see "supabaseUrl is required" during build:
-   - Create `.env.local` with placeholder values:
+## References
 
-     ```bash
-     NEXT_PUBLIC_SUPABASE_URL=https://placeholder.supabase.co
-     NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=placeholder-key
-     ```
-
-   - Or disable Supabase features during build by setting:
-
-     ```bash
-     NEXT_PUBLIC_IS_OFFLINE=true
-     ```
-
-3. **Environment Variables**
-   - Ensure all required variables are set in Vercel
-   - Check variable names match exactly
-
-4. **Performance Issues**
-
-   ```bash
-   # Analyze bundle size
-   pnpm run analyze
-   ```
-
-5. **CI/CD Pipeline Issues**
-   - GitHub Actions workflow uses `pnpm/action-setup@v4` for proper pnpm
-     installation
-   - Deployment jobs are commented out until Vercel secrets are configured
-   - To enable automatic deployment, configure these secrets in GitHub:
-     - `VERCEL_TOKEN`
-     - `VERCEL_ORG_ID`
-     - `VERCEL_PROJECT_ID`
-
-### Enabling Automatic Deployment
-
-To enable automatic Vercel deployment in GitHub Actions:
-
-1. **Get Vercel Credentials**:
-
-   ```bash
-   # Install Vercel CLI and login
-   pnpm add -g vercel
-   vercel login
-
-   # Link project and get credentials
-   vercel link
-   ```
-
-2. **Configure GitHub Secrets**:
-   - Go to GitHub Repository → Settings → Secrets and Variables → Actions
-   - Add the required secrets (get these from Vercel dashboard or CLI)
-
-3. **Uncomment Deployment Jobs**:
-   - Edit `.github/workflows/ci.yml`
-   - Uncomment the `deploy-preview` and `deploy-production` jobs
-
-### Support
-
-- Vercel Documentation: <https://vercel.com/docs>
-- Next.js Documentation: <https://nextjs.org/docs>
-
----
-
-## Deployment Checklist
-
-- [ ] Code quality checks pass
-- [ ] Environment variables configured
-- [ ] Domain configured (if custom)
-- [ ] Analytics setup
-- [ ] Error monitoring enabled
-- [ ] Performance optimized
-- [ ] Security headers verified
-
-**Your WorkSight application is ready for production! 🎉**
+- Vercel monorepo docs: <https://vercel.com/docs>
+- Next.js: <https://nextjs.org/docs>
+- Repo MVP plan: [docs/mvp/README.md](../docs/mvp/README.md)
