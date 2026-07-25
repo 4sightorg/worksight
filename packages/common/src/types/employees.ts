@@ -48,7 +48,8 @@ export const EmployeeProfileSchema = z.object({
   role: RoleSchema,                     // Role
   department: z.array(DepartmentsSchema), // Departments
   team: z.uuid().nullable().optional(),   // Optional team ID
-  manager_id: z.uuid().optional(),        // Optional manager ID
+  // Nullable: system accounts and guests have no manager. Empty string is not a UUID.
+  manager_id: z.uuid().nullable().optional(),
   date_joined: z.date(),                 // Joining date
   created_at: z.date(),
   updated_at: z.date(),

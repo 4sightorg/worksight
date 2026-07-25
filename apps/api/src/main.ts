@@ -29,6 +29,10 @@ async function bootstrap() {
 
   await app.listen(port);
   logger.log(`API listening on http://localhost:${port} (CORS: ${corsOrigins.join(', ')})`);
-  logger.log('Data is fixture-backed from @worksight/common — not Supabase.');
+  if (process.env.DATABASE_URL) {
+    logger.log('Data source: Postgres via DATABASE_URL (direct or PgBouncer).');
+  } else {
+    logger.log('Data source: @worksight/common fixtures (set DATABASE_URL to use Postgres).');
+  }
 }
 bootstrap();

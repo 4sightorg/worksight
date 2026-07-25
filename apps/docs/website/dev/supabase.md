@@ -25,11 +25,14 @@ IS_OFFLINE=false
 Client helpers live under `apps/web` (e.g. `src/lib/supabase.ts`,
 `src/utils/supabase/*`). Prefer those over inventing a new root client.
 
-## Not true for MVP Nest routes
+## Not true for MVP Nest routes — updated 2026-07-26
 
-- Nest `/users`, `/teams`, `/tasks`, `/activities` do **not** read Supabase.
-- Do not document service-role keys or table schemas as required for the MVP API
-  slice.
+Nest `/users`, `/teams`, `/tasks`, `/activities` read **Postgres via
+`DATABASE_URL`** when set (direct or PgBouncer). They fall back to
+`@worksight/common` fixtures when unset. They do **not** use the Supabase JS
+client.
+
+See [`docs/handoffs/2026-07-26-api-postgres.md`](../../handoffs/2026-07-26-api-postgres.md).
 
 ## Further reading
 

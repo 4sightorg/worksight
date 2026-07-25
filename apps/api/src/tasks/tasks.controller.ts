@@ -7,7 +7,7 @@ export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Get()
-  getAll(@Query('employee_id') employeeId?: string): Assignment[] {
+  getAll(@Query('employee_id') employeeId?: string): Promise<Assignment[]> {
     return this.tasksService.findAll(employeeId);
   }
 
@@ -17,8 +17,8 @@ export class TasksController {
   }
 
   @Get(':id')
-  getOne(@Param('id') id: string): Assignment {
-    const assignment = this.tasksService.findById(id);
+  async getOne(@Param('id') id: string): Promise<Assignment> {
+    const assignment = await this.tasksService.findById(id);
     if (!assignment) {
       throw new NotFoundException(`Task ${id} not found`);
     }
@@ -31,7 +31,7 @@ export class ActivitiesController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Get()
-  getAll(@Query('employee_id') employeeId?: string): Activity[] {
+  getAll(@Query('employee_id') employeeId?: string): Promise<Activity[]> {
     return this.tasksService.findAllActivities(employeeId);
   }
 }
