@@ -73,6 +73,16 @@ the same fixtures the offline demo uses.
 - `EmployeeProfile.manager_id` is nullable; `Assignment.employee_id` /
   `source_id` are UUIDs.
 
+## API docs (Scalar + CDN Swagger)
+
+Nest's default Swagger UI 404'd on Vercel: the HTML rendered, but
+`swagger-ui.css` / `*.js` from `swagger-ui-dist` are not in the function
+bundle. Docs now:
+
+- `/openapi.json` (+ `/api-json`) — OpenAPI document
+- `/api` and `/reference` — [Scalar](https://scalar.com) API reference
+- `/swagger` — classic Swagger UI via unpkg CDN
+
 ## Vercel serverless fix (follow-up branch `fix/api-vercel-esm`)
 
 Production was crashing with `FUNCTION_INVOCATION_FAILED` /
