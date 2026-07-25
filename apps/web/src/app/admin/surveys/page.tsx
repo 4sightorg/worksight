@@ -41,103 +41,23 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
-
-interface Survey {
-  id: string;
-  title: string;
-  description: string;
-  status: 'draft' | 'active' | 'paused' | 'completed';
-  questionCount: number;
-  responseCount: number;
-  createdAt: string;
-  lastModified: string;
-  createdBy: string;
-  category: 'burnout' | 'satisfaction' | 'wellness' | 'feedback';
-  targetAudience: 'all' | 'managers' | 'employees' | 'specific';
-}
-
-const mockSurveys: Survey[] = [
-  {
-    id: '1',
-    title: 'Burnout Assessment 2025',
-    description: 'Comprehensive burnout evaluation for all employees',
-    status: 'active',
-    questionCount: 15,
-    responseCount: 247,
-    createdAt: '2025-01-15',
-    lastModified: '2025-01-20',
-    createdBy: 'Admin User',
-    category: 'burnout',
-    targetAudience: 'all',
-  },
-  {
-    id: '2',
-    title: 'Job Satisfaction Survey',
-    description: 'Quarterly job satisfaction and engagement survey',
-    status: 'active',
-    questionCount: 12,
-    responseCount: 156,
-    createdAt: '2025-01-10',
-    lastModified: '2025-01-18',
-    createdBy: 'HR Manager',
-    category: 'satisfaction',
-    targetAudience: 'employees',
-  },
-  {
-    id: '3',
-    title: 'Manager Feedback Survey',
-    description: 'Leadership effectiveness and team dynamics assessment',
-    status: 'draft',
-    questionCount: 8,
-    responseCount: 0,
-    createdAt: '2025-01-22',
-    lastModified: '2025-01-22',
-    createdBy: 'Admin User',
-    category: 'feedback',
-    targetAudience: 'managers',
-  },
-  {
-    id: '4',
-    title: 'Wellness Check Q4 2024',
-    description: 'Mental health and wellness assessment',
-    status: 'completed',
-    questionCount: 10,
-    responseCount: 312,
-    createdAt: '2024-10-01',
-    lastModified: '2024-12-31',
-    createdBy: 'Wellness Team',
-    category: 'wellness',
-    targetAudience: 'all',
-  },
-  {
-    id: '5',
-    title: 'Remote Work Experience',
-    description: 'Evaluation of remote work setup and productivity',
-    status: 'paused',
-    questionCount: 14,
-    responseCount: 89,
-    createdAt: '2025-01-05',
-    lastModified: '2025-01-19',
-    createdBy: 'Operations Lead',
-    category: 'feedback',
-    targetAudience: 'all',
-  },
-];
+import { getMvpSurveys, type MvpSurvey } from '@/lib/mvp-data';
 
 function SurveyManagementContent() {
   const { logout } = useAuth();
-  const [surveys, setSurveys] = useState<Survey[]>([]);
+  const [surveys, setSurveys] = useState<MvpSurvey[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      setSurveys(mockSurveys);
-      setIsLoading(false);
-    }, 1000);
+    const fixtureSurveys = getMvpSurveys();
+    if (fixtureSurveys.length === 0) {
+      throw new Error('Common survey fixtures empty; refusing silent empty fallback');
+    }
+    setSurveys(fixtureSurveys);
+    setIsLoading(false);
   }, []);
 
   const handleLogout = async () => {

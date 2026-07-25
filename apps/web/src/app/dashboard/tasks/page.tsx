@@ -55,6 +55,8 @@ import {
 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { assignmentLookup } from '@/lib/mvp-data';
+import type { Assignment } from '@worksight/common/types';
 
 interface Task {
   id: string;
@@ -68,63 +70,33 @@ interface Task {
 
 type ViewMode = 'kanban' | 'table';
 
-// Mock tasks data - in real app this would come from your backend
-const initialTasks: Task[] = [
-  {
-    id: '1',
-    title: 'Implement survey results storage',
-    description: 'Create Zustand store for survey results with persistence',
-    status: 'completed',
-    priority: 'high',
-    dueDate: '2025-08-24',
-    storyPoints: 8,
-  },
-  {
-    id: '2',
-    title: 'Fix ESLint warnings',
-    description: 'Resolve remaining TypeScript and linting issues',
-    status: 'in-progress',
-    priority: 'medium',
-    dueDate: '2025-08-25',
-    storyPoints: 3,
-  },
-  {
-    id: '3',
-    title: 'Dashboard navigation improvements',
-    description: 'Implement client-side routing for dashboard sections',
-    status: 'in-progress',
-    priority: 'high',
-    dueDate: '2025-08-26',
-    storyPoints: 5,
-  },
-  {
-    id: '4',
-    title: 'Mobile responsive design',
-    description: 'Ensure dashboard works well on mobile devices',
-    status: 'pending',
-    priority: 'medium',
-    dueDate: '2025-08-28',
-    storyPoints: 13,
-  },
-  {
-    id: '5',
-    title: 'User authentication improvements',
-    description: 'Add password reset and email verification',
-    status: 'pending',
-    priority: 'low',
-    dueDate: '2025-08-30',
-    storyPoints: 8,
-  },
-  {
-    id: '6',
-    title: 'Add task drag and drop',
-    description: 'Implement kanban board with draggable tasks',
-    status: 'in-progress',
-    priority: 'high',
-    dueDate: '2025-08-25',
-    storyPoints: 8,
-  },
-];
+function mapDashboardStatus(status: Assignment['status']): Task['status'] {
+  if (status === 'completed') return 'completed';
+  if (status === 'in_progress') return 'in-progress';
+  return 'pending';
+}
+
+function mapDashboardPriority(priority: Assignment['priority']): Task['priority'] {
+  if (priority === 'critical' || priority === 'high') return 'high';
+  if (priority === 'medium') return 'medium';
+  return 'low';
+}
+
+function getInitialTasksFromCommon(): Task[] {
+  const assignments = assignmentLookup.all();
+  if (assignments.length === 0) {
+    throw new Error('Common assignment fixtures empty; refusing silent empty fallback');
+  }
+  return assignments.map((assignment) => ({
+    id: assignment.id,
+    title: assignment.title ?? assignment.external_id ?? 'Untitled task',
+    description: [assignment.epic, assignment.sprint, assignment.type].filter(Boolean).join(' · '),
+    status: mapDashboardStatus(assignment.status),
+    priority: mapDashboardPriority(assignment.priority),
+    dueDate: assignment.updated_at.toISOString().slice(0, 10),
+    storyPoints: assignment.points ?? 1,
+  }));
+}
 
 const statusConfig = {
   pending: { icon: Clock, color: 'text-orange-500', bg: 'bg-orange-50', label: 'Pending' },
@@ -147,7 +119,7 @@ const statusOrder: Task['status'][] = ['pending', 'in-progress', 'completed'];
 
 export default function TasksPage() {
   const [viewMode, setViewMode] = useState<ViewMode>('kanban');
-  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+  const [tasks, setTasks] = useState<Task[]>(() => getInitialTasksFromCommon());
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [showNewTaskDialog, setShowNewTaskDialog] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);

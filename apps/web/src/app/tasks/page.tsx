@@ -45,60 +45,9 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { AlertCircle, CheckSquare, Clock, GripVertical, LogOut, Plus, Search } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
+import { getMvpTasks, type MvpTask } from '@/lib/mvp-data';
 
-interface Task {
-  id: string;
-  title: string;
-  description: string;
-  status: 'todo' | 'in-progress' | 'completed';
-  priority: 'low' | 'medium' | 'high';
-  dueDate: string;
-  estimatedHours: number;
-  order: number;
-}
-
-const mockTasks: Task[] = [
-  {
-    id: '1',
-    title: 'Implement user authentication',
-    description: 'Set up Supabase auth with OAuth providers and offline fallback',
-    status: 'completed',
-    priority: 'high',
-    dueDate: '2025-08-20',
-    estimatedHours: 8,
-    order: 0,
-  },
-  {
-    id: '2',
-    title: 'Design task management interface',
-    description: 'Create a clean, intuitive interface for managing work tasks',
-    status: 'in-progress',
-    priority: 'medium',
-    dueDate: '2025-08-21',
-    estimatedHours: 6,
-    order: 1,
-  },
-  {
-    id: '3',
-    title: 'Add burnout tracking metrics',
-    description: 'Implement features to track and analyze work burnout patterns',
-    status: 'todo',
-    priority: 'high',
-    dueDate: '2025-08-23',
-    estimatedHours: 12,
-    order: 2,
-  },
-  {
-    id: '4',
-    title: 'Setup CI/CD pipeline',
-    description: 'Configure automated testing and deployment workflows',
-    status: 'todo',
-    priority: 'low',
-    dueDate: '2025-08-25',
-    estimatedHours: 4,
-    order: 3,
-  },
-];
+type Task = MvpTask;
 
 interface SortableTaskProps {
   task: Task;
@@ -260,7 +209,13 @@ function SortableTask({ task, onTaskUpdate }: SortableTaskProps) {
 function TasksContent() {
   const { user, logout } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
-  const [tasks, setTasks] = useState<Task[]>(mockTasks.sort((a, b) => a.order - b.order));
+  const [tasks, setTasks] = useState<Task[]>(() => {
+    const fixtureTasks = getMvpTasks();
+    if (fixtureTasks.length === 0) {
+      throw new Error('Common assignment fixtures empty; refusing silent empty fallback');
+    }
+    return [...fixtureTasks].sort((a, b) => a.order - b.order);
+  });
 
   const sensors = useSensors(
     useSensor(PointerSensor),

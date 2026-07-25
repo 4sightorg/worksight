@@ -2,7 +2,6 @@
 
 import { useAuth } from '@/auth';
 import { getRoleColor, getUserRoleDisplay } from '@/auth/admin';
-import { UserRole } from '@/auth/types';
 import { AdminRoute } from '@/components/admin';
 import { SessionTimer } from '@/components/features';
 import { AppSidebar } from '@/components/main/sidebar';
@@ -35,6 +34,7 @@ import {
     validateUserArray,
     validateUserFilters,
 } from '@/schemas/user';
+import { getUsersWithMetrics } from '@/lib/mvp-data';
 import {
     AlertTriangle,
     CheckCircle,
@@ -49,74 +49,6 @@ import {
 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
-const mockUsers: UserWithMetrics[] = [
-  {
-    id: '1',
-    name: 'John Doe',
-    email: 'john.doe@company.com',
-    role: UserRole.EMPLOYEE,
-    department: 'Engineering',
-    team: 'Frontend',
-    burnoutScore: 3.2,
-    lastActive: '2 hours ago',
-    surveyCompleted: true,
-    riskLevel: 'low',
-    tasksCompleted: 24,
-  },
-  {
-    id: '2',
-    name: 'Jane Smith',
-    email: 'jane.smith@company.com',
-    role: UserRole.TEAM_LEAD,
-    department: 'Engineering',
-    team: 'Backend',
-    burnoutScore: 7.8,
-    lastActive: '30 minutes ago',
-    surveyCompleted: true,
-    riskLevel: 'high',
-    tasksCompleted: 31,
-  },
-  {
-    id: '3',
-    name: 'Bob Wilson',
-    email: 'bob.wilson@company.com',
-    role: UserRole.MANAGER,
-    department: 'Product',
-    team: 'Design',
-    burnoutScore: 5.4,
-    lastActive: '1 day ago',
-    surveyCompleted: false,
-    riskLevel: 'medium',
-    tasksCompleted: 18,
-  },
-  {
-    id: '4',
-    name: 'Alice Johnson',
-    email: 'alice.johnson@company.com',
-    role: UserRole.EMPLOYEE,
-    department: 'Marketing',
-    team: 'Content',
-    burnoutScore: 2.1,
-    lastActive: '5 minutes ago',
-    surveyCompleted: true,
-    riskLevel: 'low',
-    tasksCompleted: 42,
-  },
-  {
-    id: '5',
-    name: 'Charlie Brown',
-    email: 'charlie.brown@company.com',
-    role: UserRole.ADMIN,
-    department: 'IT',
-    team: 'DevOps',
-    burnoutScore: 6.7,
-    lastActive: '1 hour ago',
-    surveyCompleted: true,
-    riskLevel: 'medium',
-    tasksCompleted: 15,
-  },
-];
-
 function UserManagementContent() {
   const { logout } = useAuth();
   const [users, setUsers] = useState<UserWithMetrics[]>([]);
@@ -127,23 +59,24 @@ function UserManagementContent() {
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
   useEffect(() => {
-    // Simulate API call with validation
-    setTimeout(() => {
-      // Validate mock data using Zod
-      const validationResult = validateUserArray(mockUsers);
+    // Load employees from @worksight/common fixtures
+    const fixtureUsers = getUsersWithMetrics();
+    const validationResult = validateUserArray(fixtureUsers);
 
-      if (!validationResult.allValid) {
-        const errors = validationResult.invalid.map(
-          (item) =>
-            `User at index ${item.index}: ${item.errors?.map((e: { message: string }) => e.message).join(', ')}`
-        );
-        setValidationErrors(errors);
-      }
+    if (!validationResult.allValid) {
+      const errors = validationResult.invalid.map(
+        (item) =>
+          `User at index ${item.index}: ${item.errors?.map((e: { message: string }) => e.message).join(', ')}`
+      );
+      setValidationErrors(errors);
+    }
 
-      // Use only valid users
-      setUsers(validationResult.valid.map((item) => item.data!));
-      setIsLoading(false);
-    }, 1000);
+    if (validationResult.valid.length === 0 && fixtureUsers.length > 0) {
+      throw new Error('Common employee fixtures failed validation; refusing empty fallback');
+    }
+
+    setUsers(validationResult.valid.map((item) => item.data!));
+    setIsLoading(false);
   }, []);
 
   // Validate filters when they change
