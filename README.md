@@ -47,17 +47,30 @@ cp apps/web/env.example apps/web/.env.local
 # Start the web application
 pnpm dev:web
 
+# Start the Nest API (fixture-backed common data; default :3001)
+pnpm --filter @worksight/common build
+pnpm dev:api
+
 # Start the documentation site
 pnpm dev:docs
 
-# Start both applications
+# Start both web + docs (turbo)
 pnpm dev
+
+# MVP E2E demo: API + web with shared common fixtures (see docs/mvp/DEMO.md)
+pnpm demo
 ```
 
 Open:
 
 - **Web App**: <http://localhost:3000>
+- **E2E demo page**: <http://localhost:3000/demo> (requires API on :3001)
+- **API**: <http://localhost:3001> (Swagger at `/api`)
 - **Documentation**: <http://localhost:5173>
+
+> Demo data is **fixture-backed** from `@worksight/common` — not Supabase. Set
+> `NEXT_PUBLIC_USE_API=true` and `NEXT_PUBLIC_API_URL=http://localhost:3001` so
+> dashboard/admin pages call Nest instead of in-process fixtures.
 
 ## 📦 Available Scripts
 
