@@ -73,6 +73,22 @@ the same fixtures the offline demo uses.
 - `EmployeeProfile.manager_id` is nullable; `Assignment.employee_id` /
   `source_id` are UUIDs.
 
+## Vercel serverless fix (follow-up branch `fix/api-vercel-esm`)
+
+Production was crashing with `FUNCTION_INVOCATION_FAILED` /
+`ERR_REQUIRE_ESM`: Nest emits CommonJS, but `@worksight/common` was
+ESM-only (`"type": "module"`), so the serverless function died on the
+first `require('@worksight/common')`. Also, `main.ts` called
+`app.listen()`, which is wrong for Vercel.
+
+- `@worksight/common` now dual-builds `dist/esm` + `dist/cjs` (with
+  matching `exports.require` / `exports.import`).
+- Nest bootstrap is shared (`src/bootstrap.ts`); local still uses
+  `main.ts` + listen, Vercel uses `api/index.js` → `dist/vercel.js`
+  (Express adapter, cached warm isolate).
+- `apps/api/vercel.json` drops `outputDirectory: dist` (that made Vercel
+  treat every compiled file as a function) and rewrites `/(.*)` → `/api`.
+
 ## DB-backed stats (follow-up branch `feat/api-db-stats`)
 
 - `GET /users/stats` and `GET /tasks/stats/:employeeId` now hydrate the

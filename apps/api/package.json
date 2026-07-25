@@ -4,10 +4,10 @@
   "private": true,
   "scripts": {
     "build": "nest build",
-    "dev": "nest start --watch",
-    "start": "nest start",
-    "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
+    "dev": "node --env-file=.env ./node_modules/@nestjs/cli/bin/nest.js start --watch",
+    "start": "node --env-file=.env ./node_modules/@nestjs/cli/bin/nest.js start",
+    "start:debug": "node --env-file=.env ./node_modules/@nestjs/cli/bin/nest.js start --debug --watch",
+    "start:prod": "node --env-file=.env dist/main",
     "type-check": "tsc --noEmit",
     "lint": "eslint \"src/**/*.ts\"",
     "lint:fix": "eslint \"src/**/*.ts\" --fix",
@@ -18,8 +18,8 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "seed": "tsx src/db/seed.ts",
-    "db:migrate": "psql \"$DATABASE_URL\" -f sql/001_core.sql"
+    "seed": "tsx --env-file=.env src/db/seed.ts",
+    "db:migrate": "tsx --env-file=.env -e \"import { execFileSync } from 'node:child_process'; for (const f of ['sql/001_core.sql','sql/002_attendance.sql','sql/003_surveys.sql']) execFileSync('psql',[process.env.DATABASE_URL_DIRECT!,'-f',f],{stdio:'inherit'})\""
   },
   "dependencies": {
     "@nestjs/common": "^11.1.6",
@@ -29,6 +29,7 @@
     "@supabase/supabase-js": "^2.58.0",
     "@worksight/common": "workspace:*",
     "class-transformer": "^0.5.1",
+    "express": "^5.2.1",
     "pg": "^8.16.3",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2"

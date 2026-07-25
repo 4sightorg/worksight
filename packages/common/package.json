@@ -2,33 +2,40 @@
   "name": "@worksight/common",
   "version": "1.0.0",
   "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.js"
+      "types": "./dist/esm/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js",
+      "default": "./dist/esm/index.js"
     },
     "./data": {
-      "types": "./dist/data/index.d.ts",
-      "import": "./dist/data/index.js"
+      "types": "./dist/esm/data/index.d.ts",
+      "import": "./dist/esm/data/index.js",
+      "require": "./dist/cjs/data/index.js"
     },
     "./types": {
-      "types": "./dist/types/index.d.ts",
-      "import": "./dist/types/index.js"
+      "types": "./dist/esm/types/index.d.ts",
+      "import": "./dist/esm/types/index.js",
+      "require": "./dist/cjs/types/index.js"
     },
     "./utils": {
-      "types": "./dist/utils/index.d.ts",
-      "import": "./dist/utils/index.js"
+      "types": "./dist/esm/utils/index.d.ts",
+      "import": "./dist/esm/utils/index.js",
+      "require": "./dist/cjs/utils/index.js"
     }
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsc -b && tsc-alias -p tsconfig.json --resolve-full-paths",
-    "dev": "tsc -w",
+    "build": "pnpm clean && pnpm build:esm && pnpm build:cjs",
+    "build:esm": "tsc -p tsconfig.esm.json && tsc-alias -p tsconfig.esm.json --resolve-full-paths",
+    "build:cjs": "tsc -p tsconfig.cjs.json && tsc-alias -p tsconfig.cjs.json --resolve-full-paths && node ./scripts/write-cjs-package.mjs",
+    "dev": "tsc -w -p tsconfig.esm.json",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
     "lint:strict": "eslint --max-warnings 30 \"src/**/*.ts\"",
@@ -36,8 +43,8 @@
     "prettier:check": "prettier --check \"**/*.{js,ts,md}\"",
     "format": "run-s prettier lint:fix",
     "format:check": "run-s prettier:check lint:strict",
-    "type-check": "tsc --noEmit",
-    "clean": "rimraf .next dist .turbo tsconfig.tsbuildinfo"
+    "type-check": "tsc --noEmit -p tsconfig.esm.json",
+    "clean": "rm -rf dist .turbo tsconfig.tsbuildinfo tsconfig.esm.tsbuildinfo tsconfig.cjs.tsbuildinfo"
   },
   "peerDependencies": {
     "zod": "^4.1.11"

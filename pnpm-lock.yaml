@@ -102,6 +102,9 @@ importers:
       class-transformer:
         specifier: ^0.5.1
         version: 0.5.1
+      express:
+        specifier: ^5.2.1
+        version: 5.2.1
       pg:
         specifier: ^8.16.3
         version: 8.20.0
