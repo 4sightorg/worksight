@@ -27,6 +27,7 @@
 | W3 | Wire API → common types | [#17](https://github.com/4sightorg/worksight/issues/17) | P0 |
 | W4 | E2E demo path | [#18](https://github.com/4sightorg/worksight/issues/18) | P1 |
 | W5 | Docs sync | [#19](https://github.com/4sightorg/worksight/issues/19) | P1 |
+| W6 | Centralize deployments | [#20](https://github.com/4sightorg/worksight/issues/20) | P1 |
 
 **Suggested order:** W1 → W2∥W3 → W4 → W5.
 
