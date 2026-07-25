@@ -5,7 +5,17 @@
  *
  * Idempotent: truncates core tables then reloads. Requires 001_core.sql applied.
  */
-import { Activities, Assignments, Attendance, Employees, Teams } from '@worksight/common';
+import {
+  Activities,
+  Assignments,
+  Attendance,
+  Employees,
+  SurveyQuestionnaire,
+  SurveyResponseList,
+  SurveyResponses,
+  Surveys,
+  Teams,
+} from '@worksight/common';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { Pool } from 'pg';
@@ -20,14 +30,16 @@ async function main() {
   const client = await pool.connect();
 
   try {
-    for (const file of ['001_core.sql', '002_attendance.sql']) {
+    for (const file of ['001_core.sql', '002_attendance.sql', '003_surveys.sql']) {
       const schemaSql = readFileSync(join(__dirname, '..', '..', 'sql', file), 'utf8');
       await client.query(schemaSql);
     }
 
     await client.query('BEGIN');
     await client.query(
-      `TRUNCATE attendance, activities, assignments, teams, employees RESTART IDENTITY CASCADE`
+      `TRUNCATE survey_responses, survey_response_meta, survey_questions, surveys,
+               attendance, activities, assignments, teams, employees
+       RESTART IDENTITY CASCADE`
     );
 
     // Insert managers before reports so manager_id FKs resolve.
@@ -142,6 +154,62 @@ async function main() {
       );
     }
 
+    for (const survey of Surveys) {
+      await client.query(
+        `INSERT INTO surveys (id, created_by, created_at, num_questions)
+         VALUES ($1,$2,$3,$4)`,
+        [survey.id, survey.created_by, survey.created_at, survey.num_questions]
+      );
+    }
+
+    for (const question of SurveyQuestionnaire) {
+      await client.query(
+        `INSERT INTO survey_questions
+           (survey_id, id, question_text, question_subtext, dimension, type,
+            required, options, reverse_score, min_value, min_label, max_value,
+            max_label, default_value)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)`,
+        [
+          question.survey_id,
+          question.id,
+          question.question_text,
+          question.question_subtext ?? null,
+          Array.isArray(question.dimension) ? question.dimension : [question.dimension],
+          question.type,
+          question.required,
+          question.options ?? null,
+          question.reverseScore,
+          question.min_value ?? null,
+          question.min_label ?? null,
+          question.max_value ?? null,
+          question.max_label ?? null,
+          question.defaultValue === undefined ? null : JSON.stringify(question.defaultValue),
+        ]
+      );
+    }
+
+    for (const meta of SurveyResponseList) {
+      await client.query(
+        `INSERT INTO survey_response_meta (id, survey_id, employee_id, submitted_at, avg_score)
+         VALUES ($1,$2,$3,$4,$5)`,
+        [meta.id, meta.survey_id, meta.employee_id, meta.submitted_at, meta.avg_score]
+      );
+    }
+
+    for (const response of SurveyResponses) {
+      await client.query(
+        `INSERT INTO survey_responses (id, response_meta_id, question_id, response, created_at)
+         VALUES ($1,$2,$3,$4,$5)`,
+        [
+          response.id,
+          response.response_meta_id,
+          response.question_id,
+          response.response === null ? null : JSON.stringify(response.response),
+          response.created_at,
+        ]
+      );
+    }
+
     await client.query('COMMIT');
 
     const counts = await client.query(
@@ -150,7 +218,11 @@ async function main() {
          (SELECT count(*)::int FROM teams) AS teams,
          (SELECT count(*)::int FROM assignments) AS assignments,
          (SELECT count(*)::int FROM activities) AS activities,
-         (SELECT count(*)::int FROM attendance) AS attendance`
+         (SELECT count(*)::int FROM attendance) AS attendance,
+         (SELECT count(*)::int FROM surveys) AS surveys,
+         (SELECT count(*)::int FROM survey_questions) AS survey_questions,
+         (SELECT count(*)::int FROM survey_response_meta) AS survey_submissions,
+         (SELECT count(*)::int FROM survey_responses) AS survey_responses`
     );
     console.log('Seeded', counts.rows[0]);
   } catch (error) {

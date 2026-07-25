@@ -3,11 +3,12 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AttendanceModule } from './attendance/attendance.module';
 import { DatabaseModule } from './db/database.module';
+import { SurveysModule } from './surveys/surveys.module';
 import { TasksModule } from './tasks/tasks.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
-  imports: [DatabaseModule, UsersModule, TasksModule, AttendanceModule],
+  imports: [DatabaseModule, UsersModule, TasksModule, AttendanceModule, SurveysModule],
   controllers: [AppController],
   providers: [AppService],
 })

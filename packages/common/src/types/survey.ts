@@ -25,8 +25,8 @@ export const SurveyQuestionTypeSchema = z.enum([
 export const SurveySchema = z.object({
   /** Unique survey ID */
   id: z.uuid(),
-  /** Creator's identifier */
-  created_by: z.string(),
+  /** Creator's employee id */
+  created_by: z.uuid(),
   /** Creation timestamp */
   created_at: z.date(),
   /** Number of questions in the survey */
@@ -67,7 +67,7 @@ export const SurveyQuestionSchema = z.object({
 export const SurveyResponseMetadataSchema = z.object({
   id: z.uuid(),
   survey_id: z.uuid(),
-  employee_id: z.string(),
+  employee_id: z.uuid(),
   submitted_at: z.date(),
   avg_score: z.number().nullable(),
 });
@@ -85,6 +85,25 @@ export const SurveyResponseSchema = z.object({
   question_id: z.number().int(),
   response: z.union([z.string(), z.number()]).nullable(),
   created_at: z.date(),
+});
+
+/** ----------------------------- */
+/** Survey Submission (API input) */
+/** ----------------------------- */
+
+/**
+ * Payload for submitting a filled survey.
+ */
+export const SurveySubmissionSchema = z.object({
+  employee_id: z.uuid(),
+  answers: z
+    .array(
+      z.object({
+        question_id: z.number().int().nonnegative(),
+        response: z.union([z.string(), z.number()]).nullable(),
+      })
+    )
+    .min(1),
 });
 
 /** ----------------------------- */
@@ -166,6 +185,7 @@ export type SurveyQuestion = z.infer<typeof SurveyQuestionSchema>;
 export type SurveyQuestionType = z.infer<typeof SurveyQuestionTypeSchema>;
 export type SurveyQuestionStats = z.infer<typeof SurveyQuestionStatsSchema>;
 export type SurveyResponse = z.infer<typeof SurveyResponseSchema>;
+export type SurveySubmission = z.infer<typeof SurveySubmissionSchema>;
 export type SurveyResponseStats = z.infer<typeof SurveyResponseStatsSchema>;
 export type SurveyResponseMetadata = z.infer<typeof SurveyResponseMetadataSchema>;
 export type SurveyResponseMetadataStats = z.infer<typeof SurveyResponseMetadataStatsSchema>;

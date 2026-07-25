@@ -5,6 +5,10 @@ import type {
   AttendanceRecord,
   AttendanceStats,
   EmployeeProfile,
+  Survey,
+  SurveyQuestion,
+  SurveyResponseMetadata,
+  SurveySubmission,
   Team,
 } from '@worksight/common';
 import { DatabaseService } from './database.service';
@@ -66,6 +70,38 @@ type AttendanceStatsRow = {
   total_records: number;
   total_hours: number;
   days_present: number;
+};
+
+type SurveyRow = {
+  id: string;
+  created_by: string;
+  created_at: Date;
+  num_questions: number;
+};
+
+type SurveyQuestionRow = {
+  survey_id: string;
+  id: number;
+  question_text: string;
+  question_subtext: string | null;
+  dimension: string[];
+  type: SurveyQuestion['type'];
+  required: boolean;
+  options: string[] | null;
+  reverse_score: boolean;
+  min_value: number | null;
+  min_label: string | null;
+  max_value: number | null;
+  max_label: string | null;
+  default_value: string | number | null;
+};
+
+type SurveyResponseMetaRow = {
+  id: string;
+  survey_id: string;
+  employee_id: string;
+  submitted_at: Date;
+  avg_score: number | null;
 };
 
 type ActivityRow = {
@@ -175,6 +211,74 @@ export class WorksightRepository {
       averageHours: Math.round(average * 100) / 100,
     };
   }
+
+  async listSurveys(): Promise<Survey[]> {
+    const { rows } = await this.db.query<SurveyRow>(`SELECT * FROM surveys ORDER BY created_at`);
+    return rows.map(toSurvey);
+  }
+
+  async getSurvey(id: string): Promise<Survey | null> {
+    const { rows } = await this.db.query<SurveyRow>(`SELECT * FROM surveys WHERE id = $1`, [id]);
+    return rows[0] ? toSurvey(rows[0]) : null;
+  }
+
+  async listSurveyQuestions(surveyId: string): Promise<SurveyQuestion[]> {
+    const { rows } = await this.db.query<SurveyQuestionRow>(
+      `SELECT * FROM survey_questions WHERE survey_id = $1 ORDER BY id`,
+      [surveyId]
+    );
+    return rows.map(toSurveyQuestion);
+  }
+
+  async listSurveySubmissions(employeeId?: string): Promise<SurveyResponseMetadata[]> {
+    const { rows } = employeeId
+      ? await this.db.query<SurveyResponseMetaRow>(
+          `SELECT * FROM survey_response_meta WHERE employee_id = $1 ORDER BY submitted_at DESC`,
+          [employeeId]
+        )
+      : await this.db.query<SurveyResponseMetaRow>(
+          `SELECT * FROM survey_response_meta ORDER BY submitted_at DESC`
+        );
+    return rows.map(toSurveyResponseMeta);
+  }
+
+  async createSurveySubmission(
+    surveyId: string,
+    submission: SurveySubmission
+  ): Promise<SurveyResponseMetadata> {
+    const numeric = submission.answers
+      .map(a => a.response)
+      .filter((r): r is number => typeof r === 'number');
+    const avgScore = numeric.length
+      ? Math.round((numeric.reduce((a, b) => a + b, 0) / numeric.length) * 100) / 100
+      : null;
+
+    return this.db.withClient(async client => {
+      await client.query('BEGIN');
+      try {
+        const {
+          rows: [meta],
+        } = await client.query<SurveyResponseMetaRow>(
+          `INSERT INTO survey_response_meta (id, survey_id, employee_id, submitted_at, avg_score)
+           VALUES (gen_random_uuid(), $1, $2, now(), $3)
+           RETURNING *`,
+          [surveyId, submission.employee_id, avgScore]
+        );
+        for (const answer of submission.answers) {
+          await client.query(
+            `INSERT INTO survey_responses (id, response_meta_id, question_id, response)
+             VALUES (gen_random_uuid(), $1, $2, $3)`,
+            [meta.id, answer.question_id, answer.response === null ? null : JSON.stringify(answer.response)]
+          );
+        }
+        await client.query('COMMIT');
+        return toSurveyResponseMeta(meta);
+      } catch (error) {
+        await client.query('ROLLBACK');
+        throw error;
+      }
+    });
+  }
 }
 
 function toEmployee(row: EmployeeRow): EmployeeProfile {
@@ -234,6 +338,45 @@ function toAttendance(row: AttendanceRow): AttendanceRecord {
     check_out: row.check_out ? new Date(row.check_out) : null,
     hours_worked: row.hours_worked === null ? null : Number(row.hours_worked),
     created_at: new Date(row.created_at),
+  };
+}
+
+function toSurvey(row: SurveyRow): Survey {
+  return {
+    id: row.id,
+    created_by: row.created_by,
+    created_at: new Date(row.created_at),
+    num_questions: row.num_questions,
+  };
+}
+
+function toSurveyQuestion(row: SurveyQuestionRow): SurveyQuestion {
+  return {
+    id: row.id,
+    survey_id: row.survey_id,
+    question_text: row.question_text,
+    question_subtext: row.question_subtext ?? undefined,
+    // Stored as an array; unwrap singletons for fixture parity.
+    dimension: row.dimension.length === 1 ? row.dimension[0] : row.dimension,
+    type: row.type,
+    required: row.required,
+    options: row.options ?? undefined,
+    reverseScore: row.reverse_score,
+    min_value: row.min_value ?? undefined,
+    min_label: row.min_label ?? undefined,
+    max_value: row.max_value ?? undefined,
+    max_label: row.max_label ?? undefined,
+    defaultValue: row.default_value ?? undefined,
+  };
+}
+
+function toSurveyResponseMeta(row: SurveyResponseMetaRow): SurveyResponseMetadata {
+  return {
+    id: row.id,
+    survey_id: row.survey_id,
+    employee_id: row.employee_id,
+    submitted_at: new Date(row.submitted_at),
+    avg_score: row.avg_score,
   };
 }
 
