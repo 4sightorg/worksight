@@ -1,8 +1,9 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "module": "es2022",
-    "moduleResolution": "bundler",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noEmit": false,
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
@@ -20,8 +21,10 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "@worksight/common": ["../../packages/common/src"],
-      "@worksight/common/*": ["../../packages/common/src/*"]
+      // Resolve against the built package so type-check matches what Node
+      // loads at runtime (requires `pnpm --filter @worksight/common build`).
+      "@worksight/common": ["../../packages/common/dist"],
+      "@worksight/common/*": ["../../packages/common/dist/*"]
     }
   },
   "include": ["src/**/*"],
