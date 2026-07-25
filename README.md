@@ -154,7 +154,7 @@ based on its dashboard **Root Directory** setting:
   `apps/docs/vercel.json`.
 
 All three share `pnpm install --frozen-lockfile`, a
-`pnpm --filter @worksight/<app> build` command, production branch `canary`, and
+`pnpm turbo run build --filter=@worksight/<app>` command, production branch `canary`, and
 skip-unaffected-project deploys. No environment values are committed to
 `vercel.json`.
 

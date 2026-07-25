@@ -2,7 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
   "installCommand": "pnpm install --frozen-lockfile",
-  "buildCommand": "pnpm --filter @worksight/web build",
+  "buildCommand": "pnpm turbo run build --filter=@worksight/web",
   "build": {
     "env": {
       "NEXT_TELEMETRY_DISABLED": "1"
