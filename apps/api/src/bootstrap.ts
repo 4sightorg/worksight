@@ -55,12 +55,29 @@ export async function createApp(): Promise<BootstrappedApp> {
  */
 function setupApiDocs(app: INestApplication, server: Express): void {
   const config = new DocumentBuilder()
-    .setTitle('WorkSight')
-    .setDescription('Check your tasks, manage your well-being')
+    .setTitle('WorkSight API')
+    .setDescription(
+      [
+        'Wellness-aware workforce API. Reads Postgres when `DATABASE_URL` is set;',
+        'otherwise serves `@worksight/common` fixtures.',
+        '',
+        'Interactive docs: `/api` or `/reference` (Scalar), `/swagger` (Swagger UI).',
+        'Machine-readable OpenAPI: `/openapi.json`.',
+      ].join('\n')
+    )
     .setVersion('1.0')
+    .addTag('system', 'Liveness and readiness')
+    .addTag('users', 'Employees')
+    .addTag('teams', 'Teams')
+    .addTag('tasks', 'Assignments / tasks')
+    .addTag('activities', 'Activity feed')
+    .addTag('attendance', 'Attendance records')
+    .addTag('surveys', 'Burnout / wellness surveys')
     .addBearerAuth()
     .build();
-  const document = SwaggerModule.createDocument(app, config);
+  const document = SwaggerModule.createDocument(app, config, {
+    operationIdFactory: (_controllerKey: string, methodKey: string) => methodKey,
+  });
 
   const sendOpenApi = (_req: Request, res: Response) => {
     res.json(document);
