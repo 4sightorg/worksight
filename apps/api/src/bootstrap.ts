@@ -80,6 +80,8 @@ function setupApiDocs(app: INestApplication, server: Express): void {
 }
 
 function cdnScalarHtml(specUrl: string): string {
+  // Current Scalar CDN API — the old data-url + standalone.min.js embed is a blank page.
+  // https://scalar.com/products/api-references/integrations/html-js
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -88,16 +90,14 @@ function cdnScalarHtml(specUrl: string): string {
   <title>WorkSight API</title>
 </head>
 <body>
-  <script
-    id="api-reference"
-    data-url=${JSON.stringify(specUrl)}
-    data-configuration=${JSON.stringify({
-      theme: 'default',
-      hideModels: false,
+  <div id="app"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
+  <script>
+    Scalar.createApiReference('#app', {
+      url: ${JSON.stringify(specUrl)},
       metaData: { title: 'WorkSight API' },
-    })}
-  ></script>
-  <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@1.38.1/dist/browser/standalone.min.js" crossorigin></script>
+    });
+  </script>
 </body>
 </html>`;
 }
@@ -107,21 +107,24 @@ function cdnSwaggerHtml(specUrl: string): string {
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>WorkSight API — Swagger UI</title>
   <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.27.1/swagger-ui.css" />
-  <style>body { margin: 0; background: #fafafa; }</style>
+  <style>html { box-sizing: border-box; overflow-y: scroll; } body { margin: 0; background: #fafafa; }</style>
 </head>
 <body>
   <div id="swagger-ui"></div>
   <script src="https://unpkg.com/swagger-ui-dist@5.27.1/swagger-ui-bundle.js" crossorigin></script>
   <script src="https://unpkg.com/swagger-ui-dist@5.27.1/swagger-ui-standalone-preset.js" crossorigin></script>
   <script>
-    window.ui = SwaggerUIBundle({
-      url: ${JSON.stringify(specUrl)},
-      dom_id: '#swagger-ui',
-      presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
-      layout: 'StandaloneLayout',
-    });
+    window.onload = function () {
+      window.ui = SwaggerUIBundle({
+        url: ${JSON.stringify(specUrl)},
+        dom_id: '#swagger-ui',
+        presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
+        layout: 'StandaloneLayout',
+      });
+    };
   </script>
 </body>
 </html>`;
