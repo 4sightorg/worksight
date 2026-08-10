@@ -1,0 +1,129 @@
+name: API Postgres Integration
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: [main, dev, canary]
+  pull_request:
+    paths:
+      - 'apps/api/**'
+      - 'packages/common/**'
+      - '.github/workflows/api-postgres.yml'
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '20'
+  API_PORT: '3001'
+
+jobs:
+  api-postgres:
+    name: API against Postgres
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: worksight
+          POSTGRES_PASSWORD: worksight
+          POSTGRES_DB: worksight
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U worksight -d worksight"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://worksight:worksight@localhost:5432/worksight
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build @worksight/common
+        run: pnpm --filter @worksight/common build
+
+      - name: Build @worksight/api
+        run: pnpm --filter @worksight/api build
+
+      - name: Unit tests (@worksight/api)
+        run: pnpm --filter @worksight/api test
+        env:
+          DATABASE_URL: ''
+
+      - name: Apply schema + seed fixtures
+        run: pnpm --filter @worksight/api seed
+
+      - name: Start API
+        run: |
+          cd apps/api
+          PORT="${API_PORT}" node dist/main > api.log 2>&1 &
+          echo $! > api.pid
+        shell: bash
+
+      - name: Wait for API ready
+        run: |
+          for i in $(seq 1 60); do
+            if curl -fsS "http://127.0.0.1:${API_PORT}/health" > /dev/null; then
+              echo "API ready after ${i} attempt(s)"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "API did not become ready in time"
+          cat apps/api/api.log || true
+          exit 1
+        shell: bash
+
+      - name: Smoke test /health and /users
+        run: |
+          node --input-type=module -e '
+            const base = `http://127.0.0.1:${process.env.API_PORT}`;
+
+            const health = await (await fetch(`${base}/health`)).json();
+            console.log("GET /health ->", JSON.stringify(health));
+            if (health.database !== "postgres") {
+              throw new Error(`expected database=postgres, got ${JSON.stringify(health.database)}`);
+            }
+
+            const usersRes = await fetch(`${base}/users`);
+            if (!usersRes.ok) {
+              throw new Error(`GET /users failed with ${usersRes.status}`);
+            }
+            const users = await usersRes.json();
+            if (!Array.isArray(users) || users.length === 0) {
+              throw new Error(`expected a non-empty /users array, got ${JSON.stringify(users).slice(0, 200)}`);
+            }
+            console.log(`GET /users -> ${users.length} users`);
+          '
+        shell: bash
+
+      - name: API logs
+        if: always()
+        run: cat apps/api/api.log || true
+        shell: bash
+
+      - name: Stop API
+        if: always()
+        run: |
+          cd apps/api
+          if [ -f api.pid ]; then
+            kill "$(cat api.pid)" || true
+          fi
+        shell: bash
