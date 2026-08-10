@@ -2,7 +2,7 @@
 
 > **Status:** Persistence MVP landed on `canary` (2026-08-10)  
 > **Epic (fixtures):** [#14](https://github.com/4sightorg/worksight/issues/14)  
-> **Postgres stack:** PRs #28–#32, #37–#39
+> **Postgres stack:** PRs #28–#32, #37–#40 (+ survey UI→API id map)
 
 ## Definition of Done (persistence MVP)
 
@@ -12,6 +12,7 @@
 - [x] Task POST/PATCH
 - [x] CI job seeds Postgres and smokes `/health` + `/users`
 - [x] Web `/demo` shows `database` backend; admin/tasks/surveys use API when `USE_API=true`
+- [x] Survey results map UI question ids → Nest `question_id` and POST responses
 - [x] `pnpm demo` / `DEMO_WITH_POSTGRES=1 pnpm demo` documented
 - [ ] Live connectors (explicit non-goal)
 - [ ] Production auth hardening (explicit non-goal)
