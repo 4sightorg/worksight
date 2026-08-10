@@ -18,7 +18,7 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "seed": "tsx --env-file=.env src/db/seed.ts",
+    "seed": "tsx src/db/seed.ts",
     "db:migrate": "tsx --env-file=.env -e \"import { execFileSync } from 'node:child_process'; for (const f of ['sql/001_core.sql','sql/002_attendance.sql','sql/003_surveys.sql']) execFileSync('psql',[process.env.DATABASE_URL_DIRECT!,'-f',f],{stdio:'inherit'})\""
   },
   "dependencies": {
