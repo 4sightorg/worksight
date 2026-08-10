@@ -18,6 +18,14 @@ import { activities, assignments, employees, teams } from './schema';
 
 export type DataBackend = 'postgres' | 'fixtures';
 
+/** Insert shape for `assignments`, derived from the table so it tracks schema.ts. */
+export type NewAssignmentRow = typeof assignments.$inferInsert;
+
+/** Columns `PATCH /tasks/:id` is allowed to touch. */
+export type AssignmentPatch = Partial<
+  Pick<NewAssignmentRow, 'status' | 'priority' | 'title' | 'points'>
+>;
+
 @Injectable()
 export class DbService implements OnModuleDestroy {
   private readonly logger = new Logger(DbService.name);
@@ -125,6 +133,27 @@ export class DbService implements OnModuleDestroy {
       urgentActivities: urgent,
       workLifeBalanceScore: Math.max(0, 100 - afterHours * 10 - weekend * 5),
     };
+  }
+
+  /* ---------------------------------------------------------------- writes */
+
+  /** Insert one assignment and return it mapped back to the shared type. */
+  async createAssignment(values: NewAssignmentRow): Promise<Assignment> {
+    const [row] = await this.db.insert(assignments).values(values).returning();
+    return toAssignment(row);
+  }
+
+  /**
+   * Apply a partial update. Returns `null` when no row matched `id` so callers
+   * can turn that into a 404. `updated_at` is bumped server-side.
+   */
+  async updateAssignment(id: string, patch: AssignmentPatch): Promise<Assignment | null> {
+    const [row] = await this.db
+      .update(assignments)
+      .set({ ...patch, updatedAt: new Date() })
+      .where(eq(assignments.id, id))
+      .returning();
+    return row ? toAssignment(row) : null;
   }
 }
 

@@ -1,4 +1,13 @@
-import { Controller, Get, NotFoundException, Param, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  NotFoundException,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import type { Activity, Assignment } from '@worksight/common';
 import { TasksService } from './tasks.service';
 
@@ -23,6 +32,22 @@ export class TasksController {
       throw new NotFoundException(`Task ${id} not found`);
     }
     return assignment;
+  }
+
+  /** Requires DATABASE_URL; 501 in fixture mode. */
+  @Post()
+  create(@Body() body: unknown): Promise<Assignment> {
+    return this.tasksService.create(body);
+  }
+
+  /** Partial update. Requires DATABASE_URL; 501 in fixture mode. */
+  @Patch(':id')
+  async update(@Param('id') id: string, @Body() body: unknown): Promise<Assignment> {
+    const updated = await this.tasksService.update(id, body);
+    if (!updated) {
+      throw new NotFoundException(`Task ${id} not found`);
+    }
+    return updated;
   }
 }
 
