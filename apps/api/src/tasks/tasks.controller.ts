@@ -1,12 +1,17 @@
 import {
+  Body,
   Controller,
   Get,
   NotFoundException,
   Param,
   ParseUUIDPipe,
+  Patch,
+  Post,
   Query,
 } from '@nestjs/common';
 import {
+  ApiBody,
+  ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -47,6 +52,18 @@ export class TasksController {
     return this.tasksService.getStatsForEmployee(employeeId);
   }
 
+  @Post()
+  @ApiOperation({
+    summary: 'Create an assignment',
+    description:
+      'Requires `DATABASE_URL`. Returns 501 in fixture mode. Timestamps are server-owned.',
+  })
+  @ApiBody({ type: AssignmentDto })
+  @ApiCreatedResponse({ type: AssignmentDto })
+  create(@Body() body: unknown): Promise<Assignment> {
+    return this.tasksService.create(body);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get assignment by id' })
   @ApiParam({ name: 'id', format: 'uuid' })
@@ -58,6 +75,26 @@ export class TasksController {
       throw new NotFoundException(`Task ${id} not found`);
     }
     return assignment;
+  }
+
+  @Patch(':id')
+  @ApiOperation({
+    summary: 'Partial update an assignment',
+    description:
+      'Patch `status`, `priority`, `title`, and/or `points`. Requires `DATABASE_URL` (501 otherwise).',
+  })
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @ApiOkResponse({ type: AssignmentDto })
+  @ApiNotFoundResponse({ description: 'Assignment not found' })
+  async update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() body: unknown
+  ): Promise<Assignment> {
+    const updated = await this.tasksService.update(id, body);
+    if (!updated) {
+      throw new NotFoundException(`Task ${id} not found`);
+    }
+    return updated;
   }
 }
 

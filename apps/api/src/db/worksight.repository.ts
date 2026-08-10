@@ -118,6 +118,27 @@ type ActivityRow = {
   created_at: Date;
 };
 
+
+/** Insert shape for POST /tasks (timestamps owned by the repository). */
+export type NewAssignmentInput = {
+  id: string;
+  employee_id: string;
+  source_id: string | null;
+  external_id: string | null;
+  type: Assignment['type'];
+  title: string | null;
+  status: Assignment['status'];
+  sprint: string | null;
+  epic: string | null;
+  points: number | null;
+  priority: Assignment['priority'];
+};
+
+/** Columns PATCH /tasks/:id may touch. */
+export type AssignmentPatch = Partial<
+  Pick<Assignment, 'status' | 'priority' | 'title' | 'points'>
+>;
+
 @Injectable()
 export class WorksightRepository {
   constructor(private readonly db: DatabaseService) {}
@@ -167,6 +188,64 @@ export class WorksightRepository {
     const { rows } = await this.db.query<AssignmentRow>(
       `SELECT * FROM assignments WHERE id = $1`,
       [id]
+    );
+    return rows[0] ? toAssignment(rows[0]) : null;
+  }
+
+  /** Insert one assignment and return the mapped shared type. */
+  async createAssignment(input: NewAssignmentInput): Promise<Assignment> {
+    const now = new Date();
+    const { rows } = await this.db.query<AssignmentRow>(
+      `INSERT INTO assignments
+         (id, employee_id, source_id, external_id, type, title, status,
+          sprint, epic, points, priority, created_at, updated_at)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+       RETURNING *`,
+      [
+        input.id,
+        input.employee_id,
+        input.source_id,
+        input.external_id,
+        input.type,
+        input.title,
+        input.status,
+        input.sprint,
+        input.epic,
+        input.points,
+        input.priority,
+        now,
+        now,
+      ]
+    );
+    return toAssignment(rows[0]);
+  }
+
+  /**
+   * Partial update. Returns null when no row matches so callers can 404.
+   * `updated_at` is always bumped server-side.
+   */
+  async updateAssignment(id: string, patch: AssignmentPatch): Promise<Assignment | null> {
+    const sets: string[] = [];
+    const params: unknown[] = [];
+    const push = (column: string, value: unknown) => {
+      params.push(value);
+      sets.push(`${column} = $${params.length}`);
+    };
+
+    if (patch.status !== undefined) push('status', patch.status);
+    if (patch.priority !== undefined) push('priority', patch.priority);
+    if (patch.title !== undefined) push('title', patch.title);
+    if (patch.points !== undefined) push('points', patch.points);
+
+    if (sets.length === 0) {
+      throw new Error('AssignmentPatch must set at least one column');
+    }
+
+    push('updated_at', new Date());
+    params.push(id);
+    const { rows } = await this.db.query<AssignmentRow>(
+      `UPDATE assignments SET ${sets.join(', ')} WHERE id = $${params.length} RETURNING *`,
+      params
     );
     return rows[0] ? toAssignment(rows[0]) : null;
   }
