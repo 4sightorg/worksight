@@ -1,8 +1,21 @@
 /**
  * Client for the Nest API (@worksight/api).
- * Responses are typed against @worksight/common; payloads are fixture-backed.
+ * Responses are typed against @worksight/common; payloads are fixture-backed
+ * or Postgres when the API has DATABASE_URL.
  */
-import type { Activity, Assignment, EmployeeProfile, Team } from '@worksight/common/types';
+import type {
+  Activity,
+  Assignment,
+  AssignmentPriority,
+  AssignmentStatus,
+  AssignmentType,
+  EmployeeProfile,
+  Survey,
+  SurveyQuestion,
+  SurveyResponseMetadata,
+  SurveySubmission,
+  Team,
+} from '@worksight/common/types';
 
 export type DataSourceMode = 'api' | 'fixtures';
 
@@ -35,6 +48,32 @@ async function apiGet<T>(path: string, signal?: AbortSignal): Promise<T> {
   });
   if (!response.ok) {
     throw new Error(`API ${path} failed: ${response.status} ${response.statusText}`);
+  }
+  return response.json() as Promise<T>;
+}
+
+async function apiSend<T>(
+  method: 'POST' | 'PATCH',
+  path: string,
+  body: unknown,
+  signal?: AbortSignal
+): Promise<T> {
+  const url = `${getApiBaseUrl()}${path.startsWith('/') ? path : `/${path}`}`;
+  const response = await fetch(url, {
+    method,
+    headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+    cache: 'no-store',
+    body: JSON.stringify(body),
+    signal,
+  });
+  if (!response.ok) {
+    const detail = await response.text().catch(() => '');
+    throw new Error(
+      `API ${method} ${path} failed: ${response.status} ${response.statusText}${detail ? ` — ${detail.slice(0, 200)}` : ''}`
+    );
+  }
+  if (response.status === 204) {
+    return undefined as T;
   }
   return response.json() as Promise<T>;
 }
@@ -96,6 +135,33 @@ export type ApiActivity = Omit<Activity, 'timestamp' | 'created_at'> & {
 
 export type ApiTeam = Team;
 
+export type ApiSurvey = Omit<Survey, 'created_at'> & { created_at: string | Date };
+export type ApiSurveyQuestion = SurveyQuestion;
+export type ApiSurveySubmissionMeta = Omit<SurveyResponseMetadata, 'submitted_at'> & {
+  submitted_at: string | Date;
+};
+
+export type CreateTaskInput = {
+  id?: string;
+  employee_id: string;
+  source_id?: string | null;
+  external_id?: string | null;
+  type: AssignmentType;
+  title?: string | null;
+  status?: AssignmentStatus;
+  sprint?: string | null;
+  epic?: string | null;
+  points?: number | null;
+  priority?: AssignmentPriority;
+};
+
+export type PatchTaskInput = {
+  status?: AssignmentStatus;
+  priority?: AssignmentPriority;
+  title?: string | null;
+  points?: number | null;
+};
+
 export const worksightApi = {
   getHealth: (timeoutMs = 5000) => apiGet<ApiHealth>('/health', timeoutSignal(timeoutMs)),
   getUsers: () => apiGet<ApiEmployee[]>('/users'),
@@ -110,6 +176,24 @@ export const worksightApi = {
   getActivities: (employeeId?: string) =>
     apiGet<ApiActivity[]>(
       employeeId ? `/activities?employee_id=${encodeURIComponent(employeeId)}` : '/activities'
+    ),
+  createTask: (body: CreateTaskInput) => apiSend<ApiAssignment>('POST', '/tasks', body),
+  patchTask: (id: string, body: PatchTaskInput) =>
+    apiSend<ApiAssignment>('PATCH', `/tasks/${encodeURIComponent(id)}`, body),
+  getSurveys: () => apiGet<ApiSurvey[]>('/surveys'),
+  getSurveyQuestions: (surveyId: string) =>
+    apiGet<ApiSurveyQuestion[]>(`/surveys/${encodeURIComponent(surveyId)}/questions`),
+  getSurveySubmissions: (employeeId?: string) =>
+    apiGet<ApiSurveySubmissionMeta[]>(
+      employeeId
+        ? `/surveys/responses?employee_id=${encodeURIComponent(employeeId)}`
+        : '/surveys/responses'
+    ),
+  submitSurvey: (surveyId: string, body: SurveySubmission) =>
+    apiSend<ApiSurveySubmissionMeta>(
+      'POST',
+      `/surveys/${encodeURIComponent(surveyId)}/responses`,
+      body
     ),
 };
 

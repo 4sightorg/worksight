@@ -1,5 +1,23 @@
 version: '3.9'
 services:
+  postgres:
+    image: docker.io/library/postgres:16-alpine
+    container_name: worksight_postgres
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: worksight
+      POSTGRES_PASSWORD: worksight
+      POSTGRES_DB: worksight
+    volumes:
+      - worksight_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U worksight -d worksight']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
   web:
     container_name: worksight_web
     build:
@@ -29,4 +47,7 @@ services:
     depends_on:
       - web
       - docs
+
+volumes:
+  worksight_pg:
 
