@@ -73,8 +73,24 @@ the same fixtures the offline demo uses.
 - `EmployeeProfile.manager_id` is nullable; `Assignment.employee_id` /
   `source_id` are UUIDs.
 
-Attendance / survey fixtures still contain invalid UUIDs — they are out of the
-API surface for now.
+Survey fixtures still contain invalid UUIDs — they are out of the API surface
+for now.
+
+## Attendance (follow-up branch `feat/api-attendance`)
+
+- Attendance fixtures repaired: 77 invalid `system_id`s regenerated as
+  deterministic UUIDs (`a77e0000-…`), and stale/placeholder `employee_id`s
+  (`0001`, `admin`, `guest`, old hex ids) remapped to the repaired employee
+  UUIDs using the per-block comments in the fixture file.
+  `AttendanceSchema.employee_id` is now `z.uuid()`.
+- `apps/api/sql/002_attendance.sql` — `attendance` table with an
+  `(employee_id, date)` unique constraint; seed script applies it and loads
+  the fixtures (77 rows on Neon).
+- New endpoints: `GET /attendance` (optional `?employee_id=`) and
+  `GET /attendance/stats/:employeeId`. DB mode computes stats with a SQL
+  aggregate; fixture mode uses `AttendanceLookup`, same rounding.
+- `GET /health` now reports the data source: `database` is `fixtures`,
+  `postgres`, or `unreachable` (with `status: degraded`).
 
 ## Related
 
