@@ -73,8 +73,22 @@ the same fixtures the offline demo uses.
 - `EmployeeProfile.manager_id` is nullable; `Assignment.employee_id` /
   `source_id` are UUIDs.
 
-Survey fixtures still contain invalid UUIDs — they are out of the API surface
-for now.
+## Surveys (follow-up branch `feat/api-surveys`)
+
+- Survey fixtures repaired: `SURVEY-123` → the real survey UUID, `EMP-001` →
+  E001's UUID, `RESP-001-Q*` ids → deterministic UUIDs (`5e590000-…`).
+  `SurveySchema.created_by` and `SurveyResponseMetadataSchema.employee_id`
+  are now `z.uuid()`. No fixture dataset with invalid UUIDs remains.
+- `apps/api/sql/003_surveys.sql` — `surveys`, `survey_questions` (dimension
+  stored as `TEXT[]`, `default_value`/`response` as JSONB),
+  `survey_response_meta`, `survey_responses`. Seeded on Neon: 1 survey,
+  25 questions, 1 submission, 9 answers.
+- Endpoints: `GET /surveys`, `GET /surveys/:id/questions`,
+  `GET /surveys/responses` (optional `?employee_id=`), and
+  `POST /surveys/:id/responses` validated with the new
+  `SurveySubmissionSchema` from `@worksight/common`. avg_score is the mean of
+  numeric answers (2 dp), matching the fixture value. Fixture mode keeps
+  submissions in memory so the offline demo can still submit.
 
 ## Attendance (follow-up branch `feat/api-attendance`)
 
