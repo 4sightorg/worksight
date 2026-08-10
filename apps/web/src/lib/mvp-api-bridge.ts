@@ -76,20 +76,37 @@ function mapAssignmentPriority(priority: ApiAssignment['priority']): MvpTask['pr
 }
 
 export async function fetchUsersWithMetricsFromApi(): Promise<UserWithMetrics[]> {
-  const [employees, teams, tasks] = await Promise.all([
+  const [employees, teams, tasks, submissions] = await Promise.all([
     worksightApi.getUsers(),
     worksightApi.getTeams(),
     worksightApi.getTasks(),
+    worksightApi.getSurveySubmissions(),
   ]);
+
+  const latestByEmployee = new Map<string, (typeof submissions)[number]>();
+  for (const sub of submissions) {
+    const prev = latestByEmployee.get(sub.employee_id);
+    if (!prev || toDate(sub.submitted_at) > toDate(prev.submitted_at)) {
+      latestByEmployee.set(sub.employee_id, sub);
+    }
+  }
 
   return employees
     .filter(e => e.role !== 'guest')
     .map(employee => {
       const employeeTasks = tasks.filter(t => t.employee_id === employee.id);
       const completedTasks = employeeTasks.filter(t => t.status === 'completed').length;
-      // Approximate wellness without per-employee activity round-trips
-      const openRatio = employeeTasks.length === 0 ? 0 : 1 - completedTasks / employeeTasks.length;
-      const burnoutScore = Math.min(10, Math.round(openRatio * 8 * 10) / 10);
+      const submission = latestByEmployee.get(employee.id);
+      // Prefer persisted survey avg_score (1–5 scale → ~2–10); else open-task ratio.
+      const burnoutScore =
+        submission?.avg_score != null
+          ? Math.min(10, Math.round(submission.avg_score * 2 * 10) / 10)
+          : Math.min(
+              10,
+              Math.round(
+                (employeeTasks.length === 0 ? 0 : 1 - completedTasks / employeeTasks.length) * 8 * 10
+              ) / 10
+            );
 
       return {
         id: employee.id,
@@ -100,7 +117,7 @@ export async function fetchUsersWithMetricsFromApi(): Promise<UserWithMetrics[]>
         team: teamLabel(employee, teams),
         burnoutScore,
         lastActive: relativeTime(toDate(employee.updated_at)),
-        surveyCompleted: false,
+        surveyCompleted: Boolean(submission),
         riskLevel: riskFromBurnout(burnoutScore),
         tasksCompleted: completedTasks,
       };

@@ -26,7 +26,7 @@ Then open:
 | URL                                   | What you should see                                              |
 | ------------------------------------- | ---------------------------------------------------------------- |
 | http://localhost:3000/demo            | Counts + health badge (`fixtures` / `postgres`) + wellness sample |
-| http://localhost:3000/admin/users     | Users from API                                                   |
+| http://localhost:3000/admin/users     | Users from API; `surveyCompleted` / risk from Nest submissions when present |
 | http://localhost:3000/admin/surveys   | Survey templates from API                                        |
 | http://localhost:3000/dashboard/tasks | Assignment board; status changes PATCH the API when in API mode  |
 | http://localhost:3000/survey          | Wellness survey; results POST to `/surveys/:id/responses`        |
