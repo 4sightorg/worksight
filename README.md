@@ -189,8 +189,7 @@ required Vercel dashboard configuration.
 
 ## Contributing
 
-1. Branch from the active integration branch (MVP work stacks on
-   `feat/mvp-stabilize` / `canary` as directed).
+1. Branch from **`canary`** (production integration branch).
 2. Use conventional commits (`feat:`, `fix:`, `docs:`, …).
 3. Keep type-check / lint green for touched packages.
 4. Update docs when behavior or layout changes.

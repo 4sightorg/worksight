@@ -53,4 +53,7 @@ curl -s http://localhost:3001/tasks | head -c 240; echo
 
 - Live Jira/Trello/GitHub connectors
 - Production auth hardening (Supabase optional; offline demo uses local login)
-- Survey UI question ids that are non-numeric still stay local-only
+
+Survey scale answers use UI ids (`workload_1`, …); the web bridge maps them to
+Nest numeric `question_id` values before `POST /surveys/:id/responses`. Meta
+fields (`name` / `email` / `role`) stay local-only.

@@ -312,6 +312,49 @@ export async function fetchMvpSurveysFromApi(): Promise<
 export const DEFAULT_WELLNESS_SURVEY_ID = '277068ac-b7a9-45b5-9d41-f66b017509c7';
 
 /**
+ * Map `/survey` UI string ids → Nest/`@worksight/common` numeric question ids.
+ * Meta fields (`name`, `email`, `role`) are intentionally omitted.
+ * Order matches `SurveyQuestionnaire` in packages/common/src/data/survey.ts.
+ */
+export const UI_TO_API_SURVEY_QUESTION_IDS: Record<string, number> = {
+  workload_1: 0,
+  workload_2: 1,
+  workload_3: 2,
+  workload_4: 3,
+  workload_5: 4,
+  workload_6: 5,
+  balance_1: 6,
+  balance_2: 7,
+  balance_3: 8,
+  balance_4: 9,
+  balance_5: 10,
+  support_1: 11,
+  support_2: 12,
+  support_3: 13,
+  support_4: 14,
+  support_5: 15,
+  engagement_1: 16,
+  engagement_2: 17,
+  engagement_3: 18,
+  engagement_4: 19,
+  engagement_5: 20,
+  engagement_6: 21,
+  engagement_7: 22,
+  engagement_8: 23,
+  engagement_9: 24,
+};
+
+/** Resolve a UI or numeric question id to the API `question_id`. */
+export function mapUiQuestionIdToApi(questionId: string): number | null {
+  if (Object.prototype.hasOwnProperty.call(UI_TO_API_SURVEY_QUESTION_IDS, questionId)) {
+    return UI_TO_API_SURVEY_QUESTION_IDS[questionId]!;
+  }
+  const n = Number(questionId);
+  if (Number.isInteger(n) && n >= 0) return n;
+  return null;
+}
+
+/**
  * Best-effort POST of burnout survey answers to Nest.
  * UI stores keep local history regardless of API success.
  */
@@ -324,9 +367,15 @@ export async function submitWellnessSurveyToApi(input: {
   const employee_id = await resolveApiEmployeeId(input.employeeId);
   const answers = input.responses
     .map(r => {
-      const n = Number(r.questionId);
-      if (!Number.isInteger(n) || n < 0) return null;
-      return { question_id: n, response: r.value };
+      const question_id = mapUiQuestionIdToApi(r.questionId);
+      if (question_id === null) return null;
+      const numeric =
+        typeof r.value === 'number'
+          ? r.value
+          : Number.isFinite(Number(r.value))
+            ? Number(r.value)
+            : r.value;
+      return { question_id, response: numeric };
     })
     .filter((a): a is { question_id: number; response: string | number } => a !== null);
 
