@@ -8,6 +8,7 @@ import {
   toDate,
   worksightApi,
   type ApiAssignment,
+  type ApiDataBackend,
   type ApiEmployee,
   type ApiTaskStats,
   type ApiTeam,
@@ -157,6 +158,31 @@ export async function fetchDashboardTasksFromApi(): Promise<
     dueDate: toDate(assignment.updated_at).toISOString().slice(0, 10),
     storyPoints: assignment.points ?? 1,
   }));
+}
+
+/**
+ * Normalized GET /health for the demo page. `dataBackend` collapses to `unknown`
+ * when the API predates the Drizzle layer, so the UI never renders `undefined`.
+ */
+export type DemoHealth = {
+  status: string;
+  dataBackend: ApiDataBackend | 'unknown';
+  databaseUrlConfigured: boolean | null;
+  uptimeSeconds: number | null;
+};
+
+export async function fetchApiHealth(): Promise<DemoHealth> {
+  const health = await worksightApi.getHealth();
+  return {
+    status: health.status || 'unknown',
+    dataBackend:
+      health.dataBackend === 'postgres' || health.dataBackend === 'fixtures'
+        ? health.dataBackend
+        : 'unknown',
+    databaseUrlConfigured:
+      typeof health.databaseUrlConfigured === 'boolean' ? health.databaseUrlConfigured : null,
+    uptimeSeconds: typeof health.uptime === 'number' ? health.uptime : null,
+  };
 }
 
 export type DemoSnapshot = {

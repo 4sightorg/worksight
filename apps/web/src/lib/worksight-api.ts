@@ -19,17 +19,39 @@ export function isApiDataMode(): boolean {
   return getDataSourceMode() === 'api';
 }
 
-async function apiGet<T>(path: string): Promise<T> {
+/** Bounded wait so an unreachable (vs. refusing) API host fails fast instead of hanging. */
+function timeoutSignal(ms: number): AbortSignal | undefined {
+  return typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function'
+    ? AbortSignal.timeout(ms)
+    : undefined;
+}
+
+async function apiGet<T>(path: string, signal?: AbortSignal): Promise<T> {
   const url = `${getApiBaseUrl()}${path.startsWith('/') ? path : `/${path}`}`;
   const response = await fetch(url, {
     headers: { Accept: 'application/json' },
     cache: 'no-store',
+    signal,
   });
   if (!response.ok) {
     throw new Error(`API ${path} failed: ${response.status} ${response.statusText}`);
   }
   return response.json() as Promise<T>;
 }
+
+/** Which store the API is reading from — mirrors `DataBackend` in @worksight/api. */
+export type ApiDataBackend = 'postgres' | 'fixtures';
+
+/**
+ * GET /health. `dataBackend` and `databaseUrlConfigured` only exist on API builds
+ * that ship the Drizzle/Neon layer; older builds return `{ status, uptime }` only.
+ */
+export type ApiHealth = {
+  status: string;
+  dataBackend?: ApiDataBackend;
+  databaseUrlConfigured?: boolean;
+  uptime?: number;
+};
 
 export type ApiEmployeeStats = {
   totalEmployees: number;
@@ -72,6 +94,7 @@ export type ApiActivity = Omit<Activity, 'timestamp' | 'created_at'> & {
 export type ApiTeam = Team;
 
 export const worksightApi = {
+  getHealth: (timeoutMs = 5000) => apiGet<ApiHealth>('/health', timeoutSignal(timeoutMs)),
   getUsers: () => apiGet<ApiEmployee[]>('/users'),
   getUserStats: () => apiGet<ApiEmployeeStats>('/users/stats'),
   getTeams: () => apiGet<ApiTeam[]>('/teams'),

@@ -1,11 +1,25 @@
 'use client';
 
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { fetchDemoSnapshot, type DemoSnapshot } from '@/lib/mvp-api-bridge';
-import { getApiBaseUrl } from '@/lib/worksight-api';
-import { Activity, AlertTriangle, HeartPulse, ListChecks, Users } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import {
+  fetchApiHealth,
+  fetchDemoSnapshot,
+  type DemoHealth,
+  type DemoSnapshot,
+} from '@/lib/mvp-api-bridge';
+import { getApiBaseUrl, isApiDataMode } from '@/lib/worksight-api';
+import {
+  Activity,
+  AlertTriangle,
+  Database,
+  HeartPulse,
+  ListChecks,
+  RefreshCw,
+  Users,
+} from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 
 function riskVariant(risk: 'low' | 'medium' | 'high') {
   if (risk === 'high') return 'destructive' as const;
@@ -13,49 +27,114 @@ function riskVariant(risk: 'low' | 'medium' | 'high') {
   return 'outline' as const;
 }
 
+function backendVariant(backend: DemoHealth['dataBackend']) {
+  if (backend === 'postgres') return 'default' as const;
+  if (backend === 'fixtures') return 'secondary' as const;
+  return 'outline' as const;
+}
+
+function errorMessage(err: unknown): string {
+  if (err instanceof DOMException && (err.name === 'TimeoutError' || err.name === 'AbortError')) {
+    return 'Request timed out — no response from the API.';
+  }
+  return err instanceof Error ? err.message : String(err);
+}
+
+function formatUptime(seconds: number | null): string {
+  if (seconds === null) return '—';
+  const total = Math.max(0, Math.floor(seconds));
+  const hours = Math.floor(total / 3600);
+  const minutes = Math.floor((total % 3600) / 60);
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  if (minutes > 0) return `${minutes}m ${total % 60}s`;
+  return `${total}s`;
+}
+
 export default function DemoPage() {
   const [snapshot, setSnapshot] = useState<DemoSnapshot | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [health, setHealth] = useState<DemoHealth | null>(null);
+  const [healthError, setHealthError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [reloadKey, setReloadKey] = useState(0);
   const apiBase = getApiBaseUrl();
+  const apiMode = isApiDataMode();
+
+  const reload = useCallback(() => setReloadKey(key => key + 1), []);
 
   useEffect(() => {
     let cancelled = false;
-    (async () => {
-      try {
-        const data = await fetchDemoSnapshot();
+    setLoading(true);
+
+    // Health and snapshot settle independently: a failed probe must not blank the
+    // counts, and a failed snapshot must not hide the backend readout.
+    const healthLoad = fetchApiHealth().then(
+      data => {
+        if (!cancelled) {
+          setHealth(data);
+          setHealthError(null);
+        }
+      },
+      err => {
+        if (!cancelled) {
+          setHealth(null);
+          setHealthError(errorMessage(err));
+        }
+      }
+    );
+
+    const snapshotLoad = fetchDemoSnapshot().then(
+      data => {
         if (!cancelled) {
           setSnapshot(data);
           setError(null);
         }
-      } catch (err) {
+      },
+      err => {
         if (!cancelled) {
-          setError(err instanceof Error ? err.message : String(err));
+          setSnapshot(null);
+          setError(errorMessage(err));
         }
-      } finally {
-        if (!cancelled) setLoading(false);
       }
-    })();
+    );
+
+    void Promise.all([healthLoad, snapshotLoad]).then(() => {
+      if (!cancelled) setLoading(false);
+    });
+
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [reloadKey]);
+
+  const persistenceLabel = loading ? 'checking…' : health ? health.dataBackend : 'unreachable';
 
   return (
     <main className="mx-auto min-h-screen max-w-6xl space-y-8 px-4 py-10">
       <header className="space-y-3">
-        <p className="text-muted-foreground text-sm tracking-wide uppercase">WorkSight MVP</p>
-        <h1 className="text-3xl font-semibold tracking-tight">E2E demo path</h1>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="space-y-3">
+            <p className="text-muted-foreground text-sm tracking-wide uppercase">WorkSight MVP</p>
+            <h1 className="text-3xl font-semibold tracking-tight">E2E demo path</h1>
+          </div>
+          <Button variant="outline" size="sm" onClick={reload} disabled={loading}>
+            <RefreshCw className={loading ? 'animate-spin' : undefined} />
+            {loading ? 'Refreshing…' : 'Refresh'}
+          </Button>
+        </div>
         <p className="text-muted-foreground max-w-2xl text-sm leading-relaxed">
           This page calls the Nest API at{' '}
-          <code className="bg-muted rounded px-1 py-0.5 text-xs">{apiBase}</code>. The API serves
-          the same <code className="bg-muted rounded px-1 py-0.5 text-xs">@worksight/common</code>{' '}
-          fixtures as the web bridge — fixture-backed only, not Supabase persistence.
+          <code className="bg-muted rounded px-1 py-0.5 text-xs">{apiBase}</code>. Responses follow
+          the <code className="bg-muted rounded px-1 py-0.5 text-xs">@worksight/common</code>{' '}
+          contract; whether they come from Postgres or in-process fixtures is reported by{' '}
+          <code className="bg-muted rounded px-1 py-0.5 text-xs">GET /health</code> below.
         </p>
         <div className="flex flex-wrap gap-2">
           <Badge variant="outline">source: Nest API</Badge>
           <Badge variant="secondary">contract: @worksight/common</Badge>
-          <Badge variant="outline">persistence: fixtures</Badge>
+          <Badge variant={health ? backendVariant(health.dataBackend) : 'outline'}>
+            persistence: {persistenceLabel}
+          </Badge>
         </div>
         <p className="text-muted-foreground text-xs">
           Authenticated dashboards stay on local fixtures unless{' '}
@@ -64,7 +143,78 @@ export default function DemoPage() {
         </p>
       </header>
 
-      {loading && (
+      <Card className={healthError ? 'border-destructive' : undefined}>
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-base">
+            {healthError ? <AlertTriangle className="h-4 w-4" /> : <Database className="h-4 w-4" />}
+            API health
+          </CardTitle>
+          <CardDescription>
+            <code className="bg-muted rounded px-1 text-xs">GET {apiBase}/health</code>
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="text-sm">
+          {healthError ? (
+            <p className="text-muted-foreground">
+              Health probe failed: {healthError} Start the API (
+              <code className="bg-muted rounded px-1 text-xs">pnpm demo</code> or{' '}
+              <code className="bg-muted rounded px-1 text-xs">
+                PORT=3001 pnpm --filter @worksight/api start:prod
+              </code>
+              ) and refresh.
+            </p>
+          ) : (
+            <dl className="grid gap-x-6 gap-y-3 sm:grid-cols-2 lg:grid-cols-4">
+              <div>
+                <dt className="text-muted-foreground text-xs">Status</dt>
+                <dd className="font-medium">
+                  {loading && !health ? '…' : (health?.status ?? '—')}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground text-xs">Data backend</dt>
+                <dd>
+                  {health ? (
+                    <Badge variant={backendVariant(health.dataBackend)}>{health.dataBackend}</Badge>
+                  ) : (
+                    <span className="font-medium">…</span>
+                  )}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground text-xs">DATABASE_URL configured</dt>
+                <dd className="font-medium">
+                  {health === null
+                    ? '…'
+                    : health.databaseUrlConfigured === null
+                      ? 'not reported'
+                      : health.databaseUrlConfigured
+                        ? 'yes'
+                        : 'no'}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground text-xs">Uptime</dt>
+                <dd className="font-medium">{formatUptime(health?.uptimeSeconds ?? null)}</dd>
+              </div>
+            </dl>
+          )}
+          {health?.dataBackend === 'unknown' && (
+            <p className="text-muted-foreground mt-3 text-xs">
+              This API build does not report{' '}
+              <code className="bg-muted rounded px-1">dataBackend</code> — it predates the
+              Drizzle/Neon layer and is serving fixtures.
+            </p>
+          )}
+          <p className="text-muted-foreground mt-3 text-xs">
+            <code className="bg-muted rounded px-1">NEXT_PUBLIC_USE_API</code> is{' '}
+            <span className="font-medium">{apiMode ? 'true' : 'false'}</span> — /demo probes the API
+            either way, but the authenticated dashboards only follow it when true.
+          </p>
+        </CardContent>
+      </Card>
+
+      {loading && !snapshot && !error && (
         <Card>
           <CardContent className="text-muted-foreground py-8 text-sm">
             Loading users, teams, tasks, and wellness stats from the API…
