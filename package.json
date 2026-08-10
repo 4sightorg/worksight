@@ -13,6 +13,7 @@
     "dev:api": "turbo dev --filter=@worksight/api",
     "dev:docs": "turbo dev --filter=@worksight/docs",
     "demo": "bash scripts/demo.sh",
+    "demo:remote": "bash scripts/verify-remote-demo.sh",
     "lint": "turbo lint",
     "lint:fix": "turbo lint:fix",
     "type-check": "turbo type-check",

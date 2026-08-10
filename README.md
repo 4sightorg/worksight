@@ -147,16 +147,19 @@ nested ones):
 - Install: `pnpm install --frozen-lockfile`
 - Build: `pnpm turbo run build --filter=@worksight/<app>` (Turbo builds
   workspace dependencies such as `@worksight/common` first)
-- Env vars live in the **Vercel dashboard**, not in committed `vercel.json`
+- Env vars: public demo parity lives in each app's `vercel.json`; secrets
+  (`DATABASE_URL`, Supabase) stay in the **Vercel dashboard**.
 
-**API on Vercel:** the Nest `main.ts` still calls `app.listen()` — there is no
-serverless handler yet, so a Vercel deploy does not expose invocable functions.
-Use **Docker** (`docker compose up -d --build`) for a working API today.
+**API on Vercel:** Nest serverless handler (`apps/api/api/index.js`) + Neon
+`DATABASE_URL`. Docker remains optional for self-hosting.
 
 - **Web Application** (`@worksight/web`): Vercel —
-  [worksight.vercel.app](https://worksight.vercel.app)
+  [worksight-web.vercel.app](https://worksight-web.vercel.app) (`/demo` → Nest + Neon)
 - **Documentation** (`@worksight/docs`): GitHub Pages (optionally Vercel)
-- **API** (`@worksight/api`): Docker (`docker-compose.yml` + `nginx/`)
+- **API** (`@worksight/api`): Vercel serverless —
+  [worksight-api.vercel.app](https://worksight-api.vercel.app) (Neon via
+  `DATABASE_URL`); Docker remains an alternate path
+
 Full setup: [doc/DEPLOYMENT.md](./doc/DEPLOYMENT.md). VitePress site:
 [apps/docs](./apps/docs/).
 
@@ -166,21 +169,16 @@ This is a Turborepo + pnpm monorepo, so each app deploys as its **own** Vercel
 project (or non-Vercel target). Vercel loads a single `vercel.json` per project
 based on its dashboard **Root Directory** setting:
 
-- **Web** (`worksight`): Root Directory `apps/web` → `apps/web/vercel.json`.
+- **Web** (`worksight-web`): Root Directory `apps/web` → `apps/web/vercel.json`.
 - **API** (`worksight-api`): Root Directory `apps/api` → `apps/api/vercel.json`
-  (still needs a serverless handler; Docker is the working path today).
+  (serverless `api/index.js` + Neon `DATABASE_URL`).
 - **Docs** (`worksight-docs`): Root Directory `apps/docs` →
   `apps/docs/vercel.json`.
 
 All three share `pnpm install --frozen-lockfile`, a
 `pnpm turbo run build --filter=@worksight/<app>` command, production branch `canary`, and
-skip-unaffected-project deploys. No environment values are committed to
-`vercel.json`.
-
-Dashboard-only steps (creating projects, setting Root Directory, adding env
-vars) cannot be performed by repo files. See the
-[Deployment Guide](./doc/DEPLOYMENT.md) for the full setup, including the
-required Vercel dashboard configuration.
+skip-unaffected-project deploys. Public demo env is committed in `vercel.json`;
+database secrets are dashboard-only.
 
 - Plan: [docs/mvp/README.md](./docs/mvp/README.md) (epic
   [#14](https://github.com/4sightorg/worksight/issues/14))

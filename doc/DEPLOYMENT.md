@@ -74,25 +74,16 @@ Docs are otherwise published to GitHub Pages; the Vercel path is optional.
 
 ### API project (`@worksight/api`)
 
-`apps/api/vercel.json` now uses zero-config build settings (`pnpm --filter`
-build into `dist`) instead of the legacy `builds`/`routes` block, which silently
-disabled Vercel's install and build steps.
+Serverless entry: `apps/api/api/index.js` → `dist/vercel.js`. See
+[API (`worksight-api`)](#api-worksight-api--appsapi) below for env and Neon.
 
-**This is still not a functioning serverless API.** `main.ts` calls
-`app.listen()` rather than exporting a handler, so a Vercel deployment produces
-no invocable function. Wiring it properly requires adding a serverless entry
-(e.g. `api/index.ts` exporting the bootstrapped Nest app). Until then, deploy
-the API with Docker:
-
-```bash
-docker compose up -d --build
-```
+### Web project (continued)
 
 1. Import `4sightorg/worksight` as a Vercel project.
 2. Set **Root Directory** to `apps/web`.
 3. Keep **Include source files outside of the Root Directory** enabled.
 4. Prefer install/build from `apps/web/vercel.json`; avoid dashboard overrides.
-5. Add env vars per environment (see below).
+5. Public demo env is in `apps/web/vercel.json`; secrets stay in the dashboard.
 
 ### Docs (`worksight-docs` → `apps/docs`)
 
@@ -104,13 +95,14 @@ Docs may also publish via GitHub Pages; Vercel is optional.
 
 ### API (`worksight-api` → `apps/api`)
 
-`apps/api/vercel.json` uses zero-config-style install/build into `dist` (no
-legacy `builds`/`routes` block that skipped Vercel's install step).
+Nest boots via `apps/api/api/index.js` → `dist/vercel.js` (serverless handler).
+Production already serves routes at https://worksight-api.vercel.app when
+`DATABASE_URL` (Neon) is set in the Vercel dashboard.
 
-**This is still not a functioning serverless API.** `main.ts` calls
-`app.listen()` rather than exporting a handler, so a Vercel deployment produces
-no invocable function. Until a serverless entry exists, deploy the API with
-Docker:
+`apps/api/vercel.json` sets public `CORS_ORIGINS` for the web origin. Keep
+`DATABASE_URL` / `DATABASE_URL_DIRECT` as **dashboard secrets only**.
+
+Docker remains an alternate path:
 
 ```bash
 docker compose up -d --build
@@ -118,41 +110,58 @@ docker compose up -d --build
 
 ## Environment variables
 
-Set in the **Vercel dashboard** (or local `apps/web/.env.local`). Nothing
-sensitive belongs in committed `vercel.json`.
+Set secrets in the **Vercel dashboard**. Public demo parity for web/API is also
+committed in each app's `vercel.json` `env` block (non-secret values only).
+
+### Web (`worksight-web`) — matches local `pnpm demo`
+
+| Variable | Production value |
+| --- | --- |
+| `NEXT_PUBLIC_USE_API` | `true` |
+| `NEXT_PUBLIC_API_URL` | `https://worksight-api.vercel.app` |
+| `NEXT_PUBLIC_IS_OFFLINE` | `true` |
+| `IS_OFFLINE` | `true` |
+| `NEXT_PUBLIC_APP_URL` | `https://worksight-web.vercel.app` |
+
+Supabase vars are optional while offline demo mode is on.
+
+### API (`worksight-api`)
+
+| Variable | Where |
+| --- | --- |
+| `DATABASE_URL` | Dashboard secret (Neon pooler URL) |
+| `DATABASE_URL_DIRECT` | Dashboard secret (optional; migrations/seed) |
+| `CORS_ORIGINS` | `vercel.json` (web + localhost) |
+
+Seed Neon once (from a laptop with the secret URL):
 
 ```bash
-# Web app
-NEXT_PUBLIC_APP_NAME="WorkSight"
-NEXT_PUBLIC_APP_DESCRIPTION="Employee Well-being Analytics Platform"
-NEXT_PUBLIC_APP_URL="https://your-domain.vercel.app"
-
-# Supabase (optional; skip when offline)
-NEXT_PUBLIC_SUPABASE_URL="your-supabase-url"
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="your-supabase-key"
-
-# Offline / fixture-friendly local mode
-NEXT_PUBLIC_IS_OFFLINE="true"
+DATABASE_URL='postgresql://…@….neon.tech/neondb?sslmode=require' \
+  pnpm --filter @worksight/api seed
 ```
 
-Copy from `apps/web/env.example` for local web setup.
+Copy from `apps/web/env.example` / `apps/api/.env.example` for local setup.
 
-`apps/web/vercel.json` (loaded by the `worksight` project) declares:
+### Remote proof URLs
+
+| Surface | URL |
+| --- | --- |
+| Web demo | https://worksight-web.vercel.app/demo |
+| API health | https://worksight-api.vercel.app/health |
+| API docs | https://worksight-api.vercel.app/api |
+
+Expect `/health` → `"database":"postgres"` and `/demo` badge **postgres**.
+
+`apps/web/vercel.json` (loaded by the `worksight-web` project) declares:
 
 - `framework: nextjs` — output directory left to the framework default
 - `installCommand: pnpm install --frozen-lockfile`
 - `buildCommand: pnpm turbo run build --filter=@worksight/web`
 - `NEXT_TELEMETRY_DISABLED=1` for the build step
+- Public `env` for API-mode + offline demo (see table above)
 
-`apps/api/vercel.json` and `apps/docs/vercel.json` mirror the same shape with
-their own filter and output directory. No environment values are committed —
-they are set per environment in the dashboard.
-
-Security headers, redirects, and CORS are **not** currently configured in
-`vercel.json`; add them here if/when needed rather than assuming they exist.
-
-Security headers, redirects, and CORS are **not** assumed to be present in
-`vercel.json` — add them when needed.
+`apps/api/vercel.json` and `apps/docs/vercel.json` mirror the same install/build
+shape. No database secrets are committed.
 
 ## Pre-deploy checks
 
