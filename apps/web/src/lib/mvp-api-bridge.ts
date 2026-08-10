@@ -8,6 +8,7 @@ import {
   toDate,
   worksightApi,
   type ApiAssignment,
+  type ApiDataBackend,
   type ApiEmployee,
   type ApiTaskStats,
   type ApiTeam,
@@ -157,6 +158,44 @@ export async function fetchDashboardTasksFromApi(): Promise<
     dueDate: toDate(assignment.updated_at).toISOString().slice(0, 10),
     storyPoints: assignment.points ?? 1,
   }));
+}
+
+/**
+ * Normalized GET /health for the demo page. `dataBackend` collapses to `unknown`
+ * when the API predates the Drizzle layer, so the UI never renders `undefined`.
+ */
+export type DemoHealth = {
+  status: string;
+  dataBackend: ApiDataBackend | 'unknown';
+  databaseUrlConfigured: boolean | null;
+  uptimeSeconds: number | null;
+};
+
+function resolveDataBackend(health: {
+  database?: string;
+  dataBackend?: string;
+}): DemoHealth['dataBackend'] {
+  const raw = health.database ?? health.dataBackend;
+  if (raw === 'postgres' || raw === 'fixtures') return raw;
+  // `unreachable` still means the API intended Postgres; surface as unknown for the badge.
+  return 'unknown';
+}
+
+export async function fetchApiHealth(): Promise<DemoHealth> {
+  const health = await worksightApi.getHealth();
+  return {
+    status: health.status || 'unknown',
+    dataBackend: resolveDataBackend(health),
+    databaseUrlConfigured:
+      typeof health.databaseUrlConfigured === 'boolean'
+        ? health.databaseUrlConfigured
+        : health.database === 'postgres'
+          ? true
+          : health.database === 'fixtures'
+            ? false
+            : null,
+    uptimeSeconds: typeof health.uptime === 'number' ? health.uptime : null,
+  };
 }
 
 export type DemoSnapshot = {
