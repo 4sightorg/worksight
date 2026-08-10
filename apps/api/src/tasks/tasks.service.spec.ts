@@ -25,10 +25,10 @@ describe('TasksService', () => {
     await expect(service.findById('does-not-exist')).resolves.toBeNull();
   });
 
-  it('computes per-employee stats from the fixtures', () => {
+  it('computes per-employee stats from the fixtures', async () => {
     const employeeId = Assignments[0].employee_id;
     const expectedTotal = Assignments.filter(a => a.employee_id === employeeId).length;
-    const stats = service.getStatsForEmployee(employeeId);
+    const stats = await service.getStatsForEmployee(employeeId);
     expect(stats.totalTasks).toBe(expectedTotal);
     expect(stats.completionRate).toBeGreaterThanOrEqual(0);
   });

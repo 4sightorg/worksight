@@ -26,7 +26,15 @@ export class TasksService {
     return this.assignments.filter({ id }).first();
   }
 
-  getStatsForEmployee(employeeId: string): ReturnType<AssignmentLookup['getStats']> {
+  async getStatsForEmployee(employeeId: string): Promise<ReturnType<AssignmentLookup['getStats']>> {
+    if (this.repo.enabled) {
+      // Same lookup math, hydrated from Postgres instead of the fixtures.
+      const [assignments, activities] = await Promise.all([
+        this.repo.listAssignments(employeeId),
+        this.repo.listActivities(employeeId),
+      ]);
+      return new AssignmentLookup(assignments).getStats(employeeId, activities);
+    }
     return this.assignments.getStats(employeeId);
   }
 
