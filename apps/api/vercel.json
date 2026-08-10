@@ -10,5 +10,8 @@
       "includeFiles": "dist/**",
       "maxDuration": 30
     }
+  },
+  "env": {
+    "CORS_ORIGINS": "https://worksight-web.vercel.app,http://localhost:3000"
   }
 }

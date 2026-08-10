@@ -21,7 +21,11 @@ export async function createApp(): Promise<BootstrappedApp> {
     logger: ['error', 'warn', 'log'],
   });
 
-  const corsOrigins = (process.env.CORS_ORIGINS ?? 'http://localhost:3000')
+  // Local demo: localhost:3000. Vercel: worksight-web (+ local for mixed testing).
+  const defaultCors = process.env.VERCEL
+    ? 'https://worksight-web.vercel.app,http://localhost:3000'
+    : 'http://localhost:3000';
+  const corsOrigins = (process.env.CORS_ORIGINS ?? defaultCors)
     .split(',')
     .map(origin => origin.trim())
     .filter(Boolean);

@@ -19,8 +19,29 @@ import type {
 
 export type DataSourceMode = 'api' | 'fixtures';
 
+/** Production Nest deploy (Neon-backed). Matches local `pnpm demo` + DATABASE_URL. */
+export const PRODUCTION_API_URL = 'https://worksight-api.vercel.app';
+
+/**
+ * Nest base URL.
+ * - Explicit `NEXT_PUBLIC_API_URL` always wins (local demo sets localhost:3001).
+ * - On Vercel builds / browser hosts for worksight-web, default to the sibling API
+ *   so remote matches `DEMO_WITH_POSTGRES=1 pnpm demo`.
+ */
 export function getApiBaseUrl(): string {
-  return (process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001').replace(/\/$/, '');
+  const fromEnv = process.env.NEXT_PUBLIC_API_URL?.trim();
+  if (fromEnv) return fromEnv.replace(/\/$/, '');
+
+  if (process.env.VERCEL) return PRODUCTION_API_URL;
+
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname;
+    if (host === 'worksight-web.vercel.app' || host.startsWith('worksight-web-')) {
+      return PRODUCTION_API_URL;
+    }
+  }
+
+  return 'http://localhost:3001';
 }
 
 /** Prefer Nest API when NEXT_PUBLIC_USE_API=true; otherwise local common fixtures. */

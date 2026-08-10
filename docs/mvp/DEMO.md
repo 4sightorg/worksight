@@ -49,6 +49,17 @@ curl -s http://localhost:3001/tasks | head -c 240; echo
 | `NEXT_PUBLIC_USE_API=true` | Web reads Nest for demo/admin/tasks/surveys                              |
 | Offline auth               | `NEXT_PUBLIC_IS_OFFLINE=true` — no Supabase required for the demo path |
 
+## Remote (Vercel) — same shape as local + Postgres
+
+| Local | Remote |
+| --- | --- |
+| `DEMO_WITH_POSTGRES=1 pnpm demo` | https://worksight-web.vercel.app/demo |
+| API `:3001` + `DATABASE_URL` | https://worksight-api.vercel.app (`DATABASE_URL` → Neon) |
+| `NEXT_PUBLIC_USE_API=true` | baked in `apps/web/vercel.json` |
+| `/health` → `postgres` | curl https://worksight-api.vercel.app/health |
+
+Offline login still works on the hosted web app (`NEXT_PUBLIC_IS_OFFLINE=true`).
+
 ## Known gaps (post-MVP)
 
 - Live Jira/Trello/GitHub connectors
