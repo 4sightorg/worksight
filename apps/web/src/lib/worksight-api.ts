@@ -39,15 +39,18 @@ async function apiGet<T>(path: string, signal?: AbortSignal): Promise<T> {
   return response.json() as Promise<T>;
 }
 
-/** Which store the API is reading from — mirrors `DataBackend` in @worksight/api. */
+/** Which store the API is reading from (Postgres vs fixtures). */
 export type ApiDataBackend = 'postgres' | 'fixtures';
 
 /**
- * GET /health. `dataBackend` and `databaseUrlConfigured` only exist on API builds
- * that ship the Drizzle/Neon layer; older builds return `{ status, uptime }` only.
+ * GET /health.
+ * - #28 stack exposes `database` (`fixtures` | `postgres` | `unreachable`)
+ * - older Drizzle experiments used `dataBackend`
+ * Either shape is accepted; older builds may return `{ status, uptime }` only.
  */
 export type ApiHealth = {
   status: string;
+  database?: ApiDataBackend | 'unreachable';
   dataBackend?: ApiDataBackend;
   databaseUrlConfigured?: boolean;
   uptime?: number;

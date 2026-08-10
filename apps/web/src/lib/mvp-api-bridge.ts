@@ -171,16 +171,29 @@ export type DemoHealth = {
   uptimeSeconds: number | null;
 };
 
+function resolveDataBackend(health: {
+  database?: string;
+  dataBackend?: string;
+}): DemoHealth['dataBackend'] {
+  const raw = health.database ?? health.dataBackend;
+  if (raw === 'postgres' || raw === 'fixtures') return raw;
+  // `unreachable` still means the API intended Postgres; surface as unknown for the badge.
+  return 'unknown';
+}
+
 export async function fetchApiHealth(): Promise<DemoHealth> {
   const health = await worksightApi.getHealth();
   return {
     status: health.status || 'unknown',
-    dataBackend:
-      health.dataBackend === 'postgres' || health.dataBackend === 'fixtures'
-        ? health.dataBackend
-        : 'unknown',
+    dataBackend: resolveDataBackend(health),
     databaseUrlConfigured:
-      typeof health.databaseUrlConfigured === 'boolean' ? health.databaseUrlConfigured : null,
+      typeof health.databaseUrlConfigured === 'boolean'
+        ? health.databaseUrlConfigured
+        : health.database === 'postgres'
+          ? true
+          : health.database === 'fixtures'
+            ? false
+            : null,
     uptimeSeconds: typeof health.uptime === 'number' ? health.uptime : null,
   };
 }
