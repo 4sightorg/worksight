@@ -121,15 +121,18 @@ pnpm --filter @worksight/docs build
 
 ## MVP data layer
 
-- **Web:** dashboard / admin / tasks views consume `@worksight/common` fixtures
-  (via a thin bridge such as `apps/web/src/lib/mvp-data.ts` on the wire-web
-  branch).
-- **API:** Nest endpoints return the same fixture shapes (`EmployeeProfile`,
-  `Team`, `Assignment`, `Activity`). There is **no** DB/Supabase read path for
-  those endpoints yet.
-- Fixture-backed routes (API): `GET /users`, `/users/:id`, `/users/stats`,
+- **Default:** dashboard / admin / Nest list endpoints use `@worksight/common`
+  fixtures (no DB required).
+- **Optional Postgres/Neon:** set `DATABASE_URL` on the API. Schema + seed live
+  under `apps/api` (Drizzle). Local: `docker compose up -d postgres`, then
+  `pnpm --filter @worksight/api db:push` and `db:seed`. See
+  `apps/api/.env.example`.
+- **Web:** can still call Nest (`NEXT_PUBLIC_USE_API=true`) whether Nest is on
+  fixtures or Postgres — response shapes stay the same.
+- Fixture/DB-backed routes (API): `GET /users`, `/users/:id`, `/users/stats`,
   `/teams`, `/teams/:id`, `/tasks`, `/tasks/:id`, `/tasks/stats/:employeeId`,
-  `/activities`, plus `/`, `/ping`, `/health`.
+  `/activities`, plus `/`, `/ping`, `/health` (`dataBackend`: `fixtures` |
+  `postgres`).
 
 ## Deployment
 

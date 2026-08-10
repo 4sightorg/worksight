@@ -1,27 +1,44 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Optional } from '@nestjs/common';
 import { Activity, ActivityLookup, Assignment, AssignmentLookup } from '@worksight/common';
+import { DbService } from '../db/db.service';
 
 @Injectable()
 export class TasksService {
   private readonly assignments = new AssignmentLookup();
   private readonly activities = new ActivityLookup();
 
-  findAll(employeeId?: string): Assignment[] {
+  constructor(@Optional() private readonly db?: DbService) {}
+
+  async findAll(employeeId?: string): Promise<Assignment[]> {
+    if (this.db?.enabled) {
+      return this.db.listAssignments(employeeId);
+    }
     if (employeeId) {
       return this.assignments.getAssignmentsByEmployee(employeeId).all();
     }
     return this.assignments.all();
   }
 
-  findById(id: string): Assignment | null {
+  async findById(id: string): Promise<Assignment | null> {
+    if (this.db?.enabled) {
+      return this.db.getAssignmentById(id);
+    }
     return this.assignments.filter({ id }).first();
   }
 
-  getStatsForEmployee(employeeId: string): ReturnType<AssignmentLookup['getStats']> {
+  async getStatsForEmployee(
+    employeeId: string
+  ): Promise<ReturnType<AssignmentLookup['getStats']>> {
+    if (this.db?.enabled) {
+      return this.db.getAssignmentStats(employeeId);
+    }
     return this.assignments.getStats(employeeId);
   }
 
-  findAllActivities(employeeId?: string): Activity[] {
+  async findAllActivities(employeeId?: string): Promise<Activity[]> {
+    if (this.db?.enabled) {
+      return this.db.listActivities(employeeId);
+    }
     if (employeeId) {
       return this.activities.getActivitiesByEmployee(employeeId).all();
     }

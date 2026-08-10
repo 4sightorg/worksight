@@ -17,7 +17,12 @@
     "clean": "rm -rf dist",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:seed": "tsx src/db/seed.ts",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.6",
@@ -27,6 +32,8 @@
     "@supabase/supabase-js": "^2.58.0",
     "@worksight/common": "workspace:*",
     "class-transformer": "^0.5.1",
+    "drizzle-orm": "^0.45.2",
+    "postgres": "^3.4.9",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2"
   },
@@ -37,7 +44,10 @@
     "@types/express": "^5.0.3",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.5.2",
+    "@types/pg": "^8.21.0",
     "@types/supertest": "^6.0.3",
+    "dotenv": "^17.4.2",
+    "drizzle-kit": "^0.31.10",
     "jest": "^30.2.0",
     "source-map-support": "^0.5.21",
     "supertest": "^7.1.4",
@@ -45,6 +55,7 @@
     "ts-loader": "^9.5.4",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.2"
   }
 }

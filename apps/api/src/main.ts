@@ -1,7 +1,10 @@
 import { ClassSerializerInterceptor, Logger } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { config as loadEnv } from 'dotenv';
 import { AppModule } from './app.module';
+
+loadEnv();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -29,6 +32,10 @@ async function bootstrap() {
 
   await app.listen(port);
   logger.log(`API listening on http://localhost:${port} (CORS: ${corsOrigins.join(', ')})`);
-  logger.log('Data is fixture-backed from @worksight/common — not Supabase.');
+  logger.log(
+    process.env.DATABASE_URL?.trim()
+      ? 'Data backend: Postgres/Neon (DATABASE_URL set).'
+      : 'Data backend: @worksight/common fixtures (set DATABASE_URL for Neon/Postgres).'
+  );
 }
 bootstrap();

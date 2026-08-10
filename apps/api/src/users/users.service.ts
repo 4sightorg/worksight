@@ -1,28 +1,46 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Optional } from '@nestjs/common';
 import { EmployeeLookup, EmployeeProfile, Team, TeamLookup, Teams } from '@worksight/common';
+import { DbService } from '../db/db.service';
 
 @Injectable()
 export class UsersService {
   private readonly employees = new EmployeeLookup();
   private readonly teams = new TeamLookup(Teams);
 
-  findAll(): EmployeeProfile[] {
+  constructor(@Optional() private readonly db?: DbService) {}
+
+  async findAll(): Promise<EmployeeProfile[]> {
+    if (this.db?.enabled) {
+      return this.db.listEmployees();
+    }
     return this.employees.all();
   }
 
-  findById(id: string): EmployeeProfile | null {
+  async findById(id: string): Promise<EmployeeProfile | null> {
+    if (this.db?.enabled) {
+      return this.db.getEmployeeById(id);
+    }
     return this.employees.getById(id);
   }
 
-  getStats(): ReturnType<EmployeeLookup['getStats']> {
+  async getStats(): Promise<ReturnType<EmployeeLookup['getStats']>> {
+    if (this.db?.enabled) {
+      return this.db.getEmployeeStats();
+    }
     return this.employees.getStats();
   }
 
-  findAllTeams(): Team[] {
+  async findAllTeams(): Promise<Team[]> {
+    if (this.db?.enabled) {
+      return this.db.listTeams();
+    }
     return this.teams.all();
   }
 
-  findTeamById(id: string): Team | null {
+  async findTeamById(id: string): Promise<Team | null> {
+    if (this.db?.enabled) {
+      return this.db.getTeamById(id);
+    }
     return this.teams.getById(id);
   }
 }
