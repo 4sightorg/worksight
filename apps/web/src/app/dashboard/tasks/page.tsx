@@ -55,7 +55,7 @@ import {
 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { fetchDashboardTasksFromApi } from '@/lib/mvp-api-bridge';
+import { fetchDashboardTasksFromApi, persistTaskStatus } from '@/lib/mvp-api-bridge';
 import { assignmentLookup } from '@/lib/mvp-data';
 import { isApiDataMode } from '@/lib/worksight-api';
 import type { Assignment } from '@worksight/common/types';
@@ -187,6 +187,9 @@ export default function TasksPage() {
         setTasks(prev =>
           prev.map(task => (task.id === activeTask.id ? { ...task, status: newStatus } : task))
         );
+        void persistTaskStatus(activeTask.id, newStatus).catch(err =>
+          console.warn('Failed to persist task status', err)
+        );
       }
     } else {
       // Reordering within same status or between tasks
@@ -202,6 +205,9 @@ export default function TasksPage() {
 
           // If moving to a different status group, update the status
           if (activeTask.status !== overTask.status) {
+            void persistTaskStatus(activeTask.id, overTask.status).catch(err =>
+              console.warn('Failed to persist task status', err)
+            );
             return updatedTasks.map(task =>
               task.id === activeTask.id ? { ...task, status: overTask.status } : task
             );
@@ -221,7 +227,11 @@ export default function TasksPage() {
         if (task.id === taskId) {
           const currentIndex = statusOrder.indexOf(task.status);
           const nextIndex = (currentIndex + 1) % statusOrder.length;
-          return { ...task, status: statusOrder[nextIndex] };
+          const nextStatus = statusOrder[nextIndex];
+          void persistTaskStatus(taskId, nextStatus).catch(err =>
+            console.warn('Failed to persist task status', err)
+          );
+          return { ...task, status: nextStatus };
         }
         return task;
       })

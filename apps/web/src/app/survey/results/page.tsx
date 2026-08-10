@@ -2,6 +2,8 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useAuth } from '@/auth';
+import { submitWellnessSurveyToApi } from '@/lib/mvp-api-bridge';
 import { useSurveyResultsStore } from '@/store/survey-results-store';
 import { AlertTriangle, CheckCircle, Heart, TrendingUp } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -33,6 +35,7 @@ interface DetailedBurnoutResult {
 function SurveyResultsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { user } = useAuth();
   const [result, setResult] = useState<DetailedBurnoutResult | null>(null);
   const [responses, setResponses] = useState<SurveyResponse[]>([]);
 
@@ -448,11 +451,23 @@ function SurveyResultsContent() {
       saveResults(finalResult, finalResponses);
       setCurrentResults(finalResult);
       setCurrentResponses(finalResponses);
+      void submitWellnessSurveyToApi({
+        employeeId: user?.id,
+        responses: finalResponses,
+      }).catch(err => console.warn('API survey submit failed; local results kept', err));
     } catch (error) {
       console.error('Failed to parse survey results:', error);
       router.push('/survey');
     }
-  }, [searchParams, router, saveResults, setCurrentResults, setCurrentResponses, getLatestResults]);
+  }, [
+    searchParams,
+    router,
+    saveResults,
+    setCurrentResults,
+    setCurrentResponses,
+    getLatestResults,
+    user?.id,
+  ]);
 
   // Show results immediately - no celebration screen
   if (!result) {

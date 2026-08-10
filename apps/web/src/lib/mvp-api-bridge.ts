@@ -7,6 +7,7 @@ import type { MvpTask } from '@/lib/mvp-data';
 import {
   toDate,
   worksightApi,
+  isApiDataMode,
   type ApiAssignment,
   type ApiDataBackend,
   type ApiEmployee,
@@ -241,4 +242,98 @@ export async function fetchDemoSnapshot(): Promise<DemoSnapshot> {
   );
 
   return { users, teams, tasks, userStats, wellness };
+}
+
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+/** Prefer a real employee UUID for API writes (offline auth ids are not UUIDs). */
+export async function resolveApiEmployeeId(preferred?: string | null): Promise<string> {
+  if (preferred && UUID_RE.test(preferred)) return preferred;
+  const users = await worksightApi.getUsers();
+  const employee =
+    users.find(u => u.role === 'employee') ??
+    users.find(u => u.role === 'manager') ??
+    users[0];
+  if (!employee) {
+    throw new Error('No employees available from API to attribute writes');
+  }
+  return employee.id;
+}
+
+export function mapUiStatusToAssignment(
+  status: 'pending' | 'todo' | 'in-progress' | 'completed'
+): 'todo' | 'in_progress' | 'completed' {
+  if (status === 'completed') return 'completed';
+  if (status === 'in-progress') return 'in_progress';
+  return 'todo';
+}
+
+/** Persist a kanban/status change when API mode is on. Best-effort; callers keep optimistic UI. */
+export async function persistTaskStatus(
+  taskId: string,
+  uiStatus: 'pending' | 'todo' | 'in-progress' | 'completed'
+): Promise<void> {
+  if (!isApiDataMode()) return;
+  if (!UUID_RE.test(taskId)) return;
+  await worksightApi.patchTask(taskId, { status: mapUiStatusToAssignment(uiStatus) });
+}
+
+export async function fetchMvpSurveysFromApi(): Promise<
+  import('@/lib/mvp-data').MvpSurvey[]
+> {
+  const [surveys, users, submissions] = await Promise.all([
+    worksightApi.getSurveys(),
+    worksightApi.getUsers(),
+    worksightApi.getSurveySubmissions(),
+  ]);
+  const creators = new Map(users.map(u => [u.id, u.name]));
+  const counts = submissions.reduce<Record<string, number>>((acc, s) => {
+    acc[s.survey_id] = (acc[s.survey_id] ?? 0) + 1;
+    return acc;
+  }, {});
+
+  return surveys.map(survey => ({
+    id: survey.id,
+    title: `Wellness Survey (${survey.num_questions} questions)`,
+    description: 'Burnout and wellness assessment from the Nest API',
+    status: 'active' as const,
+    questionCount: survey.num_questions,
+    responseCount: counts[survey.id] ?? 0,
+    createdAt: toDate(survey.created_at).toISOString().slice(0, 10),
+    lastModified: toDate(survey.created_at).toISOString().slice(0, 10),
+    createdBy: creators.get(survey.created_by) ?? survey.created_by,
+    category: 'burnout' as const,
+    targetAudience: 'all' as const,
+  }));
+}
+
+/** Default wellness survey template id from @worksight/common fixtures. */
+export const DEFAULT_WELLNESS_SURVEY_ID = '277068ac-b7a9-45b5-9d41-f66b017509c7';
+
+/**
+ * Best-effort POST of burnout survey answers to Nest.
+ * UI stores keep local history regardless of API success.
+ */
+export async function submitWellnessSurveyToApi(input: {
+  employeeId?: string | null;
+  responses: Array<{ questionId: string; value: string | number }>;
+  surveyId?: string;
+}): Promise<void> {
+  if (!isApiDataMode()) return;
+  const employee_id = await resolveApiEmployeeId(input.employeeId);
+  const answers = input.responses
+    .map(r => {
+      const n = Number(r.questionId);
+      if (!Number.isInteger(n) || n < 0) return null;
+      return { question_id: n, response: r.value };
+    })
+    .filter((a): a is { question_id: number; response: string | number } => a !== null);
+
+  if (answers.length === 0) return;
+
+  await worksightApi.submitSurvey(input.surveyId ?? DEFAULT_WELLNESS_SURVEY_ID, {
+    employee_id,
+    answers,
+  });
 }

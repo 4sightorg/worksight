@@ -40,8 +40,10 @@ import {
     Users,
 } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
+import { fetchMvpSurveysFromApi } from '@/lib/mvp-api-bridge';
 import { getMvpSurveys, type MvpSurvey } from '@/lib/mvp-data';
+import { isApiDataMode } from '@/lib/worksight-api';
+import { useEffect, useMemo, useState } from 'react';
 
 function SurveyManagementContent() {
   const { logout } = useAuth();
@@ -52,12 +54,29 @@ function SurveyManagementContent() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fixtureSurveys = getMvpSurveys();
-    if (fixtureSurveys.length === 0) {
-      throw new Error('Common survey fixtures empty; refusing silent empty fallback');
-    }
-    setSurveys(fixtureSurveys);
-    setIsLoading(false);
+    let cancelled = false;
+    (async () => {
+      try {
+        if (isApiDataMode()) {
+          const apiSurveys = await fetchMvpSurveysFromApi();
+          if (!cancelled) setSurveys(apiSurveys);
+        } else {
+          const fixtureSurveys = getMvpSurveys();
+          if (fixtureSurveys.length === 0) {
+            throw new Error('Common survey fixtures empty; refusing silent empty fallback');
+          }
+          if (!cancelled) setSurveys(fixtureSurveys);
+        }
+      } catch (err) {
+        console.warn('API survey load failed; falling back to fixtures', err);
+        if (!cancelled) setSurveys(getMvpSurveys());
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const handleLogout = async () => {

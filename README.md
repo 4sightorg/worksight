@@ -7,9 +7,9 @@ WorkSight is an employee well-being analytics platform. This **pnpm +
 Turborepo** monorepo ships a Next.js web app, a NestJS API, VitePress docs, and
 shared packages — notably `@worksight/common` (types, fixtures, lookup utils).
 
-**MVP note:** dashboard and API data for the current slice come from
-`@worksight/common` fixtures, not live Supabase persistence. Supabase remains
-optional for web auth / online mode.
+**MVP note:** Nest + web run on `@worksight/common` fixtures by default, or on
+Postgres/Neon when `DATABASE_URL` is set. Supabase remains optional for web
+auth; offline mode is enough for the demo path.
 
 ## Project structure
 
@@ -121,15 +121,15 @@ pnpm --filter @worksight/docs build
 
 ## MVP data layer
 
-- **Web:** dashboard / admin / tasks views consume `@worksight/common` fixtures
-  (via a thin bridge such as `apps/web/src/lib/mvp-data.ts` on the wire-web
-  branch).
-- **API:** Nest endpoints return the same fixture shapes (`EmployeeProfile`,
-  `Team`, `Assignment`, `Activity`). There is **no** DB/Supabase read path for
-  those endpoints yet.
-- Fixture-backed routes (API): `GET /users`, `/users/:id`, `/users/stats`,
-  `/teams`, `/teams/:id`, `/tasks`, `/tasks/:id`, `/tasks/stats/:employeeId`,
-  `/activities`, plus `/`, `/ping`, `/health`.
+- Nest serves **Postgres** when `DATABASE_URL` is set (Neon or local), otherwise
+  `@worksight/common` fixtures. `/health` reports `database: fixtures|postgres`.
+- Seed: `pnpm --filter @worksight/api seed` (or `db:reset` after schema drift).
+- Local Postgres: `docker compose up -d postgres` then
+  `DATABASE_URL=postgresql://worksight:worksight@localhost:5432/worksight`.
+- Demo: `pnpm demo` or `DEMO_WITH_POSTGRES=1 pnpm demo` — see
+  [docs/mvp/DEMO.md](./docs/mvp/DEMO.md).
+- Web with `NEXT_PUBLIC_USE_API=true` hits Nest for demo/admin/tasks/surveys;
+  kanban status changes `PATCH /tasks/:id`; survey results `POST /surveys/:id/responses`.
 
 ## Deployment
 
