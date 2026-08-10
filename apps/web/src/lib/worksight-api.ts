@@ -44,9 +44,14 @@ export function getApiBaseUrl(): string {
   return 'http://localhost:3001';
 }
 
-/** Prefer Nest API when NEXT_PUBLIC_USE_API=true; otherwise local common fixtures. */
+/** Prefer Nest API when NEXT_PUBLIC_USE_API=true; on Vercel, default to API mode. */
 export function getDataSourceMode(): DataSourceMode {
-  return process.env.NEXT_PUBLIC_USE_API === 'true' ? 'api' : 'fixtures';
+  const flag = process.env.NEXT_PUBLIC_USE_API;
+  if (flag === 'true') return 'api';
+  if (flag === 'false') return 'fixtures';
+  // Remote web deploy without an explicit flag → same as local `pnpm demo`.
+  if (process.env.VERCEL) return 'api';
+  return 'fixtures';
 }
 
 export function isApiDataMode(): boolean {
