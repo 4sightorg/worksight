@@ -15,7 +15,12 @@
         "NEXT_PUBLIC_IS_OFFLINE",
         "IS_OFFLINE",
         "NEXT_PUBLIC_USE_API",
-        "NEXT_PUBLIC_API_URL"
+        "NEXT_PUBLIC_API_URL",
+        "DATABASE_URL",
+        "DATABASE_URL_DIRECT",
+        "DATABASE_POOL_MAX",
+        "CORS_ORIGINS",
+        "PORT"
       ]
     },
     "dev": {

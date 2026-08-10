@@ -23,8 +23,8 @@
     "paths": {
       // Resolve against the built package so type-check matches what Node
       // loads at runtime (requires `pnpm --filter @worksight/common build`).
-      "@worksight/common": ["../../packages/common/dist"],
-      "@worksight/common/*": ["../../packages/common/dist/*"]
+      "@worksight/common": ["../../packages/common/dist/esm"],
+      "@worksight/common/*": ["../../packages/common/dist/esm/*"]
     }
   },
   "include": ["src/**/*"],

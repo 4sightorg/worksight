@@ -73,6 +73,32 @@ the same fixtures the offline demo uses.
 - `EmployeeProfile.manager_id` is nullable; `Assignment.employee_id` /
   `source_id` are UUIDs.
 
+## API docs (Scalar + CDN Swagger)
+
+Nest's default Swagger UI 404'd on Vercel: the HTML rendered, but
+`swagger-ui.css` / `*.js` from `swagger-ui-dist` are not in the function
+bundle. Docs now:
+
+- `/openapi.json` (+ `/api-json`) — OpenAPI document
+- `/api` and `/reference` — [Scalar](https://scalar.com) API reference
+- `/swagger` — classic Swagger UI via unpkg CDN
+
+## Vercel serverless fix (follow-up branch `fix/api-vercel-esm`)
+
+Production was crashing with `FUNCTION_INVOCATION_FAILED` /
+`ERR_REQUIRE_ESM`: Nest emits CommonJS, but `@worksight/common` was
+ESM-only (`"type": "module"`), so the serverless function died on the
+first `require('@worksight/common')`. Also, `main.ts` called
+`app.listen()`, which is wrong for Vercel.
+
+- `@worksight/common` now dual-builds `dist/esm` + `dist/cjs` (with
+  matching `exports.require` / `exports.import`).
+- Nest bootstrap is shared (`src/bootstrap.ts`); local still uses
+  `main.ts` + listen, Vercel uses `api/index.js` → `dist/vercel.js`
+  (Express adapter, cached warm isolate).
+- `apps/api/vercel.json` drops `outputDirectory: dist` (that made Vercel
+  treat every compiled file as a function) and rewrites `/(.*)` → `/api`.
+
 ## DB-backed stats (follow-up branch `feat/api-db-stats`)
 
 - `GET /users/stats` and `GET /tasks/stats/:employeeId` now hydrate the
