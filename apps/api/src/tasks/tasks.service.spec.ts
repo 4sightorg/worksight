@@ -1,26 +1,28 @@
 import { Activities, Assignments } from '@worksight/common';
+import type { WorksightRepository } from '../db/worksight.repository';
 import { TasksService } from './tasks.service';
 
 describe('TasksService', () => {
   let service: TasksService;
 
   beforeEach(() => {
-    service = new TasksService();
+    const fixturesOnly = { enabled: false } as WorksightRepository;
+    service = new TasksService(fixturesOnly);
   });
 
-  it('returns the shared assignment fixtures', () => {
-    expect(service.findAll()).toEqual(Assignments);
+  it('returns the shared assignment fixtures', async () => {
+    await expect(service.findAll()).resolves.toEqual(Assignments);
   });
 
-  it('filters assignments by employee', () => {
+  it('filters assignments by employee', async () => {
     const employeeId = Assignments[0].employee_id;
     const expected = Assignments.filter(a => a.employee_id === employeeId);
-    expect(service.findAll(employeeId)).toEqual(expected);
+    await expect(service.findAll(employeeId)).resolves.toEqual(expected);
   });
 
-  it('finds an assignment by id', () => {
-    expect(service.findById(Assignments[0].id)).toEqual(Assignments[0]);
-    expect(service.findById('does-not-exist')).toBeNull();
+  it('finds an assignment by id', async () => {
+    await expect(service.findById(Assignments[0].id)).resolves.toEqual(Assignments[0]);
+    await expect(service.findById('does-not-exist')).resolves.toBeNull();
   });
 
   it('computes per-employee stats from the fixtures', () => {
@@ -31,10 +33,10 @@ describe('TasksService', () => {
     expect(stats.completionRate).toBeGreaterThanOrEqual(0);
   });
 
-  it('returns the shared activity fixtures', () => {
-    expect(service.findAllActivities()).toEqual(Activities);
+  it('returns the shared activity fixtures', async () => {
+    await expect(service.findAllActivities()).resolves.toEqual(Activities);
     const employeeId = Activities[0].employee_id;
     const expected = Activities.filter(a => a.employee_id === employeeId);
-    expect(service.findAllActivities(employeeId)).toEqual(expected);
+    await expect(service.findAllActivities(employeeId)).resolves.toEqual(expected);
   });
 });

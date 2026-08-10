@@ -1,25 +1,27 @@
 import { Employees, Teams } from '@worksight/common';
+import type { WorksightRepository } from '../db/worksight.repository';
 import { UsersService } from './users.service';
 
 describe('UsersService', () => {
   let service: UsersService;
 
   beforeEach(() => {
-    service = new UsersService();
+    const fixturesOnly = { enabled: false } as WorksightRepository;
+    service = new UsersService(fixturesOnly);
   });
 
-  it('returns the shared employee fixtures', () => {
-    expect(service.findAll()).toEqual(Employees);
-    expect(service.findAll().length).toBeGreaterThan(0);
+  it('returns the shared employee fixtures', async () => {
+    await expect(service.findAll()).resolves.toEqual(Employees);
+    expect((await service.findAll()).length).toBeGreaterThan(0);
   });
 
-  it('finds an employee by id', () => {
+  it('finds an employee by id', async () => {
     const employee = Employees[0];
-    expect(service.findById(employee.id)).toEqual(employee);
+    await expect(service.findById(employee.id)).resolves.toEqual(employee);
   });
 
-  it('returns null for an unknown employee id', () => {
-    expect(service.findById('does-not-exist')).toBeNull();
+  it('returns null for an unknown employee id', async () => {
+    await expect(service.findById('does-not-exist')).resolves.toBeNull();
   });
 
   it('computes stats over the shared fixtures', () => {
@@ -29,8 +31,8 @@ describe('UsersService', () => {
     expect(employeeRole?.count).toBe(Employees.filter(e => e.role === 'employee').length);
   });
 
-  it('returns the shared team fixtures', () => {
-    expect(service.findAllTeams()).toEqual(Teams);
-    expect(service.findTeamById(Teams[0].id)).toEqual(Teams[0]);
+  it('returns the shared team fixtures', async () => {
+    await expect(service.findAllTeams()).resolves.toEqual(Teams);
+    await expect(service.findTeamById(Teams[0].id)).resolves.toEqual(Teams[0]);
   });
 });

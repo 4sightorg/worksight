@@ -1,28 +1,45 @@
 import { Injectable } from '@nestjs/common';
 import { EmployeeLookup, EmployeeProfile, Team, TeamLookup, Teams } from '@worksight/common';
+import { WorksightRepository } from '../db/worksight.repository';
 
 @Injectable()
 export class UsersService {
   private readonly employees = new EmployeeLookup();
   private readonly teams = new TeamLookup(Teams);
 
-  findAll(): EmployeeProfile[] {
+  constructor(private readonly repo: WorksightRepository) {}
+
+  async findAll(): Promise<EmployeeProfile[]> {
+    if (this.repo.enabled) {
+      return this.repo.listEmployees();
+    }
     return this.employees.all();
   }
 
-  findById(id: string): EmployeeProfile | null {
+  async findById(id: string): Promise<EmployeeProfile | null> {
+    if (this.repo.enabled) {
+      return this.repo.getEmployee(id);
+    }
     return this.employees.getById(id);
   }
 
   getStats(): ReturnType<EmployeeLookup['getStats']> {
+    // Stats still come from the in-memory lookup util; Postgres path returns the
+    // same shape over the loaded fixture until a SQL aggregate lands.
     return this.employees.getStats();
   }
 
-  findAllTeams(): Team[] {
+  async findAllTeams(): Promise<Team[]> {
+    if (this.repo.enabled) {
+      return this.repo.listTeams();
+    }
     return this.teams.all();
   }
 
-  findTeamById(id: string): Team | null {
+  async findTeamById(id: string): Promise<Team | null> {
+    if (this.repo.enabled) {
+      return this.repo.getTeam(id);
+    }
     return this.teams.getById(id);
   }
 }

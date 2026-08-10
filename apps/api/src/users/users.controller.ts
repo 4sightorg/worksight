@@ -7,7 +7,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  getAll(): EmployeeProfile[] {
+  getAll(): Promise<EmployeeProfile[]> {
     return this.usersService.findAll();
   }
 
@@ -17,8 +17,8 @@ export class UsersController {
   }
 
   @Get(':id')
-  getOne(@Param('id') id: string): EmployeeProfile {
-    const employee = this.usersService.findById(id);
+  async getOne(@Param('id') id: string): Promise<EmployeeProfile> {
+    const employee = await this.usersService.findById(id);
     if (!employee) {
       throw new NotFoundException(`User ${id} not found`);
     }
@@ -31,13 +31,13 @@ export class TeamsController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  getAll(): Team[] {
+  getAll(): Promise<Team[]> {
     return this.usersService.findAllTeams();
   }
 
   @Get(':id')
-  getOne(@Param('id') id: string): Team {
-    const team = this.usersService.findTeamById(id);
+  async getOne(@Param('id') id: string): Promise<Team> {
+    const team = await this.usersService.findTeamById(id);
     if (!team) {
       throw new NotFoundException(`Team ${id} not found`);
     }

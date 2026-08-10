@@ -15,8 +15,8 @@ export const AssignmentPrioritySchema = z.enum(['low', 'medium', 'high', 'critic
  */
 export const AssignmentSchema = z.object({
   id: z.uuid(),
-  employee_id: z.string(),
-  source_id: z.string().nullable(),
+  employee_id: z.uuid(),
+  source_id: z.uuid().nullable(),
   external_id: z.string().nullable(),
   type: AssignmentTypeSchema,
   title: z.string().nullable(),
