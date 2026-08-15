@@ -358,6 +358,56 @@ export class WorksightRepository {
       }
     });
   }
+
+  async getOrgStats(): Promise<{
+    totalEmployees: number;
+    activeTasks: number;
+    tasksByStatus: { todo: number; in_progress: number; completed: number };
+    avgAttendanceHours: number;
+    recentSurveyAvg: number | null;
+    activitiesLast7d: number;
+  }> {
+    const { rows: empRows } = await this.db.query<{ count: number }>(
+      `SELECT count(*)::int as count FROM employees`
+    );
+    const totalEmployees = empRows[0]?.count ?? 0;
+
+    const { rows: taskRows } = await this.db.query<{ status: string; count: number }>(
+      `SELECT status, count(*)::int as count FROM assignments GROUP BY status`
+    );
+    const tasksByStatus = { todo: 0, in_progress: 0, completed: 0 };
+    for (const r of taskRows) {
+      if (r.status in tasksByStatus) {
+        tasksByStatus[r.status as keyof typeof tasksByStatus] = Number(r.count);
+      }
+    }
+    const activeTasks = tasksByStatus.todo + tasksByStatus.in_progress;
+
+    const { rows: attRows } = await this.db.query<{ avg_hours: number }>(
+      `SELECT COALESCE(AVG(hours_worked), 0)::float as avg_hours FROM attendance WHERE hours_worked IS NOT NULL`
+    );
+    const avgAttendanceHours = Math.round((attRows[0]?.avg_hours ?? 0) * 100) / 100;
+
+    const { rows: surveyRows } = await this.db.query<{ avg_score: number }>(
+      `SELECT AVG(avg_score)::float as avg_score FROM survey_response_meta WHERE avg_score IS NOT NULL`
+    );
+    const recentSurveyAvg =
+      surveyRows[0]?.avg_score != null ? Math.round(surveyRows[0].avg_score * 100) / 100 : null;
+
+    const { rows: actRows } = await this.db.query<{ count: number }>(
+      `SELECT count(*)::int as count FROM activities WHERE timestamp >= (SELECT COALESCE(MAX(timestamp), now()) FROM activities) - interval '7 days'`
+    );
+    const activitiesLast7d = actRows[0]?.count ?? 0;
+
+    return {
+      totalEmployees,
+      activeTasks,
+      tasksByStatus,
+      avgAttendanceHours,
+      recentSurveyAvg,
+      activitiesLast7d,
+    };
+  }
 }
 
 function toEmployee(row: EmployeeRow): EmployeeProfile {

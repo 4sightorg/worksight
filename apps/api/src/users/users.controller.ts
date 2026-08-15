@@ -7,7 +7,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import type { EmployeeProfile, Team } from '@worksight/common';
-import { EmployeeProfileDto, EmployeeStatsDto, TeamDto } from '../openapi/schemas';
+import { EmployeeProfileDto, EmployeeStatsDto, OrgStatsDto, TeamDto } from '../openapi/schemas';
 import { UsersService } from './users.service';
 
 @ApiTags('users')
@@ -32,6 +32,13 @@ export class UsersController {
     return this.usersService.getStats();
   }
 
+  @Get('stats/org')
+  @ApiOperation({ summary: 'Org aggregate stats' })
+  @ApiOkResponse({ type: OrgStatsDto })
+  getOrgStats(): Promise<OrgStatsDto> {
+    return this.usersService.getOrgStats();
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get employee by id' })
   @ApiParam({ name: 'id', format: 'uuid' })
@@ -43,6 +50,19 @@ export class UsersController {
       throw new NotFoundException(`User ${id} not found`);
     }
     return employee;
+  }
+}
+
+@ApiTags('stats')
+@Controller('stats')
+export class StatsController {
+  constructor(private readonly usersService: UsersService) {}
+
+  @Get('org')
+  @ApiOperation({ summary: 'Org aggregate stats' })
+  @ApiOkResponse({ type: OrgStatsDto })
+  getOrgStats(): Promise<OrgStatsDto> {
+    return this.usersService.getOrgStats();
   }
 }
 

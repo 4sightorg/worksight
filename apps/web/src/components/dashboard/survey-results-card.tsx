@@ -152,21 +152,28 @@ export function SurveyResultsCard() {
           </div>
         </div>
 
-        {/* Trend Indicator (mock for now) */}
-        <div className="flex items-center justify-between border-t pt-2">
-          <span className="text-muted-foreground text-xs">Since last assessment</span>
-          <div className="flex items-center gap-1">
-            {Math.random() > 0.5 ? (
-              <TrendingUp className="h-3 w-3 text-red-500" />
-            ) : (
-              <TrendingDown className="h-3 w-3 text-green-500" />
-            )}
-            <span className="text-xs">
-              {Math.random() > 0.5 ? '+' : '-'}
-              {Math.floor(Math.random() * 10)}%
-            </span>
-          </div>
-        </div>
+        {/* Trend Indicator */}
+        {(() => {
+          const baselineScore = 50;
+          const diff = Math.round(results.overallScore - baselineScore);
+          const isHigher = diff >= 0;
+          return (
+            <div className="flex items-center justify-between border-t pt-2">
+              <span className="text-muted-foreground text-xs">Since baseline assessment</span>
+              <div className="flex items-center gap-1">
+                {isHigher ? (
+                  <TrendingUp className="h-3 w-3 text-red-500" />
+                ) : (
+                  <TrendingDown className="h-3 w-3 text-green-500" />
+                )}
+                <span className="text-xs">
+                  {isHigher ? '+' : ''}
+                  {diff}%
+                </span>
+              </div>
+            </div>
+          );
+        })()}
       </CardContent>
     </Card>
   );

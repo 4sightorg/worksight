@@ -86,6 +86,37 @@ export class EmployeeStatsDto {
   adminCount!: number;
 }
 
+export class TasksByStatusDto {
+  @ApiProperty()
+  todo!: number;
+
+  @ApiProperty()
+  in_progress!: number;
+
+  @ApiProperty()
+  completed!: number;
+}
+
+export class OrgStatsDto {
+  @ApiProperty()
+  totalEmployees!: number;
+
+  @ApiProperty()
+  activeTasks!: number;
+
+  @ApiProperty({ type: TasksByStatusDto })
+  tasksByStatus!: TasksByStatusDto;
+
+  @ApiProperty()
+  avgAttendanceHours!: number;
+
+  @ApiPropertyOptional({ nullable: true })
+  recentSurveyAvg!: number | null;
+
+  @ApiProperty()
+  activitiesLast7d!: number;
+}
+
 export class TeamDto {
   @ApiProperty({ format: 'uuid' })
   id!: string;
