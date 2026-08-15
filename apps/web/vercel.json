@@ -8,8 +8,6 @@
       "NEXT_TELEMETRY_DISABLED": "1",
       "NEXT_PUBLIC_USE_API": "true",
       "NEXT_PUBLIC_API_URL": "https://worksight-api.vercel.app",
-      "NEXT_PUBLIC_IS_OFFLINE": "true",
-      "IS_OFFLINE": "true",
       "NEXT_PUBLIC_APP_URL": "https://worksight-web.vercel.app",
       "NEXT_PUBLIC_APP_NAME": "WorkSight",
       "NEXT_PUBLIC_APP_DESCRIPTION": "Employee Well-being Analytics Platform"
@@ -18,8 +16,6 @@
   "env": {
     "NEXT_PUBLIC_USE_API": "true",
     "NEXT_PUBLIC_API_URL": "https://worksight-api.vercel.app",
-    "NEXT_PUBLIC_IS_OFFLINE": "true",
-    "IS_OFFLINE": "true",
     "NEXT_PUBLIC_APP_URL": "https://worksight-web.vercel.app"
   }
 }

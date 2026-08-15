@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
+import { signIn as clientSignIn, signUp as clientSignUp } from './client';
 import { AUTH_CONFIG } from './identity';
 import { isOfflineMode, offlineLogin } from './offline';
 import { User } from './types';
@@ -34,7 +35,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [initialized, setInitialized] = useState(false);
 
-  const [_, setAccessTokenState] = useState<string | null>(null);
+  const [, setAccessTokenState] = useState<string | null>(null);
   const [saveLogin, setSaveLoginState] = useState(false);
 
   // Wrap setters to handle side-effects
@@ -126,19 +127,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return result;
       }
 
-      // Online login logic would go here
-      // For now, fall back to offline login
-      const result = await offlineLogin(email, password);
-      if (result.user) {
-        setUser(result.user);
-        if (saveLogin) {
-          localStorage.setItem('user_session', JSON.stringify(result.user));
+      // Online mode: use client.ts signIn (handles Supabase & test account fallback)
+      const res = await clientSignIn({ email, password }, saveLogin);
+      if (res.user) {
+        setUser(res.user);
+        if (res.accessToken) {
+          setAccessToken(res.accessToken);
         }
-        if (typeof document !== 'undefined') {
-          document.cookie = `ws_offline_session=1; path=/`;
-        }
+        return { user: res.user, error: null };
       }
-      return result;
+      return { user: null, error: res.error?.message || 'Login failed' };
     } catch (error) {
       console.error('Login error:', error);
       return { user: null, error: 'Login failed' };
@@ -148,10 +146,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signup = async (
-    _userData: unknown,
-    _saveLogin: boolean = false
+    userData: unknown,
+    saveLoginParam: boolean = false
   ): Promise<{ user: User | null; error: string | null }> => {
-    // Check if forced offline mode
     const isForceOffline = process.env.NEXT_PUBLIC_IS_OFFLINE === 'true';
 
     if (isOfflineMode() || isForceOffline) {
@@ -163,8 +160,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       };
     }
 
-    // Online signup logic would go here
-    return { user: null, error: 'Signup not implemented for online mode yet' };
+    try {
+      const res = await clientSignUp(
+        userData as { email: string; username: string; password: string; name: string },
+        saveLoginParam
+      );
+
+      if (res.user) {
+        setUser(res.user);
+        if (res.accessToken) {
+          setAccessToken(res.accessToken);
+        }
+        setSaveLogin(saveLoginParam);
+        return { user: res.user, error: null };
+      }
+
+      return { user: null, error: res.error?.message || 'Signup failed' };
+    } catch (err) {
+      return { user: null, error: err instanceof Error ? err.message : 'Signup failed' };
+    }
   };
 
   const logout = async (): Promise<void> => {

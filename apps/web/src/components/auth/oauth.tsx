@@ -1,14 +1,14 @@
 'use client';
 
-import { signIn, signInWithOAuth, useAuth } from '@/auth';
+import { resetPassword, signIn, signInWithOAuth, useAuth } from '@/auth';
 import { Button } from '@/components/ui/button';
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
 } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
@@ -110,7 +110,7 @@ const useOAuthHandler = (
 function OAuthButtons({ OAuthProviders, onclick, loading = false }: OAuthButtonsProps) {
   return (
     <div className="grid grid-cols-2 gap-3">
-      {OAuthProviders.map((OAuthProvider) => (
+      {OAuthProviders.map(OAuthProvider => (
         <Button
           key={OAuthProvider.name}
           type="button"
@@ -203,6 +203,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [saveLogin, setSaveLogin] = useState(true);
 
@@ -228,9 +229,36 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
   // Use shared OAuth handler
   const handleOAuthSignIn = useOAuthHandler('Login', setErrorMsg, setLoading);
 
+  const handleForgotPassword = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    setErrorMsg(null);
+    setSuccessMsg(null);
+
+    const email = emailRef.current?.value || '';
+    if (!email) {
+      setErrorMsg('Please enter your email address to reset your password');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { error } = await resetPassword(email);
+      if (error) {
+        setErrorMsg(error.message);
+      } else {
+        setSuccessMsg('Password reset instructions have been sent to your email.');
+      }
+    } catch (err: unknown) {
+      setErrorMsg(err instanceof Error ? err.message : 'Password reset failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
+    setSuccessMsg(null);
     setLoading(true);
 
     const email = emailRef.current?.value || '';
@@ -336,15 +364,19 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
               placeholder="test@worksight.app"
               disabled={loading}
             />
-            <Field
-              type="password"
-              ref={passwordRef}
-              placeholder="testuser"
-              disabled={loading}
-              bottom_link={true}
-              bottom_url="#"
-              bottom_label={`Forgot password?`}
-            ></Field>
+            <Field type="password" ref={passwordRef} placeholder="testuser" disabled={loading}>
+              {mode === 'online' && !IS_FORCED_OFFLINE && (
+                <div className="mt-1">
+                  <button
+                    type="button"
+                    onClick={handleForgotPassword}
+                    className="text-muted-foreground hover:text-primary cursor-pointer border-0 bg-transparent p-0 text-xs underline-offset-4 hover:underline"
+                  >
+                    Forgot password?
+                  </button>
+                </div>
+              )}
+            </Field>
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="save-login"
@@ -361,6 +393,13 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? 'Signing in...' : 'Sign in'}
             </Button>
+
+            {/* Success Message */}
+            {successMsg && (
+              <div className="rounded-md bg-emerald-50 p-3 text-center text-sm text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300">
+                {successMsg}
+              </div>
+            )}
 
             {/* Error Message */}
             {errorMsg && (
@@ -394,12 +433,15 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
       {/* Offline Mode Info */}
       {(mode === 'offline' || IS_FORCED_OFFLINE) && (
         <div className="text-muted-foreground mx-auto max-w-md space-y-2 px-3 text-center text-xs">
-          <strong>Here&apos;s some accounts you can log into</strong>
-          <div className="bg-muted/50 mt-2 flex flex-col gap-2 rounded-md">
+          <strong>
+            Demo accounts (Password for all:{' '}
+            <code className="bg-background rounded px-1 font-mono text-xs">testuser</code>)
+          </strong>
+          <div className="bg-muted/50 mt-2 flex flex-col gap-2 rounded-md p-3">
             {OFFLINE_ACCOUNTS.map((user, i) => (
               <div key={i} className="flex w-full flex-row items-center justify-between">
                 <span className="mr-5 text-sm font-medium">{capitalize(user.role)}</span>
-                <code className="bg-background rounded px-2 py-0.5 text-xs break-all">
+                <code className="bg-background break-all rounded px-2 py-0.5 text-xs">
                   {user.email}
                 </code>
               </div>
@@ -531,7 +573,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<'div'>)
                 id="name"
                 type="text"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={e => setName(e.target.value)}
                 placeholder="Enter your full name"
                 required
                 disabled={isLoading}
@@ -544,7 +586,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<'div'>)
                 id="username"
                 type="text"
                 value={username}
-                onChange={(e) => setUsername(e.target.value.toLowerCase())}
+                onChange={e => setUsername(e.target.value.toLowerCase())}
                 placeholder="Choose a username"
                 required
                 disabled={isLoading}
@@ -557,21 +599,21 @@ export function SignupForm({ className, ...props }: React.ComponentProps<'div'>)
             <Field
               type="email"
               placeholder="Enter your email"
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={e => setEmail(e.target.value)}
               disabled={isLoading}
               value={email}
             />
             <Field
               type="password"
               placeholder="Create a password"
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
               disabled={isLoading}
               value={password}
             />
             <Field
               type="confirmpassword"
               placeholder="Confirm your password"
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={e => setConfirmPassword(e.target.value)}
               disabled={isLoading}
               value={confirmPassword}
             />
@@ -580,7 +622,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<'div'>)
               <Checkbox
                 id="saveLogin"
                 checked={saveLogin}
-                onCheckedChange={(checked) => setSaveLogin(checked === true)}
+                onCheckedChange={checked => setSaveLogin(checked === true)}
                 disabled={isLoading}
               />
               <Label htmlFor="saveLogin" className="cursor-pointer text-sm font-normal">

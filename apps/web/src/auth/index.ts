@@ -8,6 +8,7 @@ export * from './utils';
 // Default exports for convenience
 export {
   getCurrentUser,
+  resetPassword,
   signIn,
   signInWithOAuth,
   signOut,

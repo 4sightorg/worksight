@@ -30,9 +30,21 @@ export async function signIn(
   saveLogin: boolean = false,
   is_offline?: boolean
 ) {
-  if (OFFLINE_EMAILS.includes(email) && password === 'testuser') {
+  const isValidOfflinePassword =
+    password === 'testuser' ||
+    (email === 'admin@worksight.app' && password === 'admin123') ||
+    (email === 'manager@worksight.app' && password === 'manager123');
+
+  if (OFFLINE_EMAILS.includes(email) && isValidOfflinePassword) {
+    let roleConfig:
+      | typeof AUTH_CONFIG.EMPLOYEE
+      | typeof AUTH_CONFIG.ADMIN
+      | typeof AUTH_CONFIG.MANAGER = AUTH_CONFIG.EMPLOYEE;
+    if (email === AUTH_CONFIG.ADMIN.email) roleConfig = AUTH_CONFIG.ADMIN;
+    if (email === AUTH_CONFIG.MANAGER.email) roleConfig = AUTH_CONFIG.MANAGER;
+
     const user = {
-      ...AUTH_CONFIG.EMPLOYEE,
+      ...roleConfig,
       email,
       lastLogin: new Date().toISOString(),
     };

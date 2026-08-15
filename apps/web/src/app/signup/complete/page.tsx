@@ -3,12 +3,12 @@
 import { useAuth } from '@/auth/provider';
 import { Button } from '@/components/ui/button';
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
 } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
@@ -32,7 +32,7 @@ export default function CompleteSignupForm() {
   const [error, setError] = useState('');
   const [oauthData, setOauthData] = useState<OAuthUserData | null>(null);
   const router = useRouter();
-  const { setUser, setAccessToken } = useAuth();
+  const { setUser, setAccessToken, setSaveLogin: setAuthSaveLogin } = useAuth();
 
   useEffect(() => {
     // Get OAuth user data from session storage
@@ -132,6 +132,7 @@ export default function CompleteSignupForm() {
       if (session?.access_token) {
         setUser(user);
         setAccessToken(session.access_token);
+        setAuthSaveLogin(saveLogin);
 
         // Clear OAuth data from session storage
         sessionStorage.removeItem('oauth_user_data');
@@ -209,7 +210,7 @@ export default function CompleteSignupForm() {
                   id="username"
                   type="text"
                   value={username}
-                  onChange={(e) => setUsername(e.target.value.toLowerCase())}
+                  onChange={e => setUsername(e.target.value.toLowerCase())}
                   placeholder="Choose a username"
                   required
                   disabled={isLoading}
@@ -224,7 +225,7 @@ export default function CompleteSignupForm() {
                 <Checkbox
                   id="saveLogin"
                   checked={saveLogin}
-                  onCheckedChange={(checked) => setSaveLogin(checked === true)}
+                  onCheckedChange={checked => setSaveLogin(checked === true)}
                   disabled={isLoading}
                 />
                 <Label htmlFor="saveLogin" className="cursor-pointer text-sm font-normal">
