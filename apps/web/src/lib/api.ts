@@ -3,8 +3,6 @@ import { Employees } from '@/data/employees';
 import {
     supabase,
     type Employee,
-    type SurveyResponse,
-    type Task,
     type UserSettings,
 } from './supabase';
 
@@ -83,119 +81,6 @@ export const employeeApi = {
 
     if (error) throw error;
     return data;
-  },
-};
-
-// Tasks API
-export const tasksApi = {
-  getByUserId: async (userId: string): Promise<Task[]> => {
-    if (isOfflineMode()) {
-      // Return mock tasks for offline mode
-      return [];
-    }
-
-    const { data, error } = await supabase
-      .from('tasks')
-      .select('*')
-      .eq('assigned_to', userId)
-      .order('created_at', { ascending: false });
-
-    if (error) throw error;
-    return data || [];
-  },
-
-  create: async (task: Omit<Task, 'id' | 'created_at' | 'updated_at'>): Promise<Task> => {
-    if (isOfflineMode()) {
-      throw new Error('Cannot create tasks in offline mode');
-    }
-
-    const { data, error } = await supabase.from('tasks').insert([task]).select().single();
-
-    if (error) throw error;
-    return data;
-  },
-
-  update: async (id: string, updates: Partial<Task>): Promise<Task> => {
-    if (isOfflineMode()) {
-      throw new Error('Cannot update tasks in offline mode');
-    }
-
-    const { data, error } = await supabase
-      .from('tasks')
-      .update({ ...updates, updated_at: new Date().toISOString() })
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
-  },
-
-  delete: async (id: string): Promise<void> => {
-    if (isOfflineMode()) {
-      throw new Error('Cannot delete tasks in offline mode');
-    }
-
-    const { error } = await supabase.from('tasks').delete().eq('id', id);
-
-    if (error) throw error;
-  },
-};
-
-// Survey API
-export const surveyApi = {
-  submit: async (
-    userId: string,
-    responses: unknown,
-    burnoutScore: number
-  ): Promise<SurveyResponse> => {
-    if (isOfflineMode()) {
-      // Store in localStorage for offline mode
-      const offlineResponse: SurveyResponse = {
-        id: `offline-${Date.now()}`,
-        user_id: userId,
-        responses,
-        burnout_score: burnoutScore,
-        created_at: new Date().toISOString(),
-      };
-
-      const existingResponses = JSON.parse(localStorage.getItem('offline_surveys') || '[]');
-      existingResponses.push(offlineResponse);
-      localStorage.setItem('offline_surveys', JSON.stringify(existingResponses));
-
-      return offlineResponse;
-    }
-
-    const { data, error } = await supabase
-      .from('survey_responses')
-      .insert([
-        {
-          user_id: userId,
-          responses,
-          burnout_score: burnoutScore,
-        },
-      ])
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
-  },
-
-  getByUserId: async (userId: string): Promise<SurveyResponse[]> => {
-    if (isOfflineMode()) {
-      const offlineResponses = JSON.parse(localStorage.getItem('offline_surveys') || '[]');
-      return offlineResponses.filter((response: SurveyResponse) => response.user_id === userId);
-    }
-
-    const { data, error } = await supabase
-      .from('survey_responses')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false });
-
-    if (error) throw error;
-    return data || [];
   },
 };
 
