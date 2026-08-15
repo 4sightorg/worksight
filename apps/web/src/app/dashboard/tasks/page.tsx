@@ -86,8 +86,8 @@ function mapDashboardPriority(priority: Assignment['priority']): Task['priority'
 
 function getInitialTasksFromCommon(): Task[] {
   const assignments = assignmentLookup.all();
-  if (assignments.length === 0) {
-    throw new Error('Common assignment fixtures empty; refusing silent empty fallback');
+  if (!assignments || assignments.length === 0) {
+    return [];
   }
   return assignments.map(assignment => ({
     id: assignment.id,
@@ -127,23 +127,26 @@ export default function TasksPage() {
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [showNewTaskDialog, setShowNewTaskDialog] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+  const [isUsingFallback, setIsUsingFallback] = useState(false);
+  const [writeError, setWriteError] = useState<string | null>(null);
+
+  const loadTasksFromApi = useCallback(async () => {
+    if (!isApiDataMode()) return;
+    try {
+      const apiTasks = await fetchDashboardTasksFromApi();
+      setTasks(apiTasks);
+      setIsUsingFallback(false);
+    } catch (err) {
+      console.warn('API dashboard tasks failed; falling back to fixtures', err);
+      setTasks(getInitialTasksFromCommon());
+      setIsUsingFallback(true);
+    }
+  }, []);
 
   useEffect(() => {
     if (!isApiDataMode()) return;
-    let cancelled = false;
-    (async () => {
-      try {
-        const apiTasks = await fetchDashboardTasksFromApi();
-        if (!cancelled) setTasks(apiTasks);
-      } catch (err) {
-        console.warn('API dashboard tasks failed; falling back to fixtures', err);
-        if (!cancelled) setTasks(getInitialTasksFromCommon());
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+    void loadTasksFromApi();
+  }, [loadTasksFromApi]);
 
   // Get current user's stats if they're an employee
 
@@ -187,9 +190,10 @@ export default function TasksPage() {
         setTasks(prev =>
           prev.map(task => (task.id === activeTask.id ? { ...task, status: newStatus } : task))
         );
-        void persistTaskStatus(activeTask.id, newStatus).catch(err =>
-          console.warn('Failed to persist task status', err)
-        );
+        void persistTaskStatus(activeTask.id, newStatus).catch(err => {
+          console.warn('Failed to persist task status', err);
+          setWriteError('Failed to save task status to server. Local changes kept.');
+        });
       }
     } else {
       // Reordering within same status or between tasks
@@ -205,9 +209,10 @@ export default function TasksPage() {
 
           // If moving to a different status group, update the status
           if (activeTask.status !== overTask.status) {
-            void persistTaskStatus(activeTask.id, overTask.status).catch(err =>
-              console.warn('Failed to persist task status', err)
-            );
+            void persistTaskStatus(activeTask.id, overTask.status).catch(err => {
+              console.warn('Failed to persist task status', err);
+              setWriteError('Failed to save task status to server. Local changes kept.');
+            });
             return updatedTasks.map(task =>
               task.id === activeTask.id ? { ...task, status: overTask.status } : task
             );
@@ -228,9 +233,10 @@ export default function TasksPage() {
           const currentIndex = statusOrder.indexOf(task.status);
           const nextIndex = (currentIndex + 1) % statusOrder.length;
           const nextStatus = statusOrder[nextIndex];
-          void persistTaskStatus(taskId, nextStatus).catch(err =>
-            console.warn('Failed to persist task status', err)
-          );
+          void persistTaskStatus(taskId, nextStatus).catch(err => {
+            console.warn('Failed to persist task status', err);
+            setWriteError('Failed to save task status to server. Local changes kept.');
+          });
           return { ...task, status: nextStatus };
         }
         return task;
@@ -244,6 +250,12 @@ export default function TasksPage() {
       id: Date.now().toString(), // Simple ID generation
     };
     setTasks(prev => [...prev, task]);
+    try {
+      const current = parseInt(localStorage.getItem('tasks_created') || '0', 10);
+      localStorage.setItem('tasks_created', (current + 1).toString());
+    } catch (err) {
+      console.warn('Failed to update tasks_created in localStorage', err);
+    }
     setShowNewTaskDialog(false);
   };
 
@@ -265,6 +277,31 @@ export default function TasksPage() {
                   { label: 'Wellness', href: '/dashboard/wellness' },
                 ]}
               />
+
+              {/* Status / Error Banners */}
+              {isUsingFallback && (
+                <div className="flex items-center justify-between rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-900 dark:text-amber-200">
+                  <div className="flex items-center gap-2">
+                    <AlertCircle className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
+                    <span>Showing demo data (live API task load failed).</span>
+                  </div>
+                  <Button size="sm" variant="outline" onClick={() => void loadTasksFromApi()} className="h-7 text-xs">
+                    Retry API
+                  </Button>
+                </div>
+              )}
+              {writeError && (
+                <div className="flex items-center justify-between rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
+                  <div className="flex items-center gap-2">
+                    <AlertCircle className="h-4 w-4 shrink-0" />
+                    <span>{writeError}</span>
+                  </div>
+                  <Button size="sm" variant="ghost" onClick={() => setWriteError(null)} className="h-7 text-xs">
+                    Dismiss
+                  </Button>
+                </div>
+              )}
+
               {/* Header */}
               <div className="flex items-center justify-between">
                 <div>

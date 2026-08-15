@@ -211,35 +211,34 @@ function SortableTask({ task, onTaskUpdate }: SortableTaskProps) {
 function TasksContent() {
   const { user, logout } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
+  const [isUsingFallback, setIsUsingFallback] = useState(false);
   const [tasks, setTasks] = useState<Task[]>(() => {
     if (isApiDataMode()) return [];
     const fixtureTasks = getMvpTasks();
-    if (fixtureTasks.length === 0) {
-      throw new Error('Common assignment fixtures empty; refusing silent empty fallback');
+    if (!fixtureTasks || fixtureTasks.length === 0) {
+      return [];
     }
     return [...fixtureTasks].sort((a, b) => a.order - b.order);
   });
 
-  useEffect(() => {
+  const loadTasks = useCallback(async () => {
     if (!isApiDataMode()) return;
-    let cancelled = false;
-    (async () => {
-      try {
-        const apiTasks = await fetchMvpTasksFromApi();
-        if (!cancelled) {
-          setTasks([...apiTasks].sort((a, b) => a.order - b.order));
-        }
-      } catch (err) {
-        console.warn('API task load failed; falling back to fixtures', err);
-        if (!cancelled) {
-          setTasks([...getMvpTasks()].sort((a, b) => a.order - b.order));
-        }
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
+    try {
+      const apiTasks = await fetchMvpTasksFromApi();
+      setTasks([...apiTasks].sort((a, b) => a.order - b.order));
+      setIsUsingFallback(false);
+    } catch (err) {
+      console.warn('API task load failed; falling back to fixtures', err);
+      setTasks([...getMvpTasks()].sort((a, b) => a.order - b.order));
+      setIsUsingFallback(true);
+    }
   }, []);
+
+  useEffect(() => {
+    if (isApiDataMode()) {
+      void loadTasks();
+    }
+  }, [loadTasks]);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -317,6 +316,17 @@ function TasksContent() {
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-6 p-6">
+          {isUsingFallback && (
+            <div className="flex items-center justify-between rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-900 dark:text-amber-200">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
+                <span>Showing demo data (live API task load failed).</span>
+              </div>
+              <Button size="sm" variant="outline" onClick={() => void loadTasks()} className="h-7 text-xs">
+                Retry API
+              </Button>
+            </div>
+          )}
           {/* Header */}
           <div className="flex items-center justify-between">
             <div>
