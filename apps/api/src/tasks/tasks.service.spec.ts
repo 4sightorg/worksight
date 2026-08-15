@@ -1,7 +1,4 @@
-import {
-  BadRequestException,
-  NotImplementedException,
-} from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 import { Activities, Assignments, type Assignment } from '@worksight/common';
 import type { WorksightRepository } from '../db/worksight.repository';
 import { TasksService } from './tasks.service';
@@ -44,16 +41,17 @@ describe('TasksService', () => {
     await expect(service.findAllActivities(employeeId)).resolves.toEqual(expected);
   });
 
-  it('refuses writes in fixture mode with a 501', async () => {
-    await expect(
-      service.create({
-        employee_id: '11111111-1111-4111-8111-111111111111',
-        type: 'bug',
-      })
-    ).rejects.toBeInstanceOf(NotImplementedException);
-    await expect(service.update('any-id', { status: 'completed' })).rejects.toBeInstanceOf(
-      NotImplementedException
-    );
+  it('supports writes in fixture mode in memory', async () => {
+    const created = await service.create({
+      employee_id: '11111111-1111-4111-8111-111111111111',
+      type: 'bug',
+    });
+    expect(created.employee_id).toBe('11111111-1111-4111-8111-111111111111');
+    expect(created.type).toBe('bug');
+
+    const updated = await service.update(created.id, { status: 'completed' });
+    expect(updated).not.toBeNull();
+    expect(updated?.status).toBe('completed');
   });
 });
 

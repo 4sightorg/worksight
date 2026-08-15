@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EmployeeLookup, EmployeeProfile, Team, TeamLookup, Teams } from '@worksight/common';
+import { paginate, PaginationQuery } from '../common/pagination.dto';
 import { WorksightRepository } from '../db/worksight.repository';
 
 @Injectable()
@@ -9,11 +10,9 @@ export class UsersService {
 
   constructor(private readonly repo: WorksightRepository) {}
 
-  async findAll(): Promise<EmployeeProfile[]> {
-    if (this.repo.enabled) {
-      return this.repo.listEmployees();
-    }
-    return this.employees.all();
+  async findAll(pagination?: PaginationQuery): Promise<EmployeeProfile[]> {
+    const list = this.repo.enabled ? await this.repo.listEmployees() : this.employees.all();
+    return paginate(list, pagination);
   }
 
   async findById(id: string): Promise<EmployeeProfile | null> {
@@ -31,11 +30,9 @@ export class UsersService {
     return this.employees.getStats();
   }
 
-  async findAllTeams(): Promise<Team[]> {
-    if (this.repo.enabled) {
-      return this.repo.listTeams();
-    }
-    return this.teams.all();
+  async findAllTeams(pagination?: PaginationQuery): Promise<Team[]> {
+    const list = this.repo.enabled ? await this.repo.listTeams() : this.teams.all();
+    return paginate(list, pagination);
   }
 
   async findTeamById(id: string): Promise<Team | null> {

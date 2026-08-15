@@ -20,6 +20,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import type { Activity, Assignment } from '@worksight/common';
+import { parsePaginationParams } from '../common/pagination.dto';
+import { ParseOptionalUUIDPipe } from '../common/parse-optional-uuid.pipe';
 import { ActivityDto, AssignmentDto, TaskStatsDto } from '../openapi/schemas';
 import { TasksService } from './tasks.service';
 
@@ -36,9 +38,15 @@ export class TasksController {
     format: 'uuid',
     description: 'When set, only assignments for this employee',
   })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Limit count' })
+  @ApiQuery({ name: 'offset', required: false, type: Number, description: 'Offset count' })
   @ApiOkResponse({ type: AssignmentDto, isArray: true })
-  getAll(@Query('employee_id') employeeId?: string): Promise<Assignment[]> {
-    return this.tasksService.findAll(employeeId);
+  getAll(
+    @Query('employee_id', ParseOptionalUUIDPipe) employeeId?: string,
+    @Query('limit') limit?: string,
+    @Query('offset') offset?: string
+  ): Promise<Assignment[]> {
+    return this.tasksService.findAll(employeeId, parsePaginationParams(limit, offset));
   }
 
   @Get('stats/:employeeId')
@@ -55,8 +63,7 @@ export class TasksController {
   @Post()
   @ApiOperation({
     summary: 'Create an assignment',
-    description:
-      'Requires `DATABASE_URL`. Returns 501 in fixture mode. Timestamps are server-owned.',
+    description: 'Persists a new assignment (works in Postgres and fixture modes). Timestamps are server-owned.',
   })
   @ApiBody({ type: AssignmentDto })
   @ApiCreatedResponse({ type: AssignmentDto })
@@ -81,7 +88,7 @@ export class TasksController {
   @ApiOperation({
     summary: 'Partial update an assignment',
     description:
-      'Patch `status`, `priority`, `title`, and/or `points`. Requires `DATABASE_URL` (501 otherwise).',
+      'Patch `status`, `priority`, `title`, and/or `points`. Works in Postgres and fixture modes.',
   })
   @ApiParam({ name: 'id', format: 'uuid' })
   @ApiOkResponse({ type: AssignmentDto })
@@ -111,8 +118,14 @@ export class ActivitiesController {
     format: 'uuid',
     description: 'When set, only activities for this employee',
   })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Limit count' })
+  @ApiQuery({ name: 'offset', required: false, type: Number, description: 'Offset count' })
   @ApiOkResponse({ type: ActivityDto, isArray: true })
-  getAll(@Query('employee_id') employeeId?: string): Promise<Activity[]> {
-    return this.tasksService.findAllActivities(employeeId);
+  getAll(
+    @Query('employee_id', ParseOptionalUUIDPipe) employeeId?: string,
+    @Query('limit') limit?: string,
+    @Query('offset') offset?: string
+  ): Promise<Activity[]> {
+    return this.tasksService.findAllActivities(employeeId, parsePaginationParams(limit, offset));
   }
 }
