@@ -3,12 +3,25 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import express, { type Express, type Request, type Response } from 'express';
+import helmet from 'helmet';
 import { AppModule } from './app.module';
+import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 
 export type BootstrappedApp = {
   app: INestApplication;
   server: Express;
+  corsOrigins: string[];
 };
+
+export function getCorsOrigins(): string[] {
+  const defaultCors = process.env.VERCEL
+    ? 'https://worksight-web.vercel.app,http://localhost:3000'
+    : 'http://localhost:3000';
+  return (process.env.CORS_ORIGINS ?? defaultCors)
+    .split(',')
+    .map(origin => origin.trim())
+    .filter(Boolean);
+}
 
 /**
  * Shared Nest bootstrap for local (`main.ts`) and Vercel (`api/index.ts`).
@@ -21,19 +34,16 @@ export async function createApp(): Promise<BootstrappedApp> {
     logger: ['error', 'warn', 'log'],
   });
 
+  app.use(helmet({ contentSecurityPolicy: false }));
+
   // Local demo: localhost:3000. Vercel: worksight-web (+ local for mixed testing).
-  const defaultCors = process.env.VERCEL
-    ? 'https://worksight-web.vercel.app,http://localhost:3000'
-    : 'http://localhost:3000';
-  const corsOrigins = (process.env.CORS_ORIGINS ?? defaultCors)
-    .split(',')
-    .map(origin => origin.trim())
-    .filter(Boolean);
+  const corsOrigins = getCorsOrigins();
 
   app.enableCors({
     origin: corsOrigins,
     methods: ['GET', 'HEAD', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE'],
   });
+  app.useGlobalFilters(new GlobalExceptionFilter());
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   setupApiDocs(app, server);
@@ -47,7 +57,7 @@ export async function createApp(): Promise<BootstrappedApp> {
     logger.log('Data source: @worksight/common fixtures (set DATABASE_URL to use Postgres).');
   }
 
-  return { app, server };
+  return { app, server, corsOrigins };
 }
 
 /**

@@ -1,5 +1,6 @@
 import { Controller, Get, Header } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiProduces, ApiTags } from '@nestjs/swagger';
+import { Public } from './auth/public.decorator';
 import { DatabaseService } from './db/database.service';
 import { HealthDto } from './openapi/schemas';
 
@@ -8,6 +9,7 @@ import { HealthDto } from './openapi/schemas';
 export class AppController {
   constructor(private readonly db: DatabaseService) {}
 
+  @Public()
   @Get('ping')
   @Header('Content-Type', 'text/plain')
   @ApiOperation({ summary: 'Liveness probe', description: 'Returns plain-text `pong`.' })
@@ -17,6 +19,7 @@ export class AppController {
     return `pong`;
   }
 
+  @Public()
   @Get('health')
   @ApiOperation({
     summary: 'Readiness / data-source check',
