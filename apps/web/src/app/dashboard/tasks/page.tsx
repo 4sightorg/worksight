@@ -261,6 +261,7 @@ export default function TasksPage() {
                 aria-label="Tasks sub navigation"
                 items={[
                   { label: 'Tasks', href: '/dashboard/tasks', badge: tasks.length },
+                  { label: 'Attendance', href: '/dashboard/attendance' },
                   { label: 'Reports', href: '/dashboard/reports', soon: true },
                   { label: 'Wellness', href: '/dashboard/wellness' },
                 ]}

@@ -10,6 +10,7 @@ import {
     Activity,
     BarChart3,
     CheckSquare,
+    Clock,
     FileText,
     Info,
     Settings,
@@ -41,6 +42,12 @@ const sidebarItems = [
     href: '/dashboard/tasks',
     icon: CheckSquare,
     description: 'Your assigned tasks and progress',
+  },
+  {
+    name: 'Attendance',
+    href: '/dashboard/attendance',
+    icon: Clock,
+    description: 'Work hours and check-in history',
   },
   {
     name: 'Wellness',
@@ -121,21 +128,21 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         return sidebarItems.filter((item) => ['Wellness', 'Settings'].includes(item.name));
 
       case 'employee':
-        // Employees see overview, tasks, wellness, and settings
+        // Employees see overview, tasks, attendance, wellness, and settings
         return sidebarItems.filter((item) =>
-          ['Overview', 'My Tasks', 'Wellness', 'Settings'].includes(item.name)
+          ['Overview', 'My Tasks', 'Attendance', 'Wellness', 'Settings'].includes(item.name)
         );
 
       case 'manager':
         // Managers see everything except wellness (they manage reports instead)
         return sidebarItems.filter((item) =>
-          ['Overview', 'My Tasks', 'Reports', 'Settings'].includes(item.name)
+          ['Overview', 'My Tasks', 'Attendance', 'Reports', 'Settings'].includes(item.name)
         );
 
       case 'exec':
-        // Executives see overview, reports, and settings (high-level view)
+        // Executives see overview, attendance, reports, and settings (high-level view)
         return sidebarItems.filter((item) =>
-          ['Overview', 'Reports', 'Settings'].includes(item.name)
+          ['Overview', 'Attendance', 'Reports', 'Settings'].includes(item.name)
         );
 
       default:
