@@ -1,9 +1,8 @@
 import {
   BadRequestException,
   Injectable,
-  NotImplementedException,
 } from '@nestjs/common';
-import { Activity, ActivityLookup, Assignment, AssignmentLookup } from '@worksight/common';
+import { Activity, ActivityLookup, Assignment, AssignmentLookup, Assignments } from '@worksight/common';
 import { randomUUID } from 'node:crypto';
 import {
   AssignmentPatch,
@@ -14,7 +13,8 @@ import { parseCreateAssignment, parseUpdateAssignment } from './task-write.dto';
 
 @Injectable()
 export class TasksService {
-  private readonly assignments = new AssignmentLookup();
+  // In fixture mode, task modifications live in memory for the offline demo.
+  private readonly inMemoryAssignments: Assignment[] = [...Assignments];
   private readonly activities = new ActivityLookup();
 
   constructor(private readonly repo: WorksightRepository) {}
@@ -24,16 +24,16 @@ export class TasksService {
       return this.repo.listAssignments(employeeId);
     }
     if (employeeId) {
-      return this.assignments.getAssignmentsByEmployee(employeeId).all();
+      return this.inMemoryAssignments.filter(a => a.employee_id === employeeId);
     }
-    return this.assignments.all();
+    return [...this.inMemoryAssignments];
   }
 
   async findById(id: string): Promise<Assignment | null> {
     if (this.repo.enabled) {
       return this.repo.getAssignment(id);
     }
-    return this.assignments.filter({ id }).first();
+    return this.inMemoryAssignments.find(a => a.id === id) ?? null;
   }
 
   async getStatsForEmployee(employeeId: string): Promise<ReturnType<AssignmentLookup['getStats']>> {
@@ -44,7 +44,7 @@ export class TasksService {
       ]);
       return new AssignmentLookup(assignments).getStats(employeeId, activities);
     }
-    return this.assignments.getStats(employeeId);
+    return new AssignmentLookup(this.inMemoryAssignments).getStats(employeeId);
   }
 
   async findAllActivities(employeeId?: string): Promise<Activity[]> {
@@ -57,13 +57,31 @@ export class TasksService {
     return this.activities.all();
   }
 
-  /** `POST /tasks` — persist a new assignment (Postgres only). */
+  /** `POST /tasks` — persist a new assignment. */
   async create(body: unknown): Promise<Assignment> {
-    this.requireWritableBackend();
     const input = parseCreateAssignment(body);
+    const id = input.id ?? randomUUID();
 
-    const row: NewAssignmentInput = {
-      id: input.id ?? randomUUID(),
+    if (this.repo.enabled) {
+      const row: NewAssignmentInput = {
+        id,
+        employee_id: input.employee_id,
+        source_id: input.source_id ?? null,
+        external_id: input.external_id ?? null,
+        type: input.type,
+        title: input.title ?? null,
+        status: input.status,
+        sprint: input.sprint ?? null,
+        epic: input.epic ?? null,
+        points: input.points ?? null,
+        priority: input.priority,
+      };
+      return this.repo.createAssignment(row);
+    }
+
+    const now = new Date();
+    const created: Assignment = {
+      id,
       employee_id: input.employee_id,
       source_id: input.source_id ?? null,
       external_id: input.external_id ?? null,
@@ -74,13 +92,15 @@ export class TasksService {
       epic: input.epic ?? null,
       points: input.points ?? null,
       priority: input.priority,
+      created_at: now,
+      updated_at: now,
     };
-    return this.repo.createAssignment(row);
+    this.inMemoryAssignments.unshift(created);
+    return created;
   }
 
   /** `PATCH /tasks/:id` — returns `null` when the id does not exist. */
   async update(id: string, body: unknown): Promise<Assignment | null> {
-    this.requireWritableBackend();
     const input = parseUpdateAssignment(body);
 
     const patch: AssignmentPatch = {};
@@ -94,19 +114,35 @@ export class TasksService {
         'PATCH body must set at least one of: status, priority, title, points'
       );
     }
-    return this.repo.updateAssignment(id, patch);
+
+    if (this.repo.enabled) {
+      return this.repo.updateAssignment(id, patch);
+    }
+
+    const index = this.inMemoryAssignments.findIndex(a => a.id === id);
+    if (index === -1) return null;
+
+    const existing = this.inMemoryAssignments[index];
+    const updated: Assignment = {
+      ...existing,
+      ...(patch.status !== undefined && { status: patch.status }),
+      ...(patch.priority !== undefined && { priority: patch.priority }),
+      ...(patch.title !== undefined && { title: patch.title }),
+      ...(patch.points !== undefined && { points: patch.points }),
+      updated_at: new Date(),
+    };
+    this.inMemoryAssignments[index] = updated;
+    return updated;
   }
 
-  /**
-   * Writes need Postgres. Fixture mode is read-only — fail with 501 so clients
-   * do not think a mutation stuck.
-   */
-  private requireWritableBackend(): void {
-    if (!this.repo.enabled) {
-      throw new NotImplementedException(
-        'Task writes require a database backend. Set DATABASE_URL to enable ' +
-          'POST /tasks and PATCH /tasks/:id; fixture mode is read-only.'
-      );
+  /** `DELETE /tasks/:id` — returns false when the assignment is not found. */
+  async delete(id: string): Promise<boolean> {
+    if (this.repo.enabled) {
+      return this.repo.deleteAssignment(id);
     }
+    const index = this.inMemoryAssignments.findIndex(a => a.id === id);
+    if (index === -1) return false;
+    this.inMemoryAssignments.splice(index, 1);
+    return true;
   }
 }
