@@ -18,13 +18,28 @@ export class SurveysService {
   // Fixture-mode submissions live in memory for the offline demo.
   private readonly submissions: SurveyResponseMetadata[] = [...SurveyResponseList];
 
+  private readonly customSurveys: Survey[] = [];
+
   constructor(private readonly repo: WorksightRepository) {}
 
   async findAll(): Promise<Survey[]> {
     if (this.repo.enabled) {
       return this.repo.listSurveys();
     }
-    return this.surveys.all();
+    return [...this.surveys.all(), ...this.customSurveys];
+  }
+
+  async create(body: { created_by?: string; num_questions?: number }): Promise<Survey> {
+    const survey: Survey = {
+      id: randomUUID(),
+      created_by: body?.created_by || randomUUID(),
+      created_at: new Date(),
+      num_questions: body?.num_questions ?? 0,
+    };
+    if (!this.repo.enabled) {
+      this.customSurveys.push(survey);
+    }
+    return survey;
   }
 
   async findQuestions(surveyId: string): Promise<SurveyQuestion[]> {

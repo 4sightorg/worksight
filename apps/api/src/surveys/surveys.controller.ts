@@ -46,6 +46,15 @@ export class SurveysController {
     return this.surveysService.findAll();
   }
 
+  @Post()
+  @HttpCode(201)
+  @ApiOperation({ summary: 'Create a survey template' })
+  @ApiBody({ type: SurveyDto })
+  @ApiCreatedResponse({ type: SurveyDto })
+  create(@Body() body: { created_by?: string; num_questions?: number }): Promise<Survey> {
+    return this.surveysService.create(body);
+  }
+
   @Get('responses')
   @ApiOperation({ summary: 'List survey submissions' })
   @ApiQuery({

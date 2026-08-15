@@ -104,6 +104,26 @@ async function apiSend<T>(
   return response.json() as Promise<T>;
 }
 
+async function apiDelete<T>(path: string, signal?: AbortSignal): Promise<T> {
+  const url = `${getApiBaseUrl()}${path.startsWith('/') ? path : `/${path}`}`;
+  const response = await fetch(url, {
+    method: 'DELETE',
+    headers: { Accept: 'application/json' },
+    cache: 'no-store',
+    signal,
+  });
+  if (!response.ok) {
+    const detail = await response.text().catch(() => '');
+    throw new Error(
+      `API DELETE ${path} failed: ${response.status} ${response.statusText}${detail ? ` — ${detail.slice(0, 200)}` : ''}`
+    );
+  }
+  if (response.status === 204) {
+    return undefined as T;
+  }
+  return response.json() as Promise<T>;
+}
+
 /** Which store the API is reading from (Postgres vs fixtures). */
 export type ApiDataBackend = 'postgres' | 'fixtures';
 
@@ -192,6 +212,10 @@ export const worksightApi = {
   getHealth: (timeoutMs = 5000) => apiGet<ApiHealth>('/health', timeoutSignal(timeoutMs)),
   getUsers: () => apiGet<ApiEmployee[]>('/users'),
   getUserStats: () => apiGet<ApiEmployeeStats>('/users/stats'),
+  createUser: (body: Partial<ApiEmployee>) => apiSend<ApiEmployee>('POST', '/users', body),
+  patchUser: (id: string, body: Partial<ApiEmployee>) =>
+    apiSend<ApiEmployee>('PATCH', `/users/${encodeURIComponent(id)}`, body),
+  deleteUser: (id: string) => apiDelete<void>(`/users/${encodeURIComponent(id)}`),
   getTeams: () => apiGet<ApiTeam[]>('/teams'),
   getTasks: (employeeId?: string) =>
     apiGet<ApiAssignment[]>(
@@ -207,6 +231,8 @@ export const worksightApi = {
   patchTask: (id: string, body: PatchTaskInput) =>
     apiSend<ApiAssignment>('PATCH', `/tasks/${encodeURIComponent(id)}`, body),
   getSurveys: () => apiGet<ApiSurvey[]>('/surveys'),
+  createSurvey: (body: { created_by?: string; num_questions?: number }) =>
+    apiSend<ApiSurvey>('POST', '/surveys', body),
   getSurveyQuestions: (surveyId: string) =>
     apiGet<ApiSurveyQuestion[]>(`/surveys/${encodeURIComponent(surveyId)}/questions`),
   getSurveySubmissions: (employeeId?: string) =>
