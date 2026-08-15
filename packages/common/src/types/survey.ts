@@ -70,6 +70,7 @@ export const SurveyResponseMetadataSchema = z.object({
   employee_id: z.uuid(),
   submitted_at: z.date(),
   avg_score: z.number().nullable(),
+  dimensions: z.record(z.string(), z.number()).optional(),
 });
 
 /** ----------------------------- */
@@ -179,6 +180,29 @@ export const SurveyResponseStatsSchema = z.object({
 /** Type Inference                */
 /** ----------------------------- */
 
+export const CreateSurveySchema = z.object({
+  created_by: z.string().uuid().optional(),
+  questions: z
+    .array(
+      z.object({
+        id: z.number().int().optional(),
+        question_text: z.string(),
+        question_subtext: z.string().optional(),
+        dimension: z.union([z.string(), z.array(z.string())]).optional(),
+        type: SurveyQuestionTypeSchema.optional(),
+        required: z.boolean().optional(),
+        options: z.array(z.string()).optional(),
+        reverseScore: z.boolean().optional(),
+        min_value: z.number().optional(),
+        min_label: z.string().optional(),
+        max_value: z.number().optional(),
+        max_label: z.string().optional(),
+        defaultValue: z.union([z.string(), z.number()]).optional(),
+      })
+    )
+    .optional(),
+});
+
 export type Survey = z.infer<typeof SurveySchema>;
 export type SurveyStats = z.infer<typeof SurveyStatsSchema>;
 export type SurveyQuestion = z.infer<typeof SurveyQuestionSchema>;
@@ -186,6 +210,7 @@ export type SurveyQuestionType = z.infer<typeof SurveyQuestionTypeSchema>;
 export type SurveyQuestionStats = z.infer<typeof SurveyQuestionStatsSchema>;
 export type SurveyResponse = z.infer<typeof SurveyResponseSchema>;
 export type SurveySubmission = z.infer<typeof SurveySubmissionSchema>;
+export type CreateSurveyInput = z.infer<typeof CreateSurveySchema>;
 export type SurveyResponseStats = z.infer<typeof SurveyResponseStatsSchema>;
 export type SurveyResponseMetadata = z.infer<typeof SurveyResponseMetadataSchema>;
 export type SurveyResponseMetadataStats = z.infer<typeof SurveyResponseMetadataStatsSchema>;

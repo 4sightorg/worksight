@@ -352,6 +352,9 @@ export class SurveyResponseMetadataDto {
 
   @ApiPropertyOptional({ nullable: true, description: 'Mean of numeric answers (2 dp), or null' })
   avg_score!: number | null;
+
+  @ApiPropertyOptional({ description: 'Average score breakdown per dimension' })
+  dimensions?: Record<string, number>;
 }
 
 export class SurveyAnswerDto {
@@ -372,3 +375,12 @@ export class SurveySubmissionDto {
   @ApiProperty({ type: [SurveyAnswerDto], minItems: 1 })
   answers!: SurveyAnswerDto[];
 }
+
+export class CreateSurveyDto {
+  @ApiPropertyOptional({ format: 'uuid', description: 'Creator employee id' })
+  created_by?: string;
+
+  @ApiPropertyOptional({ type: [SurveyQuestionDto], description: 'Survey questions' })
+  questions?: SurveyQuestionDto[];
+}
+

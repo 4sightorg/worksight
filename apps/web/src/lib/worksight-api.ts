@@ -221,6 +221,8 @@ export const worksightApi = {
       `/surveys/${encodeURIComponent(surveyId)}/responses`,
       body
     ),
+  createSurvey: (body: { created_by?: string; questions?: Partial<ApiSurveyQuestion>[] }) =>
+    apiSend<ApiSurvey>('POST', '/surveys', body),
 };
 
 export function toDate(value: string | Date): Date {
