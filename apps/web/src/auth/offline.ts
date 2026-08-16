@@ -1,4 +1,5 @@
 import { Employees } from '@/data/employees';
+import { AUTH_CONFIG } from './identity';
 import { User } from './types';
 
 // Check if app is in offline mode
@@ -46,9 +47,33 @@ export const offlineLogin = async (
   email: string,
   password: string
 ): Promise<{ user: User | null; error: string | null }> => {
-  // Always accept "testuser" as password in offline mode
-  if (password !== 'testuser') {
+  const isValidPassword =
+    password === 'testuser' ||
+    (email === 'admin@worksight.app' && password === 'admin123') ||
+    (email === 'manager@worksight.app' && password === 'manager123');
+
+  if (!isValidPassword) {
     return { user: null, error: 'Invalid credentials' };
+  }
+
+  // Check unified AUTH_CONFIG accounts first
+  if (email === AUTH_CONFIG.EMPLOYEE.email || email === 'test' || email === 'testuser') {
+    return {
+      user: { ...AUTH_CONFIG.EMPLOYEE, lastLogin: new Date().toISOString() } as User,
+      error: null,
+    };
+  }
+  if (email === AUTH_CONFIG.ADMIN.email || email === 'admin@worksight.com') {
+    return {
+      user: { ...AUTH_CONFIG.ADMIN, lastLogin: new Date().toISOString() } as User,
+      error: null,
+    };
+  }
+  if (email === AUTH_CONFIG.MANAGER.email) {
+    return {
+      user: { ...AUTH_CONFIG.MANAGER, lastLogin: new Date().toISOString() } as User,
+      error: null,
+    };
   }
 
   // Check in employees data
@@ -62,11 +87,10 @@ export const offlineLogin = async (
 
   // Check test accounts
   const testAccounts = [
-    { email: 'admin@worksight.com', name: 'System Admin', role: 'admin' as const },
     { email: 'guest@worksight.com', name: 'Guest User', role: 'guest' as const },
   ];
 
-  const testAccount = testAccounts.find((acc) => acc.email === email);
+  const testAccount = testAccounts.find(acc => acc.email === email);
   if (testAccount) {
     const user: User = {
       id: `test-${testAccount.role}`,
@@ -82,12 +106,12 @@ export const offlineLogin = async (
 
 // Get available offline users (for development convenience)
 export const getOfflineUsers = () => {
-  return Object.values(Employees).map((employee) => ({
+  return Object.values(Employees).map(employee => ({
     email: employee.email,
     name: employee.name,
     role: employee.manager_id === '' ? 'exec' : 'employee',
     department: employee.department,
-    id: Object.keys(Employees).find((key) => Employees[key] === employee),
+    id: Object.keys(Employees).find(key => Employees[key] === employee),
   }));
 };
 

@@ -20,7 +20,8 @@ function getSupabaseClient(): SupabaseClient | null {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
   const isBuild =
-    process.env.NEXT_PHASE === 'phase-production-build' || process.env.npm_lifecycle_event === 'build';
+    process.env.NEXT_PHASE === 'phase-production-build' ||
+    process.env.npm_lifecycle_event === 'build';
 
   if (!url || !key) {
     if (isBuild || process.env.NODE_ENV === 'production') {
@@ -115,7 +116,7 @@ export async function signIn(
   }
 
   // Admin test credentials
-  if (email === 'admin@worksight.app' && password === 'admin123') {
+  if (email === 'admin@worksight.app' && (password === 'admin123' || password === 'testuser')) {
     const user = {
       ...AUTH_CONFIG.ADMIN,
       lastLogin: new Date().toISOString(),
@@ -127,7 +128,7 @@ export async function signIn(
   }
 
   // Manager test credentials
-  if (email === 'manager@worksight.app' && password === 'manager123') {
+  if (email === 'manager@worksight.app' && (password === 'manager123' || password === 'testuser')) {
     const user = {
       ...AUTH_CONFIG.MANAGER,
       lastLogin: new Date().toISOString(),
@@ -420,3 +421,28 @@ export const extendSession = (): boolean => {
   storeSession(storedSession.user, storedSession.accessToken, storedSession.saveLogin);
   return true;
 };
+
+// Reset password with Supabase
+export async function resetPassword(email: string): Promise<{ error: { message: string } | null }> {
+  if (isOffline()) {
+    return { error: { message: 'Password reset is not available in offline mode' } };
+  }
+
+  const supabase = getSupabaseClient();
+  if (supabase) {
+    try {
+      const redirectUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/auth/callback`;
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: redirectUrl,
+      });
+      if (error) {
+        return { error: { message: error.message } };
+      }
+      return { error: null };
+    } catch (err) {
+      return { error: { message: err instanceof Error ? err.message : 'Password reset failed' } };
+    }
+  }
+
+  return { error: { message: 'Authentication service unavailable' } };
+}
