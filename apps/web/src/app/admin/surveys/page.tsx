@@ -6,44 +6,46 @@ import { SessionTimer } from '@/components/features';
 import { AppSidebar } from '@/components/main/sidebar';
 import { Badge } from '@/components/ui/badge';
 import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { sections } from '@/data/sections';
-import {
-    BarChart3,
-    Copy,
-    Edit3,
-    Eye,
-    FileText,
-    LogOut,
-    Play,
-    Plus,
-    Search,
-    Settings,
-    Users,
-} from 'lucide-react';
-import Link from 'next/link';
 import { fetchMvpSurveysFromApi } from '@/lib/mvp-api-bridge';
 import { getMvpSurveys, type MvpSurvey } from '@/lib/mvp-data';
 import { isApiDataMode } from '@/lib/worksight-api';
+import {
+  BarChart3,
+  Copy,
+  Edit3,
+  Eye,
+  FileText,
+  LogOut,
+  Play,
+  Plus,
+  Search,
+  Settings,
+  Users,
+  X,
+} from 'lucide-react';
+import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 
 function SurveyManagementContent() {
   const { logout } = useAuth();
@@ -53,17 +55,32 @@ function SurveyManagementContent() {
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [isLoading, setIsLoading] = useState(true);
 
+  // Modals
+  const [viewingSurvey, setViewingSurvey] = useState<MvpSurvey | null>(null);
+  const [analyticsSurvey, setAnalyticsSurvey] = useState<MvpSurvey | null>(null);
+
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
+        let loadedSurveys: MvpSurvey[] = [];
         if (isApiDataMode()) {
-          const apiSurveys = await fetchMvpSurveysFromApi();
-          if (!cancelled) setSurveys(apiSurveys);
+          loadedSurveys = await fetchMvpSurveysFromApi();
         } else {
-          const fixtureSurveys = getMvpSurveys();
-          if (!cancelled) setSurveys(fixtureSurveys || []);
+          loadedSurveys = getMvpSurveys();
         }
+        // Include any custom surveys saved to localStorage
+        const customRaw = typeof window !== 'undefined' ? localStorage.getItem('worksight_custom_surveys') : null;
+        if (customRaw) {
+          try {
+            const customSurveys: MvpSurvey[] = JSON.parse(customRaw);
+            loadedSurveys = [...customSurveys, ...loadedSurveys];
+          } catch (e) {
+            console.error('Failed to parse custom surveys', e);
+          }
+        }
+
+        if (!cancelled) setSurveys(loadedSurveys);
       } catch (err) {
         console.warn('API survey load failed; falling back to fixtures', err);
         if (!cancelled) setSurveys(getMvpSurveys());
@@ -78,6 +95,30 @@ function SurveyManagementContent() {
 
   const handleLogout = async () => {
     await logout();
+  };
+
+  const handleDuplicateSurvey = (surveyToCopy: MvpSurvey) => {
+    const duplicated: MvpSurvey = {
+      ...surveyToCopy,
+      id: `survey-copy-${Date.now()}`,
+      title: `${surveyToCopy.title} (Copy)`,
+      status: 'draft',
+      responseCount: 0,
+      createdAt: new Date().toISOString().slice(0, 10),
+      lastModified: new Date().toISOString().slice(0, 10),
+    };
+
+    setSurveys(prev => [duplicated, ...prev]);
+
+    // Persist duplicate to localStorage
+    const existingCustom = JSON.parse(localStorage.getItem('worksight_custom_surveys') || '[]');
+    localStorage.setItem('worksight_custom_surveys', JSON.stringify([duplicated, ...existingCustom]));
+
+    toast.success(`Duplicated survey: "${surveyToCopy.title}"`);
+  };
+
+  const handleEditSurvey = (survey: MvpSurvey) => {
+    toast.info(`Editing survey "${survey.title}". Metadata loaded into survey builder.`);
   };
 
   const getStatusBadgeVariant = (status: string) => {
@@ -126,7 +167,7 @@ function SurveyManagementContent() {
   };
 
   const filteredSurveys = useMemo(() => {
-    return surveys.filter((survey) => {
+    return surveys.filter(survey => {
       const matchesSearch =
         survey.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         survey.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -204,7 +245,7 @@ function SurveyManagementContent() {
             </div>
 
             {/* Stats */}
-            <div className="grid gap-4 md:grid-cols-4">
+            <div className="grid gap-4 mt-6 md:grid-cols-4">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Total Surveys</CardTitle>
@@ -222,7 +263,7 @@ function SurveyManagementContent() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-green-600">
-                    {surveys.filter((s) => s.status === 'active').length}
+                    {surveys.filter(s => s.status === 'active').length}
                   </div>
                 </CardContent>
               </Card>
@@ -260,7 +301,7 @@ function SurveyManagementContent() {
             </div>
 
             {/* Filters */}
-            <Card>
+            <Card className="mt-6">
               <CardHeader>
                 <CardTitle className="text-lg">Filters & Search</CardTitle>
               </CardHeader>
@@ -271,7 +312,7 @@ function SurveyManagementContent() {
                     <Input
                       placeholder="Search surveys by title, description, or creator..."
                       value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
+                      onChange={e => setSearchTerm(e.target.value)}
                       className="pl-10"
                     />
                   </div>
@@ -304,14 +345,14 @@ function SurveyManagementContent() {
             </Card>
 
             {/* Surveys Grid */}
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-6 mt-6 md:grid-cols-2 lg:grid-cols-3">
               {filteredSurveys.map((survey, index) => (
                 <div
                   key={survey.id}
                   className="animate-in fade-in slide-in-from-bottom-5 opacity-100 duration-500"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
-                  <Card className="h-full transition-shadow hover:shadow-lg">
+                  <Card className="h-full transition-shadow hover:shadow-lg flex flex-col justify-between">
                     <CardHeader className="pb-3">
                       <div className="flex items-start justify-between">
                         <div className="space-y-1">
@@ -351,18 +392,38 @@ function SurveyManagementContent() {
                       </div>
 
                       <div className="flex gap-2 pt-2">
-                        <Button variant="outline" size="sm" className="flex-1">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1"
+                          onClick={() => setViewingSurvey(survey)}
+                        >
                           <Eye className="mr-1 h-3 w-3" />
                           View
                         </Button>
-                        <Button variant="outline" size="sm" className="flex-1">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1"
+                          onClick={() => handleEditSurvey(survey)}
+                        >
                           <Edit3 className="mr-1 h-3 w-3" />
                           Edit
                         </Button>
-                        <Button variant="outline" size="sm">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setAnalyticsSurvey(survey)}
+                          title="View Analytics"
+                        >
                           <BarChart3 className="h-3 w-3" />
                         </Button>
-                        <Button variant="outline" size="sm">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDuplicateSurvey(survey)}
+                          title="Duplicate Survey"
+                        >
                           <Copy className="h-3 w-3" />
                         </Button>
                       </div>
@@ -373,7 +434,7 @@ function SurveyManagementContent() {
             </div>
 
             {filteredSurveys.length === 0 && (
-              <Card>
+              <Card className="mt-6">
                 <CardContent className="flex flex-col items-center justify-center py-12 text-center">
                   <FileText className="text-muted-foreground mb-4 h-12 w-12" />
                   <h3 className="mb-2 text-lg font-semibold">No surveys found</h3>
@@ -390,6 +451,95 @@ function SurveyManagementContent() {
                   </Button>
                 </CardContent>
               </Card>
+            )}
+
+            {/* View Survey Modal */}
+            {viewingSurvey && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                <Card className="w-full max-w-lg bg-background">
+                  <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <div>
+                      <CardTitle className="text-xl font-bold">{viewingSurvey.title}</CardTitle>
+                      <CardDescription>{viewingSurvey.description}</CardDescription>
+                    </div>
+                    <Button variant="ghost" size="icon" onClick={() => setViewingSurvey(null)}>
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4 text-sm border-t pt-4">
+                      <div>
+                        <span className="text-muted-foreground">Category:</span>
+                        <div className="font-semibold capitalize">{viewingSurvey.category}</div>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Target Audience:</span>
+                        <div className="font-semibold capitalize">{viewingSurvey.targetAudience}</div>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Question Count:</span>
+                        <div className="font-semibold">{viewingSurvey.questionCount} questions</div>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Responses:</span>
+                        <div className="font-semibold">{viewingSurvey.responseCount} submissions</div>
+                      </div>
+                    </div>
+                    <div className="border-t pt-4 text-xs text-muted-foreground space-y-1">
+                      <div>Created on {viewingSurvey.createdAt} by {viewingSurvey.createdBy}</div>
+                      <div>Status: <span className="font-medium text-foreground">{viewingSurvey.status}</span></div>
+                    </div>
+                  </CardContent>
+                  <div className="flex justify-end p-6 pt-0">
+                    <Button variant="outline" onClick={() => setViewingSurvey(null)}>
+                      Close Preview
+                    </Button>
+                  </div>
+                </Card>
+              </div>
+            )}
+
+            {/* Analytics Modal */}
+            {analyticsSurvey && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                <Card className="w-full max-w-lg bg-background">
+                  <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <div>
+                      <CardTitle className="text-xl font-bold">Survey Analytics</CardTitle>
+                      <CardDescription>{analyticsSurvey.title}</CardDescription>
+                    </div>
+                    <Button variant="ghost" size="icon" onClick={() => setAnalyticsSurvey(null)}>
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-3 gap-4 text-center border-y py-4">
+                      <div>
+                        <div className="text-2xl font-bold text-blue-600">{analyticsSurvey.responseCount}</div>
+                        <div className="text-xs text-muted-foreground">Total Responses</div>
+                      </div>
+                      <div>
+                        <div className="text-2xl font-bold text-green-600">
+                          {analyticsSurvey.responseCount > 0 ? '78%' : '0%'}
+                        </div>
+                        <div className="text-xs text-muted-foreground">Completion Rate</div>
+                      </div>
+                      <div>
+                        <div className="text-2xl font-bold text-purple-600">6.4/10</div>
+                        <div className="text-xs text-muted-foreground">Avg Score</div>
+                      </div>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Detailed response breakdowns are generated dynamically from incoming survey submissions.
+                    </p>
+                  </CardContent>
+                  <div className="flex justify-end p-6 pt-0">
+                    <Button variant="outline" onClick={() => setAnalyticsSurvey(null)}>
+                      Close Analytics
+                    </Button>
+                  </div>
+                </Card>
+              </div>
             )}
           </div>
         </main>

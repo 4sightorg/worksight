@@ -34,6 +34,9 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { fetchMvpSurveysFromApi, fetchUsersWithMetricsFromApi } from '@/lib/mvp-api-bridge';
+import { getMvpSurveys, getUsersWithMetrics } from '@/lib/mvp-data';
+import { isApiDataMode } from '@/lib/worksight-api';
 
 interface AdminStats {
   totalUsers: number;
@@ -66,18 +69,47 @@ function AdminDashboardContent() {
   }, []);
 
   useEffect(() => {
-    // Simulate fetching admin stats
-    // In production, this would be an API call
-    const mockStats: AdminStats = {
-      totalUsers: 247,
-      activeSurveys: 12,
-      completedSurveys: 1,
-      avgBurnoutScore: 6.2,
-      highRiskUsers: 23,
-      recentActivity: 45,
-    };
+    let cancelled = false;
+    (async () => {
+      try {
+        let rawUsers = [];
+        if (isApiDataMode()) {
+          rawUsers = await fetchUsersWithMetricsFromApi().catch(() => getUsersWithMetrics());
+        } else {
+          rawUsers = getUsersWithMetrics();
+        }
+        let rawSurveys = [];
+        if (isApiDataMode()) {
+          rawSurveys = await fetchMvpSurveysFromApi().catch(() => getMvpSurveys());
+        } else {
+          rawSurveys = getMvpSurveys();
+        }
 
-    setTimeout(() => setStats(mockStats), 500);
+        const activeSurveys = rawSurveys.filter((s) => s.status === 'active').length;
+        const completedSurveys = rawSurveys.reduce((sum, s) => sum + s.responseCount, 0);
+        const highRisk = rawUsers.filter((u) => u.riskLevel === 'high').length;
+        const avgBurnout =
+          rawUsers.length > 0
+            ? Math.round((rawUsers.reduce((sum, u) => sum + u.burnoutScore, 0) / rawUsers.length) * 10) / 10
+            : 0;
+
+        if (!cancelled) {
+          setStats({
+            totalUsers: rawUsers.length,
+            activeSurveys,
+            completedSurveys,
+            avgBurnoutScore: avgBurnout,
+            highRiskUsers: highRisk,
+            recentActivity: rawUsers.filter((u) => u.tasksCompleted > 0).length,
+          });
+        }
+      } catch (err) {
+        console.warn('Admin stats fetch error', err);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const handleLogout = async () => {

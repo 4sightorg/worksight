@@ -1,5 +1,8 @@
-import { Controller, Get, NotFoundException, Param, ParseUUIDPipe, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, ParseUUIDPipe, Patch, Post, Query } from '@nestjs/common';
 import {
+  ApiBody,
+  ApiCreatedResponse,
+  ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -39,6 +42,14 @@ export class UsersController {
     return this.usersService.getStats();
   }
 
+  @Post()
+  @ApiOperation({ summary: 'Create an employee account' })
+  @ApiBody({ type: EmployeeProfileDto })
+  @ApiCreatedResponse({ type: EmployeeProfileDto })
+  create(@Body() body: unknown): Promise<EmployeeProfile> {
+    return this.usersService.create(body);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get employee by id' })
   @ApiParam({ name: 'id', format: 'uuid' })
@@ -50,6 +61,35 @@ export class UsersController {
       throw new NotFoundException(`User ${id} not found`);
     }
     return employee;
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: 'Update an employee profile' })
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @ApiOkResponse({ type: EmployeeProfileDto })
+  @ApiNotFoundResponse({ description: 'Employee not found' })
+  async update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() body: unknown
+  ): Promise<EmployeeProfile> {
+    const updated = await this.usersService.update(id, body);
+    if (!updated) {
+      throw new NotFoundException(`User ${id} not found`);
+    }
+    return updated;
+  }
+
+  @Delete(':id')
+  @HttpCode(204)
+  @ApiOperation({ summary: 'Delete an employee profile' })
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @ApiNoContentResponse({ description: 'Employee deleted successfully' })
+  @ApiNotFoundResponse({ description: 'Employee not found' })
+  async delete(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+    const deleted = await this.usersService.delete(id);
+    if (!deleted) {
+      throw new NotFoundException(`User ${id} not found`);
+    }
   }
 }
 
