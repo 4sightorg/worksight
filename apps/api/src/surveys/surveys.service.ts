@@ -9,6 +9,7 @@ import {
   type SurveyResponseMetadata,
   type SurveySubmission,
 } from '@worksight/common';
+import { paginate, PaginationQuery } from '../common/pagination.dto';
 import { WorksightRepository } from '../db/worksight.repository';
 
 @Injectable()
@@ -20,11 +21,9 @@ export class SurveysService {
 
   constructor(private readonly repo: WorksightRepository) {}
 
-  async findAll(): Promise<Survey[]> {
-    if (this.repo.enabled) {
-      return this.repo.listSurveys();
-    }
-    return this.surveys.all();
+  async findAll(pagination?: PaginationQuery): Promise<Survey[]> {
+    const list = this.repo.enabled ? await this.repo.listSurveys() : this.surveys.all();
+    return paginate(list, pagination);
   }
 
   async findQuestions(surveyId: string): Promise<SurveyQuestion[]> {
@@ -41,14 +40,16 @@ export class SurveysService {
     return this.questions.filter({ survey_id: surveyId }).all();
   }
 
-  async findSubmissions(employeeId?: string): Promise<SurveyResponseMetadata[]> {
-    if (this.repo.enabled) {
-      return this.repo.listSurveySubmissions(employeeId);
-    }
-    if (employeeId) {
-      return this.submissions.filter(s => s.employee_id === employeeId);
-    }
-    return [...this.submissions];
+  async findSubmissions(
+    employeeId?: string,
+    pagination?: PaginationQuery
+  ): Promise<SurveyResponseMetadata[]> {
+    const list = this.repo.enabled
+      ? await this.repo.listSurveySubmissions(employeeId)
+      : employeeId
+        ? this.submissions.filter(s => s.employee_id === employeeId)
+        : [...this.submissions];
+    return paginate(list, pagination);
   }
 
   async submit(surveyId: string, submission: SurveySubmission): Promise<SurveyResponseMetadata> {
