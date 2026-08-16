@@ -27,6 +27,8 @@ import {
   type SurveyQuestion,
   type SurveyResponseMetadata,
 } from '@worksight/common';
+import { parsePaginationParams } from '../common/pagination.dto';
+import { ParseOptionalUUIDPipe } from '../common/parse-optional-uuid.pipe';
 import {
   CreateSurveyDto,
   SurveyDto,
@@ -43,9 +45,14 @@ export class SurveysController {
 
   @Get()
   @ApiOperation({ summary: 'List survey templates' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Limit count' })
+  @ApiQuery({ name: 'offset', required: false, type: Number, description: 'Offset count' })
   @ApiOkResponse({ type: SurveyDto, isArray: true })
-  getAll(): Promise<Survey[]> {
-    return this.surveysService.findAll();
+  getAll(
+    @Query('limit') limit?: string,
+    @Query('offset') offset?: string
+  ): Promise<Survey[]> {
+    return this.surveysService.findAll(parsePaginationParams(limit, offset));
   }
 
   @Post()
@@ -70,9 +77,15 @@ export class SurveysController {
     format: 'uuid',
     description: 'When set, only submissions from this employee',
   })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Limit count' })
+  @ApiQuery({ name: 'offset', required: false, type: Number, description: 'Offset count' })
   @ApiOkResponse({ type: SurveyResponseMetadataDto, isArray: true })
-  getSubmissions(@Query('employee_id') employeeId?: string): Promise<SurveyResponseMetadata[]> {
-    return this.surveysService.findSubmissions(employeeId);
+  getSubmissions(
+    @Query('employee_id', ParseOptionalUUIDPipe) employeeId?: string,
+    @Query('limit') limit?: string,
+    @Query('offset') offset?: string
+  ): Promise<SurveyResponseMetadata[]> {
+    return this.surveysService.findSubmissions(employeeId, parsePaginationParams(limit, offset));
   }
 
   @Get(':id')

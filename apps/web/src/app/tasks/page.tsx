@@ -43,9 +43,14 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { AlertCircle, CheckSquare, Clock, GripVertical, LogOut, Plus, Search } from 'lucide-react';
+import { AlertCircle, CheckSquare, Clock, GripVertical, LogOut, Plus, Search, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { fetchMvpTasksFromApi } from '@/lib/mvp-api-bridge';
+import {
+  fetchMvpTasksFromApi,
+  persistTaskCreation,
+  persistTaskDeletion,
+  persistTaskUpdate,
+} from '@/lib/mvp-api-bridge';
 import { getMvpTasks, type MvpTask } from '@/lib/mvp-data';
 import { isApiDataMode } from '@/lib/worksight-api';
 
@@ -54,9 +59,10 @@ type Task = MvpTask;
 interface SortableTaskProps {
   task: Task;
   onTaskUpdate: (id: string, updates: Partial<Task>) => void;
+  onTaskDelete: (id: string) => void;
 }
 
-function SortableTask({ task, onTaskUpdate }: SortableTaskProps) {
+function SortableTask({ task, onTaskUpdate, onTaskDelete }: SortableTaskProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: task.id,
   });
@@ -89,17 +95,6 @@ function SortableTask({ task, onTaskUpdate }: SortableTaskProps) {
     }
   };
 
-  // const getPriorityColor = (priority: Task['priority']) => {
-  //   switch (priority) {
-  //     case 'high':
-  //       return 'bg-red-100 text-red-800 border-red-200';
-  //     case 'medium':
-  //       return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-  //     case 'low':
-  //       return 'bg-green-100 text-green-800 border-green-200';
-  //   }
-  // };
-
   return (
     <div
       ref={setNodeRef}
@@ -113,31 +108,42 @@ function SortableTask({ task, onTaskUpdate }: SortableTaskProps) {
 
         <div className="flex-1 space-y-3">
           {/* Title */}
-          <div className="flex items-center gap-2">
-            {getStatusIcon(task.status)}
-            {isEditing === 'title' ? (
-              <Input
-                defaultValue={task.title}
-                onBlur={e => handleFieldUpdate('title', e.target.value)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter') {
-                    handleFieldUpdate('title', e.currentTarget.value);
-                  }
-                  if (e.key === 'Escape') {
-                    setIsEditing(null);
-                  }
-                }}
-                autoFocus
-                className="text-sm font-medium"
-              />
-            ) : (
-              <h4
-                className="flex-1 cursor-pointer rounded px-2 py-1 text-sm font-medium hover:bg-gray-50"
-                onClick={() => setIsEditing('title')}
-              >
-                {task.title}
-              </h4>
-            )}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex flex-1 items-center gap-2">
+              {getStatusIcon(task.status)}
+              {isEditing === 'title' ? (
+                <Input
+                  defaultValue={task.title}
+                  onBlur={e => handleFieldUpdate('title', e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') {
+                      handleFieldUpdate('title', e.currentTarget.value);
+                    }
+                    if (e.key === 'Escape') {
+                      setIsEditing(null);
+                    }
+                  }}
+                  autoFocus
+                  className="text-sm font-medium"
+                />
+              ) : (
+                <h4
+                  className="flex-1 cursor-pointer rounded px-2 py-1 text-sm font-medium hover:bg-gray-50"
+                  onClick={() => setIsEditing('title')}
+                >
+                  {task.title}
+                </h4>
+              )}
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6 text-muted-foreground hover:text-destructive shrink-0"
+              onClick={() => onTaskDelete(task.id)}
+              aria-label={`Delete task ${task.title}`}
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </Button>
           </div>
 
           {/* Description */}
@@ -211,35 +217,34 @@ function SortableTask({ task, onTaskUpdate }: SortableTaskProps) {
 function TasksContent() {
   const { user, logout } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
+  const [isUsingFallback, setIsUsingFallback] = useState(false);
   const [tasks, setTasks] = useState<Task[]>(() => {
     if (isApiDataMode()) return [];
     const fixtureTasks = getMvpTasks();
-    if (fixtureTasks.length === 0) {
-      throw new Error('Common assignment fixtures empty; refusing silent empty fallback');
+    if (!fixtureTasks || fixtureTasks.length === 0) {
+      return [];
     }
     return [...fixtureTasks].sort((a, b) => a.order - b.order);
   });
 
-  useEffect(() => {
+  const loadTasks = useCallback(async () => {
     if (!isApiDataMode()) return;
-    let cancelled = false;
-    (async () => {
-      try {
-        const apiTasks = await fetchMvpTasksFromApi();
-        if (!cancelled) {
-          setTasks([...apiTasks].sort((a, b) => a.order - b.order));
-        }
-      } catch (err) {
-        console.warn('API task load failed; falling back to fixtures', err);
-        if (!cancelled) {
-          setTasks([...getMvpTasks()].sort((a, b) => a.order - b.order));
-        }
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
+    try {
+      const apiTasks = await fetchMvpTasksFromApi();
+      setTasks([...apiTasks].sort((a, b) => a.order - b.order));
+      setIsUsingFallback(false);
+    } catch (err) {
+      console.warn('API task load failed; falling back to fixtures', err);
+      setTasks([...getMvpTasks()].sort((a, b) => a.order - b.order));
+      setIsUsingFallback(true);
+    }
   }, []);
+
+  useEffect(() => {
+    if (isApiDataMode()) {
+      void loadTasks();
+    }
+  }, [loadTasks]);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -254,7 +259,63 @@ function TasksContent() {
 
   const handleTaskUpdate = useCallback((id: string, updates: Partial<Task>) => {
     setTasks(tasks => tasks.map(task => (task.id === id ? { ...task, ...updates } : task)));
+    if (isApiDataMode()) {
+      void persistTaskUpdate(id, updates).catch(err =>
+        console.warn('Failed to persist task update to API', err)
+      );
+    }
   }, []);
+
+  const handleTaskDelete = useCallback((id: string) => {
+    setTasks(prev => prev.filter(task => task.id !== id));
+    if (isApiDataMode()) {
+      void persistTaskDeletion(id).catch(err =>
+        console.warn('Failed to persist task deletion to API', err)
+      );
+    }
+  }, []);
+
+  const handleAddTask = async () => {
+    if (isApiDataMode()) {
+      try {
+        const created = await persistTaskCreation({
+          title: 'New Task',
+          description: 'Created task',
+          status: 'todo',
+          priority: 'medium',
+          storyPoints: 1,
+        });
+        if (created) {
+          const newTask: Task = {
+            id: created.id,
+            title: created.title ?? 'New Task',
+            description: 'Created task',
+            status: 'todo',
+            priority: 'medium',
+            dueDate: new Date().toISOString().slice(0, 10),
+            estimatedHours: 1,
+            order: tasks.length,
+            assigneeId: created.employee_id,
+          };
+          setTasks(prev => [...prev, newTask]);
+          return;
+        }
+      } catch (err) {
+        console.warn('Failed to create task via API bridge', err);
+      }
+    }
+    const localTask: Task = {
+      id: Date.now().toString(),
+      title: 'New Task',
+      description: 'Created locally',
+      status: 'todo',
+      priority: 'medium',
+      dueDate: new Date().toISOString().slice(0, 10),
+      estimatedHours: 1,
+      order: tasks.length,
+    };
+    setTasks(prev => [...prev, localTask]);
+  };
 
   const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;
@@ -317,6 +378,17 @@ function TasksContent() {
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-6 p-6">
+          {isUsingFallback && (
+            <div className="flex items-center justify-between rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-900 dark:text-amber-200">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
+                <span>Showing demo data (live API task load failed).</span>
+              </div>
+              <Button size="sm" variant="outline" onClick={() => void loadTasks()} className="h-7 text-xs">
+                Retry API
+              </Button>
+            </div>
+          )}
           {/* Header */}
           <div className="flex items-center justify-between">
             <div>
@@ -325,7 +397,7 @@ function TasksContent() {
                 Drag to reorder • Click to edit • Use dropdowns to change status
               </p>
             </div>
-            <Button>
+            <Button onClick={handleAddTask}>
               <Plus className="mr-2 h-4 w-4" />
               Add Task
             </Button>
@@ -402,7 +474,12 @@ function TasksContent() {
                       <p className="text-muted-foreground py-8 text-center">No tasks found</p>
                     ) : (
                       filteredTasks.map(task => (
-                        <SortableTask key={task.id} task={task} onTaskUpdate={handleTaskUpdate} />
+                        <SortableTask
+                          key={task.id}
+                          task={task}
+                          onTaskUpdate={handleTaskUpdate}
+                          onTaskDelete={handleTaskDelete}
+                        />
                       ))
                     )}
                   </div>
