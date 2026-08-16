@@ -34,9 +34,8 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-
-import { isApiDataMode, worksightApi } from '@/lib/worksight-api';
 import { fetchUsersWithMetricsFromApi } from '@/lib/mvp-api-bridge';
+import { isApiDataMode, worksightApi } from '@/lib/worksight-api';
 import { ActivityLookup, EmployeeLookup, SurveyMetadataLookup, SurveyResponseList } from '@worksight/common';
 
 interface AdminStats {

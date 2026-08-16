@@ -127,6 +127,7 @@ export default function WellnessPage() {
             aria-label="Wellness sub navigation"
             items={[
               { label: 'Tasks', href: '/dashboard/tasks' },
+              { label: 'Attendance', href: '/dashboard/attendance' },
               { label: 'Reports', href: '/dashboard/reports', soon: true },
               { label: 'Wellness', href: '/dashboard/wellness', badge: recentSurveys.length },
             ]}

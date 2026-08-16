@@ -1,6 +1,4 @@
-import { ViewSwitcher } from '@/components/features';
 import { Button } from '@/components/ui';
-import { sections } from '@/data/sections';
 import Link from 'next/link';
 import { SiGithub } from 'react-icons/si';
 
@@ -8,10 +6,12 @@ export function SiteHeader() {
   return (
     <header className="border-grid sticky top-0 z-50 w-full">
       <div className="container-wrapper">
-        <div className="container flex h-14">
-          <ViewSwitcher views={sections.parts} defaultSection={sections.defaultPart} />
+        <div className="container flex h-14 items-center justify-between">
+          <Link href="/dashboard" className="font-bold text-lg tracking-tight">
+            WorkSight
+          </Link>
           <div className="flex items-center gap-2">
-            <nav className="5 flex items-center gap-0">
+            <nav className="flex items-center gap-0">
               <Button asChild variant="ghost" size="icon" className="h-8 w-8 px-0">
                 <Link
                   href="https://github.com/4sightorg/worksight"
@@ -22,7 +22,6 @@ export function SiteHeader() {
                   <span className="sr-only">GitHub</span>
                 </Link>
               </Button>
-              {/* <ModeToggle /> */}
             </nav>
           </div>
         </div>

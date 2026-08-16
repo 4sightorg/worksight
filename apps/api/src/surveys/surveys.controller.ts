@@ -21,12 +21,16 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import {
+  CreateSurveySchema,
   SurveySubmissionSchema,
   type Survey,
   type SurveyQuestion,
   type SurveyResponseMetadata,
 } from '@worksight/common';
+import { parsePaginationParams } from '../common/pagination.dto';
+import { ParseOptionalUUIDPipe } from '../common/parse-optional-uuid.pipe';
 import {
+  CreateSurveyDto,
   SurveyDto,
   SurveyQuestionDto,
   SurveyResponseMetadataDto,
@@ -41,9 +45,28 @@ export class SurveysController {
 
   @Get()
   @ApiOperation({ summary: 'List survey templates' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Limit count' })
+  @ApiQuery({ name: 'offset', required: false, type: Number, description: 'Offset count' })
   @ApiOkResponse({ type: SurveyDto, isArray: true })
-  getAll(): Promise<Survey[]> {
-    return this.surveysService.findAll();
+  getAll(
+    @Query('limit') limit?: string,
+    @Query('offset') offset?: string
+  ): Promise<Survey[]> {
+    return this.surveysService.findAll(parsePaginationParams(limit, offset));
+  }
+
+  @Post()
+  @HttpCode(201)
+  @ApiOperation({ summary: 'Create a survey template' })
+  @ApiBody({ type: CreateSurveyDto })
+  @ApiCreatedResponse({ type: SurveyDto })
+  @ApiBadRequestResponse({ description: 'Invalid survey creation payload' })
+  create(@Body() body: CreateSurveyDto): Promise<Survey> {
+    const parsed = CreateSurveySchema.safeParse(body);
+    if (!parsed.success) {
+      throw new BadRequestException(parsed.error.issues);
+    }
+    return this.surveysService.createSurvey(parsed.data);
   }
 
   @Get('responses')
@@ -54,9 +77,42 @@ export class SurveysController {
     format: 'uuid',
     description: 'When set, only submissions from this employee',
   })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Limit count' })
+  @ApiQuery({ name: 'offset', required: false, type: Number, description: 'Offset count' })
   @ApiOkResponse({ type: SurveyResponseMetadataDto, isArray: true })
-  getSubmissions(@Query('employee_id') employeeId?: string): Promise<SurveyResponseMetadata[]> {
-    return this.surveysService.findSubmissions(employeeId);
+  getSubmissions(
+    @Query('employee_id', ParseOptionalUUIDPipe) employeeId?: string,
+    @Query('limit') limit?: string,
+    @Query('offset') offset?: string
+  ): Promise<SurveyResponseMetadata[]> {
+    return this.surveysService.findSubmissions(employeeId, parsePaginationParams(limit, offset));
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get a single survey template by ID' })
+  @ApiParam({ name: 'id', format: 'uuid', description: 'Survey id' })
+  @ApiOkResponse({ type: SurveyDto })
+  @ApiNotFoundResponse({ description: 'Survey not found' })
+  getOne(@Param('id', ParseUUIDPipe) id: string): Promise<Survey> {
+    return this.surveysService.findOne(id);
+  }
+
+  @Get(':id/responses')
+  @ApiOperation({ summary: 'List submissions for a specific survey' })
+  @ApiParam({ name: 'id', format: 'uuid', description: 'Survey id' })
+  @ApiQuery({
+    name: 'employee_id',
+    required: false,
+    format: 'uuid',
+    description: 'When set, only submissions from this employee',
+  })
+  @ApiOkResponse({ type: SurveyResponseMetadataDto, isArray: true })
+  @ApiNotFoundResponse({ description: 'Survey not found' })
+  getSurveyResponses(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Query('employee_id') employeeId?: string
+  ): Promise<SurveyResponseMetadata[]> {
+    return this.surveysService.findSubmissionsBySurvey(id, employeeId);
   }
 
   @Get(':id/questions')
@@ -91,3 +147,4 @@ export class SurveysController {
     return this.surveysService.submit(id, parsed.data);
   }
 }
+
