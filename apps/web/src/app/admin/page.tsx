@@ -34,6 +34,9 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { fetchUsersWithMetricsFromApi } from '@/lib/mvp-api-bridge';
+import { isApiDataMode, worksightApi } from '@/lib/worksight-api';
+import { ActivityLookup, EmployeeLookup, SurveyMetadataLookup, SurveyResponseList } from '@worksight/common';
 
 interface AdminStats {
   totalUsers: number;
@@ -66,18 +69,58 @@ function AdminDashboardContent() {
   }, []);
 
   useEffect(() => {
-    // Simulate fetching admin stats
-    // In production, this would be an API call
-    const mockStats: AdminStats = {
-      totalUsers: 247,
-      activeSurveys: 12,
-      completedSurveys: 1,
-      avgBurnoutScore: 6.2,
-      highRiskUsers: 23,
-      recentActivity: 45,
-    };
+    async function loadAdminStats() {
+      try {
+        if (isApiDataMode()) {
+          const [users, surveys, submissions, orgStats, usersWithMetrics] = await Promise.all([
+            worksightApi.getUsers(),
+            worksightApi.getSurveys(),
+            worksightApi.getSurveySubmissions(),
+            worksightApi.getOrgStats(),
+            fetchUsersWithMetricsFromApi(),
+          ]);
 
-    setTimeout(() => setStats(mockStats), 500);
+          const highRisk = usersWithMetrics.filter(u => u.burnoutScore >= 7).length;
+          const totalBurnout = usersWithMetrics.reduce((sum, u) => sum + u.burnoutScore, 0);
+          const avgBurnout = usersWithMetrics.length
+            ? Math.round((totalBurnout / usersWithMetrics.length) * 10) / 10
+            : 5.5;
+
+          setStats({
+            totalUsers: users.length,
+            activeSurveys: surveys.length,
+            completedSurveys: submissions.length,
+            avgBurnoutScore: avgBurnout,
+            highRiskUsers: highRisk,
+            recentActivity: orgStats.activitiesLast7d,
+          });
+        } else {
+          const employees = new EmployeeLookup().all();
+          const surveys = new SurveyMetadataLookup().all();
+          const submissions = SurveyResponseList;
+          const activities = new ActivityLookup().all();
+
+          const scores = submissions.map(s => s.avg_score).filter((s): s is number => s !== null);
+          const avgScore = scores.length
+            ? Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 2 * 10) / 10
+            : 5.5;
+          const highRisk = submissions.filter(s => s.avg_score != null && s.avg_score * 2 >= 7).length;
+
+          setStats({
+            totalUsers: employees.length,
+            activeSurveys: surveys.length,
+            completedSurveys: submissions.length,
+            avgBurnoutScore: avgScore,
+            highRiskUsers: highRisk,
+            recentActivity: activities.length,
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching admin stats:', error);
+      }
+    }
+
+    loadAdminStats();
   }, []);
 
   const handleLogout = async () => {

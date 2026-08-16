@@ -1,13 +1,18 @@
-import { Controller, Get, NotFoundException, Param, ParseUUIDPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, ParseUUIDPipe, Patch, Post, Query } from '@nestjs/common';
 import {
+  ApiBody,
+  ApiCreatedResponse,
+  ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import type { EmployeeProfile, Team } from '@worksight/common';
-import { EmployeeProfileDto, EmployeeStatsDto, TeamDto } from '../openapi/schemas';
+import { parsePaginationParams } from '../common/pagination.dto';
+import { EmployeeProfileDto, EmployeeStatsDto, OrgStatsDto, TeamDto } from '../openapi/schemas';
 import { UsersService } from './users.service';
 
 @ApiTags('users')
@@ -17,9 +22,14 @@ export class UsersController {
 
   @Get()
   @ApiOperation({ summary: 'List employees' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Limit count' })
+  @ApiQuery({ name: 'offset', required: false, type: Number, description: 'Offset count' })
   @ApiOkResponse({ type: EmployeeProfileDto, isArray: true })
-  getAll(): Promise<EmployeeProfile[]> {
-    return this.usersService.findAll();
+  getAll(
+    @Query('limit') limit?: string,
+    @Query('offset') offset?: string
+  ): Promise<EmployeeProfile[]> {
+    return this.usersService.findAll(parsePaginationParams(limit, offset));
   }
 
   @Get('stats')
@@ -30,6 +40,21 @@ export class UsersController {
   @ApiOkResponse({ type: EmployeeStatsDto })
   getStats(): Promise<EmployeeStatsDto> {
     return this.usersService.getStats();
+  }
+
+  @Get('stats/org')
+  @ApiOperation({ summary: 'Org aggregate stats' })
+  @ApiOkResponse({ type: OrgStatsDto })
+  getOrgStats(): Promise<OrgStatsDto> {
+    return this.usersService.getOrgStats();
+  }
+
+  @Post()
+  @ApiOperation({ summary: 'Create an employee account' })
+  @ApiBody({ type: EmployeeProfileDto })
+  @ApiCreatedResponse({ type: EmployeeProfileDto })
+  create(@Body() body: unknown): Promise<EmployeeProfile> {
+    return this.usersService.create(body);
   }
 
   @Get(':id')
@@ -44,6 +69,48 @@ export class UsersController {
     }
     return employee;
   }
+
+  @Patch(':id')
+  @ApiOperation({ summary: 'Update an employee profile' })
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @ApiOkResponse({ type: EmployeeProfileDto })
+  @ApiNotFoundResponse({ description: 'Employee not found' })
+  async update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() body: unknown
+  ): Promise<EmployeeProfile> {
+    const updated = await this.usersService.update(id, body);
+    if (!updated) {
+      throw new NotFoundException(`User ${id} not found`);
+    }
+    return updated;
+  }
+
+  @Delete(':id')
+  @HttpCode(204)
+  @ApiOperation({ summary: 'Delete an employee profile' })
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @ApiNoContentResponse({ description: 'Employee deleted successfully' })
+  @ApiNotFoundResponse({ description: 'Employee not found' })
+  async delete(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+    const deleted = await this.usersService.delete(id);
+    if (!deleted) {
+      throw new NotFoundException(`User ${id} not found`);
+    }
+  }
+}
+
+@ApiTags('stats')
+@Controller('stats')
+export class StatsController {
+  constructor(private readonly usersService: UsersService) {}
+
+  @Get('org')
+  @ApiOperation({ summary: 'Org aggregate stats' })
+  @ApiOkResponse({ type: OrgStatsDto })
+  getOrgStats(): Promise<OrgStatsDto> {
+    return this.usersService.getOrgStats();
+  }
 }
 
 @ApiTags('teams')
@@ -53,9 +120,14 @@ export class TeamsController {
 
   @Get()
   @ApiOperation({ summary: 'List teams' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Limit count' })
+  @ApiQuery({ name: 'offset', required: false, type: Number, description: 'Offset count' })
   @ApiOkResponse({ type: TeamDto, isArray: true })
-  getAll(): Promise<Team[]> {
-    return this.usersService.findAllTeams();
+  getAll(
+    @Query('limit') limit?: string,
+    @Query('offset') offset?: string
+  ): Promise<Team[]> {
+    return this.usersService.findAllTeams(parsePaginationParams(limit, offset));
   }
 
   @Get(':id')

@@ -86,6 +86,37 @@ export class EmployeeStatsDto {
   adminCount!: number;
 }
 
+export class TasksByStatusDto {
+  @ApiProperty()
+  todo!: number;
+
+  @ApiProperty()
+  in_progress!: number;
+
+  @ApiProperty()
+  completed!: number;
+}
+
+export class OrgStatsDto {
+  @ApiProperty()
+  totalEmployees!: number;
+
+  @ApiProperty()
+  activeTasks!: number;
+
+  @ApiProperty({ type: TasksByStatusDto })
+  tasksByStatus!: TasksByStatusDto;
+
+  @ApiProperty()
+  avgAttendanceHours!: number;
+
+  @ApiPropertyOptional({ nullable: true })
+  recentSurveyAvg!: number | null;
+
+  @ApiProperty()
+  activitiesLast7d!: number;
+}
+
 export class TeamDto {
   @ApiProperty({ format: 'uuid' })
   id!: string;
@@ -352,6 +383,9 @@ export class SurveyResponseMetadataDto {
 
   @ApiPropertyOptional({ nullable: true, description: 'Mean of numeric answers (2 dp), or null' })
   avg_score!: number | null;
+
+  @ApiPropertyOptional({ description: 'Average score breakdown per dimension' })
+  dimensions?: Record<string, number>;
 }
 
 export class SurveyAnswerDto {
@@ -372,3 +406,12 @@ export class SurveySubmissionDto {
   @ApiProperty({ type: [SurveyAnswerDto], minItems: 1 })
   answers!: SurveyAnswerDto[];
 }
+
+export class CreateSurveyDto {
+  @ApiPropertyOptional({ format: 'uuid', description: 'Creator employee id' })
+  created_by?: string;
+
+  @ApiPropertyOptional({ type: [SurveyQuestionDto], description: 'Survey questions' })
+  questions?: SurveyQuestionDto[];
+}
+

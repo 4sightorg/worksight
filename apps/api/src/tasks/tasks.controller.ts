@@ -1,7 +1,9 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
   NotFoundException,
   Param,
   ParseUUIDPipe,
@@ -12,6 +14,7 @@ import {
 import {
   ApiBody,
   ApiCreatedResponse,
+  ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -20,6 +23,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import type { Activity, Assignment } from '@worksight/common';
+import { parsePaginationParams } from '../common/pagination.dto';
+import { ParseOptionalUUIDPipe } from '../common/parse-optional-uuid.pipe';
 import { ActivityDto, AssignmentDto, TaskStatsDto } from '../openapi/schemas';
 import { TasksService } from './tasks.service';
 
@@ -36,9 +41,15 @@ export class TasksController {
     format: 'uuid',
     description: 'When set, only assignments for this employee',
   })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Limit count' })
+  @ApiQuery({ name: 'offset', required: false, type: Number, description: 'Offset count' })
   @ApiOkResponse({ type: AssignmentDto, isArray: true })
-  getAll(@Query('employee_id') employeeId?: string): Promise<Assignment[]> {
-    return this.tasksService.findAll(employeeId);
+  getAll(
+    @Query('employee_id', ParseOptionalUUIDPipe) employeeId?: string,
+    @Query('limit') limit?: string,
+    @Query('offset') offset?: string
+  ): Promise<Assignment[]> {
+    return this.tasksService.findAll(employeeId, parsePaginationParams(limit, offset));
   }
 
   @Get('stats/:employeeId')
@@ -56,7 +67,7 @@ export class TasksController {
   @ApiOperation({
     summary: 'Create an assignment',
     description:
-      'Requires `DATABASE_URL`. Returns 501 in fixture mode. Timestamps are server-owned.',
+      'Creates a new task. Persisted in Postgres or in-memory fixture mode. Timestamps are server-owned.',
   })
   @ApiBody({ type: AssignmentDto })
   @ApiCreatedResponse({ type: AssignmentDto })
@@ -81,7 +92,7 @@ export class TasksController {
   @ApiOperation({
     summary: 'Partial update an assignment',
     description:
-      'Patch `status`, `priority`, `title`, and/or `points`. Requires `DATABASE_URL` (501 otherwise).',
+      'Patch `status`, `priority`, `title`, and/or `points`. Persisted in Postgres or in-memory fixture mode.',
   })
   @ApiParam({ name: 'id', format: 'uuid' })
   @ApiOkResponse({ type: AssignmentDto })
@@ -95,6 +106,19 @@ export class TasksController {
       throw new NotFoundException(`Task ${id} not found`);
     }
     return updated;
+  }
+
+  @Delete(':id')
+  @HttpCode(204)
+  @ApiOperation({ summary: 'Delete an assignment' })
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @ApiNoContentResponse({ description: 'Assignment deleted successfully' })
+  @ApiNotFoundResponse({ description: 'Assignment not found' })
+  async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+    const deleted = await this.tasksService.delete(id);
+    if (!deleted) {
+      throw new NotFoundException(`Task ${id} not found`);
+    }
   }
 }
 
@@ -111,8 +135,14 @@ export class ActivitiesController {
     format: 'uuid',
     description: 'When set, only activities for this employee',
   })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Limit count' })
+  @ApiQuery({ name: 'offset', required: false, type: Number, description: 'Offset count' })
   @ApiOkResponse({ type: ActivityDto, isArray: true })
-  getAll(@Query('employee_id') employeeId?: string): Promise<Activity[]> {
-    return this.tasksService.findAllActivities(employeeId);
+  getAll(
+    @Query('employee_id', ParseOptionalUUIDPipe) employeeId?: string,
+    @Query('limit') limit?: string,
+    @Query('offset') offset?: string
+  ): Promise<Activity[]> {
+    return this.tasksService.findAllActivities(employeeId, parsePaginationParams(limit, offset));
   }
 }

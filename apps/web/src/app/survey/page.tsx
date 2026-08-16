@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertCircle, Clock } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useSurveyResultsStore } from '@/store/survey-results-store';
 
 // Employee Burnout and Work Engagement Assessment Tool
 const burnoutSurveyQuestions: SurveyQuestion[] = [
@@ -432,10 +433,14 @@ export default function SurveyPage() {
       })
     );
 
+    // Save to Zustand persist store
+    const store = useSurveyResultsStore.getState();
+    store.setCurrentResponses(responses);
+
     // Clear the survey progress since it's completed
     localStorage.removeItem('survey_progress');
 
-    // Redirect to results page with detailed scores
+    // Redirect to results page (responses stored in Zustand store)
     const detailedResults = {
       overall: overallRiskScore,
       workload: workloadScore,
@@ -444,9 +449,8 @@ export default function SurveyPage() {
       engagement: engagementScore,
     };
 
-    const responsesParam = encodeURIComponent(JSON.stringify(responses));
     const scoresParam = encodeURIComponent(JSON.stringify(detailedResults));
-    router.push(`/survey/results?scores=${scoresParam}&responses=${responsesParam}`);
+    router.push(`/survey/results?scores=${scoresParam}`);
   };
 
   const handleProgress = (_current: number, _total: number) => {

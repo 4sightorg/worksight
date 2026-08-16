@@ -13,6 +13,7 @@ import {
   type ApiEmployee,
   type ApiTaskStats,
   type ApiTeam,
+  type PatchTaskInput,
 } from '@/lib/worksight-api';
 
 const ROLE_MAP: Record<string, UserRole> = {
@@ -261,6 +262,10 @@ export async function fetchDemoSnapshot(): Promise<DemoSnapshot> {
   return { users, teams, tasks, userStats, wellness };
 }
 
+export async function fetchOrgStatsFromApi(): Promise<import('./worksight-api').ApiOrgStats> {
+  return worksightApi.getOrgStats();
+}
+
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -294,6 +299,56 @@ export async function persistTaskStatus(
   if (!isApiDataMode()) return;
   if (!UUID_RE.test(taskId)) return;
   await worksightApi.patchTask(taskId, { status: mapUiStatusToAssignment(uiStatus) });
+}
+
+export async function persistTaskCreation(input: {
+  title: string;
+  description?: string;
+  status: 'pending' | 'todo' | 'in-progress' | 'completed';
+  priority: 'low' | 'medium' | 'high';
+  dueDate?: string;
+  storyPoints?: number;
+}): Promise<ApiAssignment | null> {
+  if (!isApiDataMode()) return null;
+  const employee_id = await resolveApiEmployeeId();
+  return worksightApi.createTask({
+    employee_id,
+    type: 'task',
+    title: input.title,
+    status: mapUiStatusToAssignment(input.status),
+    priority: input.priority === 'high' ? 'high' : input.priority === 'medium' ? 'medium' : 'low',
+    points: input.storyPoints ?? 1,
+  });
+}
+
+export async function persistTaskUpdate(
+  taskId: string,
+  updates: Partial<{
+    title: string;
+    description: string;
+    status: 'pending' | 'todo' | 'in-progress' | 'completed';
+    priority: 'low' | 'medium' | 'high';
+    storyPoints: number;
+  }>
+): Promise<void> {
+  if (!isApiDataMode()) return;
+  if (!UUID_RE.test(taskId)) return;
+  const patch: PatchTaskInput = {};
+  if (updates.title !== undefined) patch.title = updates.title;
+  if (updates.status !== undefined) patch.status = mapUiStatusToAssignment(updates.status);
+  if (updates.priority !== undefined) {
+    patch.priority = updates.priority === 'high' ? 'high' : updates.priority === 'medium' ? 'medium' : 'low';
+  }
+  if (updates.storyPoints !== undefined) patch.points = updates.storyPoints;
+
+  if (Object.keys(patch).length === 0) return;
+  await worksightApi.patchTask(taskId, patch);
+}
+
+export async function persistTaskDeletion(taskId: string): Promise<void> {
+  if (!isApiDataMode()) return;
+  if (!UUID_RE.test(taskId)) return;
+  await worksightApi.deleteTask(taskId);
 }
 
 export async function fetchMvpSurveysFromApi(): Promise<

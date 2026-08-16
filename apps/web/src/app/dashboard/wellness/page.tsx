@@ -13,9 +13,20 @@ import { Activity, Calendar, FolderPlus, TrendingUp, Users } from 'lucide-react'
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
+import { isApiDataMode, toDate, worksightApi } from '@/lib/worksight-api';
+import { SurveyResponseList } from '@worksight/common';
+
 export default function WellnessPage() {
   const [canTakeSurvey, setCanTakeSurvey] = useState(true);
   const [nextSurveyTime, setNextSurveyTime] = useState<string>('');
+  const [wellnessData, setWellnessData] = useState({
+    currentBurnoutLevel: 55,
+    lastSurveyDate: new Date().toISOString().slice(0, 10),
+    surveyCount: 0,
+    averageScore: 55,
+    trend: 'stable',
+  });
+  const [recentSurveys, setRecentSurveys] = useState<{ date: string; score: number; status: string }[]>([]);
 
   useEffect(() => {
     // Check survey availability
@@ -46,21 +57,52 @@ export default function WellnessPage() {
     return () => clearInterval(interval);
   }, []);
 
-  // Mock wellness data - replace with real data
-  const wellnessData = {
-    currentBurnoutLevel: 65,
-    lastSurveyDate: '2025-01-24',
-    surveyCount: 12,
-    averageScore: 58,
-    trend: 'improving',
-  };
+  useEffect(() => {
+    async function loadWellnessData() {
+      try {
+        let submissions: Array<{ submitted_at: string | Date; avg_score?: number | null }> = [];
+        if (isApiDataMode()) {
+          submissions = await worksightApi.getSurveySubmissions();
+        } else {
+          submissions = SurveyResponseList;
+        }
 
-  const recentSurveys: { date: string; score: number; status: string }[] = [
-    { date: '2025-01-24', score: 65, status: 'moderate' },
-    { date: '2025-01-17', score: 72, status: 'high' },
-    { date: '2025-01-10', score: 58, status: 'moderate' },
-    { date: '2025-01-03', score: 45, status: 'low' },
-  ];
+        const validSubs = submissions
+          .filter((s): s is { submitted_at: string | Date; avg_score: number } => s.avg_score != null)
+          .sort((a, b) => toDate(b.submitted_at).getTime() - toDate(a.submitted_at).getTime());
+
+        if (validSubs.length > 0) {
+          const mapped = validSubs.map(s => {
+            const scorePct = Math.min(100, Math.max(0, Math.round((s.avg_score / 5) * 100)));
+            const status = scorePct < 30 ? 'low' : scorePct < 60 ? 'moderate' : 'high';
+            return {
+              date: toDate(s.submitted_at).toISOString().slice(0, 10),
+              score: scorePct,
+              status,
+            };
+          });
+
+          const currentBurnout = mapped[0].score;
+          const avgPct = Math.round(
+            mapped.reduce((sum, s) => sum + s.score, 0) / mapped.length
+          );
+
+          setRecentSurveys(mapped.slice(0, 5));
+          setWellnessData({
+            currentBurnoutLevel: currentBurnout,
+            lastSurveyDate: mapped[0].date,
+            surveyCount: validSubs.length,
+            averageScore: avgPct,
+            trend: mapped.length > 1 ? (mapped[0].score <= mapped[1].score ? 'improving' : 'increasing') : 'stable',
+          });
+        }
+      } catch (error) {
+        console.error('Failed to load survey data for wellness page:', error);
+      }
+    }
+
+    loadWellnessData();
+  }, []);
 
   const getBurnoutColor = (level: number) => {
     if (level < 30) return 'text-green-600';
@@ -85,6 +127,7 @@ export default function WellnessPage() {
             aria-label="Wellness sub navigation"
             items={[
               { label: 'Tasks', href: '/dashboard/tasks' },
+              { label: 'Attendance', href: '/dashboard/attendance' },
               { label: 'Reports', href: '/dashboard/reports', soon: true },
               { label: 'Wellness', href: '/dashboard/wellness', badge: recentSurveys.length },
             ]}

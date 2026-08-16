@@ -19,32 +19,44 @@ import {
     type Survey,
 } from '@/data/surveys';
 import { useSurveyResultsStore } from '@/store/survey-results-store';
-import { useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
-// Simple RadioGroup component since we don't have shadcn's radio-group
+const RadioGroupContext = createContext<{
+  value: string;
+  onValueChange: (value: string) => void;
+}>({ value: '', onValueChange: () => {} });
+
+// Simple RadioGroup component
 const RadioGroup = ({
-  value: _value,
-  onValueChange: _onValueChange,
+  value,
+  onValueChange,
   children,
 }: {
   value: string;
   onValueChange: (value: string) => void;
   children: React.ReactNode;
 }) => (
-  <div role="radiogroup" className="space-y-2">
-    {children}
-  </div>
+  <RadioGroupContext.Provider value={{ value, onValueChange }}>
+    <div role="radiogroup" className="space-y-2">
+      {children}
+    </div>
+  </RadioGroupContext.Provider>
 );
 
-const RadioGroupItem = ({ value, id }: { value: string; id: string }) => (
-  <input
-    type="radio"
-    value={value}
-    id={id}
-    name={id.split('-')[0]}
-    className="h-4 w-4 border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
-  />
-);
+const RadioGroupItem = ({ value, id }: { value: string; id: string }) => {
+  const { value: selectedValue, onValueChange } = useContext(RadioGroupContext);
+  return (
+    <input
+      type="radio"
+      value={value}
+      id={id}
+      name={id.split('-')[0]}
+      checked={selectedValue === value}
+      onChange={() => onValueChange(value)}
+      className="h-4 w-4 border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
+    />
+  );
+};
 
 export function SurveyComponent() {
   const { user } = useAuth();
