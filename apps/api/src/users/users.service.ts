@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { EmployeeLookup, EmployeeProfile, Employees, Team, TeamLookup, Teams } from '@worksight/common';
+import { paginate, PaginationQuery } from '../common/pagination.dto';
 import { WorksightRepository } from '../db/worksight.repository';
 import { parseCreateUser, parseUpdateUser, type CreateUserInput, type UpdateUserInput } from './user-write.dto';
 
@@ -11,11 +12,11 @@ export class UsersService {
 
   constructor(private readonly repo: WorksightRepository) {}
 
-  async findAll(): Promise<EmployeeProfile[]> {
-    if (this.repo.enabled) {
-      return this.repo.listEmployees();
-    }
-    return [...this.fixtureUsers];
+  async findAll(pagination?: PaginationQuery): Promise<EmployeeProfile[]> {
+    const list = this.repo.enabled
+      ? await this.repo.listEmployees()
+      : [...this.fixtureUsers];
+    return paginate(list, pagination);
   }
 
   async findById(id: string): Promise<EmployeeProfile | null> {
@@ -102,11 +103,9 @@ export class UsersService {
     return new EmployeeLookup(this.fixtureUsers).getStats();
   }
 
-  async findAllTeams(): Promise<Team[]> {
-    if (this.repo.enabled) {
-      return this.repo.listTeams();
-    }
-    return this.teams.all();
+  async findAllTeams(pagination?: PaginationQuery): Promise<Team[]> {
+    const list = this.repo.enabled ? await this.repo.listTeams() : this.teams.all();
+    return paginate(list, pagination);
   }
 
   async findTeamById(id: string): Promise<Team | null> {

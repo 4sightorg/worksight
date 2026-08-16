@@ -1,5 +1,6 @@
 'use client';
 
+import { useAuth } from '@/auth';
 import { ProtectedRoute } from '@/components/auth/protected-route';
 import { ClientOnly } from '@/components/core';
 import { Button } from '@/components/ui/button';
@@ -7,14 +8,64 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { CollapsibleSection } from '@/components/ui/collapsible-section';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { Switch } from '@/components/ui/switch';
+import { settingsApi } from '@/lib/api';
 import { ArrowLeft, Bell, Lock, Monitor, ShieldAlert, User } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function SettingsPage() {
+  const { user, logout } = useAuth();
   const [notifications, setNotifications] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
   const [analytics, setAnalytics] = useState(true);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    const loadSettings = async () => {
+      try {
+        const userSettings = await settingsApi.get(user.id);
+        if (userSettings) {
+          setNotifications(userSettings.notifications_enabled);
+          setDarkMode(userSettings.theme === 'dark');
+        }
+      } catch (error) {
+        console.error('Failed to load settings:', error);
+      }
+    };
+    loadSettings();
+  }, [user?.id]);
+
+  const handleNotificationsChange = async (checked: boolean) => {
+    setNotifications(checked);
+    if (user?.id) {
+      try {
+        await settingsApi.upsert(user.id, { notifications_enabled: checked });
+      } catch (error) {
+        console.error('Failed to persist notification settings:', error);
+      }
+    }
+  };
+
+  const handleDarkModeChange = async (checked: boolean) => {
+    setDarkMode(checked);
+    if (user?.id) {
+      try {
+        await settingsApi.upsert(user.id, { theme: checked ? 'dark' : 'light' });
+      } catch (error) {
+        console.error('Failed to persist theme settings:', error);
+      }
+    }
+  };
+
+  const handleDeleteAccount = () => {
+    if (
+      window.confirm(
+        'Are you sure you want to delete your account? This action cannot be undone.'
+      )
+    ) {
+      logout();
+    }
+  };
 
   return (
     <ProtectedRoute>
@@ -54,11 +105,13 @@ export default function SettingsPage() {
                     <div className="space-y-4">
                       <div>
                         <label className="text-sm font-medium">Display Name</label>
-                        <p className="text-muted-foreground mt-1 text-sm">John Doe</p>
+                        <p className="text-muted-foreground mt-1 text-sm">
+                          {user?.name || user?.user_metadata?.name || 'User'}
+                        </p>
                       </div>
                       <div>
                         <label className="text-sm font-medium">Email</label>
-                        <p className="text-muted-foreground mt-1 text-sm">john.doe@company.com</p>
+                        <p className="text-muted-foreground mt-1 text-sm">{user?.email || 'N/A'}</p>
                       </div>
                       <Button variant="outline" size="sm">
                         Edit Profile
@@ -85,7 +138,10 @@ export default function SettingsPage() {
                             Get notified when surveys are available
                           </p>
                         </div>
-                        <Switch checked={notifications} onCheckedChange={setNotifications} />
+                        <Switch
+                          checked={notifications}
+                          onCheckedChange={handleNotificationsChange}
+                        />
                       </div>
                       <div className="flex items-center justify-between">
                         <div>
@@ -114,9 +170,11 @@ export default function SettingsPage() {
                       <div className="flex items-center justify-between">
                         <div>
                           <label className="text-sm font-medium">Dark Mode</label>
-                          <p className="text-muted-foreground text-sm">Use dark theme throughout the app</p>
+                          <p className="text-muted-foreground text-sm">
+                            Use dark theme throughout the app
+                          </p>
                         </div>
-                        <Switch checked={darkMode} onCheckedChange={setDarkMode} />
+                        <Switch checked={darkMode} onCheckedChange={handleDarkModeChange} />
                       </div>
                       <CollapsibleSection
                         title="Advanced Theme Options"
@@ -126,14 +184,18 @@ export default function SettingsPage() {
                           <div className="flex items-center justify-between">
                             <div>
                               <p className="text-sm font-medium">Reduced Motion</p>
-                              <p className="text-muted-foreground text-xs">Minimize animations for accessibility</p>
+                              <p className="text-muted-foreground text-xs">
+                                Minimize animations for accessibility
+                              </p>
                             </div>
                             <Switch />
                           </div>
                           <div className="flex items-center justify-between">
                             <div>
                               <p className="text-sm font-medium">Compact Spacing</p>
-                              <p className="text-muted-foreground text-xs">Denser layout for large screens</p>
+                              <p className="text-muted-foreground text-xs">
+                                Denser layout for large screens
+                              </p>
                             </div>
                             <Switch />
                           </div>
@@ -157,7 +219,9 @@ export default function SettingsPage() {
                       <div className="flex items-center justify-between">
                         <div>
                           <label className="text-sm font-medium">Analytics</label>
-                          <p className="text-muted-foreground text-sm">Help improve WorkSight with usage data</p>
+                          <p className="text-muted-foreground text-sm">
+                            Help improve WorkSight with usage data
+                          </p>
                         </div>
                         <Switch checked={analytics} onCheckedChange={setAnalytics} />
                       </div>
@@ -168,13 +232,21 @@ export default function SettingsPage() {
                         <div className="space-y-4 pt-1">
                           <div>
                             <p className="text-sm font-medium">Data Export</p>
-                            <p className="text-muted-foreground mb-2 text-xs">Generate a portable JSON of your activity and survey data.</p>
-                            <Button variant="outline" size="sm">Download My Data</Button>
+                            <p className="text-muted-foreground mb-2 text-xs">
+                              Generate a portable JSON of your activity and survey data.
+                            </p>
+                            <Button variant="outline" size="sm">
+                              Download My Data
+                            </Button>
                           </div>
                           <div>
                             <p className="text-sm font-medium">Retention Policy</p>
-                            <p className="text-muted-foreground mb-2 text-xs">We automatically prune raw telemetry after 90 days.</p>
-                            <Button variant="ghost" size="sm">Learn more</Button>
+                            <p className="text-muted-foreground mb-2 text-xs">
+                              We automatically prune raw telemetry after 90 days.
+                            </p>
+                            <Button variant="ghost" size="sm">
+                              Learn more
+                            </Button>
                           </div>
                         </div>
                       </CollapsibleSection>
@@ -201,7 +273,9 @@ export default function SettingsPage() {
                           This action cannot be undone. All personal data, survey results and task
                           history will be permanently removed.
                         </p>
-                        <Button variant="destructive" size="sm">Delete Account</Button>
+                        <Button variant="destructive" size="sm" onClick={handleDeleteAccount}>
+                          Delete Account
+                        </Button>
                       </div>
                     </CollapsibleSection>
                   </CardContent>

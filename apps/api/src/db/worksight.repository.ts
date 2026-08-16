@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { randomUUID } from 'node:crypto';
 import type {
   Activity,
   Assignment,
@@ -250,6 +251,15 @@ export class WorksightRepository {
     return rows[0] ? toAssignment(rows[0]) : null;
   }
 
+  /** Delete an assignment by id. Returns true if deleted, false if not found. */
+  async deleteAssignment(id: string): Promise<boolean> {
+    const { rowCount } = await this.db.query(
+      `DELETE FROM assignments WHERE id = $1`,
+      [id]
+    );
+    return (rowCount ?? 0) > 0;
+  }
+
   async listActivities(employeeId?: string): Promise<Activity[]> {
     const { rows } = employeeId
       ? await this.db.query<ActivityRow>(
@@ -321,9 +331,87 @@ export class WorksightRepository {
     return rows.map(toSurveyResponseMeta);
   }
 
+  async listSurveySubmissionsBySurvey(
+    surveyId: string,
+    employeeId?: string
+  ): Promise<SurveyResponseMetadata[]> {
+    const { rows } = employeeId
+      ? await this.db.query<SurveyResponseMetaRow>(
+          `SELECT * FROM survey_response_meta WHERE survey_id = $1 AND employee_id = $2 ORDER BY submitted_at DESC`,
+          [surveyId, employeeId]
+        )
+      : await this.db.query<SurveyResponseMetaRow>(
+          `SELECT * FROM survey_response_meta WHERE survey_id = $1 ORDER BY submitted_at DESC`,
+          [surveyId]
+        );
+    return rows.map(toSurveyResponseMeta);
+  }
+
+  async createSurvey(
+    createdBy?: string,
+    questionsInput: Partial<SurveyQuestion>[] = []
+  ): Promise<Survey> {
+    const surveyId = randomUUID();
+    let creator = createdBy;
+    if (!creator) {
+      const employees = await this.listEmployees();
+      creator = employees[0]?.id ?? '08b6fc43-77e6-4fcf-8ed8-dafc16b4b025';
+    }
+    const now = new Date();
+    return this.db.withClient(async client => {
+      await client.query('BEGIN');
+      try {
+        const {
+          rows: [surveyRow],
+        } = await client.query<SurveyRow>(
+          `INSERT INTO surveys (id, created_by, created_at, num_questions)
+           VALUES ($1, $2, $3, $4)
+           RETURNING *`,
+          [surveyId, creator, now, questionsInput.length]
+        );
+        for (let i = 0; i < questionsInput.length; i++) {
+          const q = questionsInput[i];
+          const qId = typeof q.id === 'number' ? q.id : i;
+          const dim = Array.isArray(q.dimension)
+            ? q.dimension
+            : q.dimension
+              ? [q.dimension]
+              : ['general'];
+          await client.query(
+            `INSERT INTO survey_questions
+               (survey_id, id, question_text, question_subtext, dimension, type, required, options, reverse_score, min_value, min_label, max_value, max_label, default_value)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`,
+            [
+              surveyId,
+              qId,
+              q.question_text || `Question ${i + 1}`,
+              q.question_subtext || null,
+              dim,
+              q.type || 'text',
+              q.required ?? true,
+              q.options || null,
+              q.reverseScore ?? false,
+              q.min_value ?? null,
+              q.min_label || null,
+              q.max_value ?? null,
+              q.max_label || null,
+              q.defaultValue ? JSON.stringify(q.defaultValue) : null,
+            ]
+          );
+        }
+        await client.query('COMMIT');
+        return toSurvey(surveyRow);
+      } catch (error) {
+        await client.query('ROLLBACK');
+        throw error;
+      }
+    });
+  }
+
   async createSurveySubmission(
     surveyId: string,
-    submission: SurveySubmission
+    submission: SurveySubmission,
+    dimensions?: Record<string, number>
   ): Promise<SurveyResponseMetadata> {
     const numeric = submission.answers
       .map(a => a.response)
@@ -351,7 +439,9 @@ export class WorksightRepository {
           );
         }
         await client.query('COMMIT');
-        return toSurveyResponseMeta(meta);
+        const res = toSurveyResponseMeta(meta);
+        if (dimensions) res.dimensions = dimensions;
+        return res;
       } catch (error) {
         await client.query('ROLLBACK');
         throw error;

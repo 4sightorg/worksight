@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, ParseUUIDPipe, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, ParseUUIDPipe, Patch, Post, Query } from '@nestjs/common';
 import {
   ApiBody,
   ApiCreatedResponse,
@@ -7,9 +7,11 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import type { EmployeeProfile, Team } from '@worksight/common';
+import { parsePaginationParams } from '../common/pagination.dto';
 import { EmployeeProfileDto, EmployeeStatsDto, TeamDto } from '../openapi/schemas';
 import { UsersService } from './users.service';
 
@@ -20,9 +22,14 @@ export class UsersController {
 
   @Get()
   @ApiOperation({ summary: 'List employees' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Limit count' })
+  @ApiQuery({ name: 'offset', required: false, type: Number, description: 'Offset count' })
   @ApiOkResponse({ type: EmployeeProfileDto, isArray: true })
-  getAll(): Promise<EmployeeProfile[]> {
-    return this.usersService.findAll();
+  getAll(
+    @Query('limit') limit?: string,
+    @Query('offset') offset?: string
+  ): Promise<EmployeeProfile[]> {
+    return this.usersService.findAll(parsePaginationParams(limit, offset));
   }
 
   @Get('stats')
@@ -93,9 +100,14 @@ export class TeamsController {
 
   @Get()
   @ApiOperation({ summary: 'List teams' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Limit count' })
+  @ApiQuery({ name: 'offset', required: false, type: Number, description: 'Offset count' })
   @ApiOkResponse({ type: TeamDto, isArray: true })
-  getAll(): Promise<Team[]> {
-    return this.usersService.findAllTeams();
+  getAll(
+    @Query('limit') limit?: string,
+    @Query('offset') offset?: string
+  ): Promise<Team[]> {
+    return this.usersService.findAllTeams(parsePaginationParams(limit, offset));
   }
 
   @Get(':id')

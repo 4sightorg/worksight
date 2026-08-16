@@ -353,6 +353,9 @@ function SurveyResultsContent() {
     }
   };
 
+  const [paramError, setParamError] = useState<string | null>(null);
+  const [apiSubmitError, setApiSubmitError] = useState<string | null>(null);
+
   useEffect(() => {
     const scoresParam = searchParams.get('scores');
     const responsesParam = searchParams.get('responses');
@@ -365,18 +368,27 @@ function SurveyResultsContent() {
         setResponses(storedResults.responses);
         return;
       } else {
-        // No stored results either, redirect to survey
-        router.push('/survey');
-        return;
+        setParamError('No survey result data was provided in the URL, and no previous results were found.');
+        const timeout = setTimeout(() => {
+          router.push('/survey');
+        }, 10000);
+        return () => clearTimeout(timeout);
       }
     }
 
     try {
       const scores = JSON.parse(decodeURIComponent(scoresParam));
 
+      let parsedResponses: SurveyResponse[] = [];
       if (responsesParam) {
-        setResponses(JSON.parse(decodeURIComponent(responsesParam)));
+        parsedResponses = JSON.parse(decodeURIComponent(responsesParam));
+      } else {
+        const stored = useSurveyResultsStore.getState().currentResponses;
+        if (stored && stored.length > 0) {
+          parsedResponses = stored;
+        }
       }
+      setResponses(parsedResponses);
 
       // Process results for each dimension
       const workloadResult = getWorkloadLevel(scores.workload);
@@ -447,17 +459,23 @@ function SurveyResultsContent() {
       setResult(finalResult);
 
       // Save to store for dashboard access
-      const finalResponses = responsesParam ? JSON.parse(decodeURIComponent(responsesParam)) : [];
-      saveResults(finalResult, finalResponses);
+      saveResults(finalResult, parsedResponses);
       setCurrentResults(finalResult);
-      setCurrentResponses(finalResponses);
+      setCurrentResponses(parsedResponses);
       void submitWellnessSurveyToApi({
         employeeId: user?.id,
-        responses: finalResponses,
-      }).catch(err => console.warn('API survey submit failed; local results kept', err));
+        responses: parsedResponses,
+      }).catch(err => {
+        console.warn('API survey submit failed; local results kept', err);
+        setApiSubmitError('Could not sync results with live API. Your results are saved locally.');
+      });
     } catch (error) {
       console.error('Failed to parse survey results:', error);
-      router.push('/survey');
+      setParamError('The survey results parameters in the link appear to be malformed or invalid.');
+      const timeout = setTimeout(() => {
+        router.push('/survey');
+      }, 10000);
+      return () => clearTimeout(timeout);
     }
   }, [
     searchParams,
@@ -468,6 +486,33 @@ function SurveyResultsContent() {
     getLatestResults,
     user?.id,
   ]);
+
+  if (paramError) {
+    return (
+      <div className="from-background to-muted/20 flex min-h-screen items-center justify-center bg-gradient-to-br p-4">
+        <Card className="w-full max-w-md border-amber-500/30 text-center shadow-lg">
+          <CardHeader className="pb-3">
+            <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400">
+              <AlertTriangle className="h-6 w-6" />
+            </div>
+            <CardTitle className="text-xl font-bold">Unable to Display Survey Results</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 pt-2">
+            <p className="text-muted-foreground text-sm">{paramError}</p>
+            <p className="text-muted-foreground text-xs">
+              Please take the survey to generate valid results. Redirecting to survey in 10 seconds...
+            </p>
+            <div className="flex flex-col gap-2 pt-2 sm:flex-row justify-center">
+              <Button onClick={() => router.push('/wellness-survey')}>Take Survey</Button>
+              <Button variant="outline" onClick={() => router.push('/dashboard')}>
+                Go to Dashboard
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   // Show results immediately - no celebration screen
   if (!result) {
@@ -498,6 +543,18 @@ function SurveyResultsContent() {
           <h1 className="text-4xl font-bold">Your Burnout Assessment Results</h1>
           <p className="text-muted-foreground text-xl">Hi {userName}, here&apos;s what we found</p>
         </div>
+
+        {apiSubmitError && (
+          <div className="flex items-center justify-between rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-900 dark:text-amber-200">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
+              <span>{apiSubmitError}</span>
+            </div>
+            <Button size="sm" variant="ghost" onClick={() => setApiSubmitError(null)} className="h-7 text-xs">
+              Dismiss
+            </Button>
+          </div>
+        )}
 
         {/* Main Result Card */}
         <Card

@@ -66,7 +66,6 @@ function NewSurveyContent() {
       if (isApiDataMode()) {
         await worksightApi.createSurvey({
           created_by: user?.id,
-          num_questions: questions.length,
         });
       }
 

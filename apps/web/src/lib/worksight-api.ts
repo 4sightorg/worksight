@@ -9,6 +9,8 @@ import type {
   AssignmentPriority,
   AssignmentStatus,
   AssignmentType,
+  AttendanceRecord,
+  AttendanceStats,
   EmployeeProfile,
   Survey,
   SurveyQuestion,
@@ -79,17 +81,20 @@ async function apiGet<T>(path: string, signal?: AbortSignal): Promise<T> {
 }
 
 async function apiSend<T>(
-  method: 'POST' | 'PATCH',
+  method: 'POST' | 'PATCH' | 'DELETE',
   path: string,
-  body: unknown,
+  body?: unknown,
   signal?: AbortSignal
 ): Promise<T> {
   const url = `${getApiBaseUrl()}${path.startsWith('/') ? path : `/${path}`}`;
   const response = await fetch(url, {
     method,
-    headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+    headers: {
+      Accept: 'application/json',
+      ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}),
+    },
     cache: 'no-store',
-    body: JSON.stringify(body),
+    ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
     signal,
   });
   if (!response.ok) {
@@ -208,6 +213,18 @@ export type PatchTaskInput = {
   points?: number | null;
 };
 
+export type ApiAttendanceRecord = Omit<
+  AttendanceRecord,
+  'date' | 'check_in' | 'check_out' | 'created_at'
+> & {
+  date: string | Date;
+  check_in: string | Date | null;
+  check_out: string | Date | null;
+  created_at: string | Date;
+};
+
+export type ApiAttendanceStats = AttendanceStats;
+
 export const worksightApi = {
   getHealth: (timeoutMs = 5000) => apiGet<ApiHealth>('/health', timeoutSignal(timeoutMs)),
   getUsers: () => apiGet<ApiEmployee[]>('/users'),
@@ -227,11 +244,20 @@ export const worksightApi = {
     apiGet<ApiActivity[]>(
       employeeId ? `/activities?employee_id=${encodeURIComponent(employeeId)}` : '/activities'
     ),
+  getAttendance: (employeeId?: string) =>
+    apiGet<ApiAttendanceRecord[]>(
+      employeeId
+        ? `/attendance?employee_id=${encodeURIComponent(employeeId)}`
+        : '/attendance'
+    ),
+  getAttendanceStats: (employeeId: string) =>
+    apiGet<ApiAttendanceStats>(`/attendance/stats/${encodeURIComponent(employeeId)}`),
   createTask: (body: CreateTaskInput) => apiSend<ApiAssignment>('POST', '/tasks', body),
   patchTask: (id: string, body: PatchTaskInput) =>
     apiSend<ApiAssignment>('PATCH', `/tasks/${encodeURIComponent(id)}`, body),
+  deleteTask: (id: string) => apiSend<void>('DELETE', `/tasks/${encodeURIComponent(id)}`),
   getSurveys: () => apiGet<ApiSurvey[]>('/surveys'),
-  createSurvey: (body: { created_by?: string; num_questions?: number }) =>
+  createSurvey: (body: { created_by?: string; questions?: Partial<ApiSurveyQuestion>[] }) =>
     apiSend<ApiSurvey>('POST', '/surveys', body),
   getSurveyQuestions: (surveyId: string) =>
     apiGet<ApiSurveyQuestion[]>(`/surveys/${encodeURIComponent(surveyId)}/questions`),
