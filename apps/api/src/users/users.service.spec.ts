@@ -31,6 +31,17 @@ describe('UsersService', () => {
     expect(employeeRole?.count).toBe(Employees.filter(e => e.role === 'employee').length);
   });
 
+  it('returns org-level aggregate stats', async () => {
+    const orgStats = await service.getOrgStats();
+    expect(orgStats.totalEmployees).toBe(Employees.length);
+    expect(typeof orgStats.activeTasks).toBe('number');
+    expect(orgStats.tasksByStatus).toHaveProperty('todo');
+    expect(orgStats.tasksByStatus).toHaveProperty('in_progress');
+    expect(orgStats.tasksByStatus).toHaveProperty('completed');
+    expect(typeof orgStats.avgAttendanceHours).toBe('number');
+    expect(typeof orgStats.activitiesLast7d).toBe('number');
+  });
+
   it('returns the shared team fixtures', async () => {
     await expect(service.findAllTeams()).resolves.toEqual(Teams);
     await expect(service.findTeamById(Teams[0].id)).resolves.toEqual(Teams[0]);

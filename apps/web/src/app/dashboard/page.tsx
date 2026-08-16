@@ -12,11 +12,23 @@ import {
 } from '@/components/ui/chart';
 import { CollapsibleSection } from '@/components/ui/collapsible-section';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import { isApiDataMode, toDate, worksightApi } from '@/lib/worksight-api';
+import { ActivityLookup, AssignmentLookup, AttendanceLookup, SurveyResponseList } from '@worksight/common';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Activity, Check, CheckSquare, Clock, ListChecks, Target, TrendingUp, User, X } from 'lucide-react';
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import { Area, AreaChart, XAxis, YAxis } from 'recharts';
+
+function formatRelativeTime(date: Date): string {
+  const deltaMs = Date.now() - date.getTime();
+  const minutes = Math.max(1, Math.floor(deltaMs / 60_000));
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 48) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
 
 function DashboardSkeleton() {
   return (
@@ -67,6 +79,14 @@ export default function DashboardPage() {
   const { user } = useAuth();
   const [surveyData, setSurveyData] = useState<unknown>(null);
   const [wellnessHistory, setWellnessHistory] = useState<unknown[]>([]);
+const [orgStats, setOrgStats] = useState<{
+    activeTasks: number;
+    avgAttendanceHours: number;
+    recentSurveyAvg: number | null;
+  } | null>(null);
+  const [recentActivities, setRecentActivities] = useState<
+    Array<{ id: string; description: string; time: string }>
+  >([]);
   const [isLoadingStorage, setIsLoadingStorage] = useState(true);
   // Getting Started state
   const [showGettingStarted, setShowGettingStarted] = useState(false);
@@ -119,31 +139,84 @@ export default function DashboardPage() {
       }
     };
 
-    // Load wellness history (5 weeks of data - 1 data point per week)
+    // Stable wellness history (5 weeks of data - no Math.random())
     const loadWellnessHistory = () => {
       const history = [];
       const today = new Date();
+      const baseScores = [42, 48, 55, 50, 58];
 
       for (let i = 4; i >= 0; i--) {
         const weekDate = new Date(today);
-        weekDate.setDate(weekDate.getDate() - i * 7); // Go back by weeks
-
-        // Generate realistic burnout progression
-        const baseScore = 35 + i * 5; // Gradual increase over time
-        const variation = Math.floor(Math.random() * 15) - 7; // ±7 variation
-        const burnoutScore = Math.max(25, Math.min(85, baseScore + variation));
+        weekDate.setDate(weekDate.getDate() - i * 7);
 
         history.push({
           week: `Week ${5 - i}`,
           date: weekDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-          burnout: burnoutScore,
+          burnout: baseScores[4 - i],
         });
       }
       setWellnessHistory(history);
     };
 
+    async function loadOrgData() {
+      if (isApiDataMode()) {
+        try {
+          const [stats, acts] = await Promise.all([
+            worksightApi.getOrgStats(),
+            worksightApi.getActivities(),
+          ]);
+          setOrgStats({
+            activeTasks: stats.activeTasks,
+            avgAttendanceHours: stats.avgAttendanceHours,
+            recentSurveyAvg: stats.recentSurveyAvg,
+          });
+          setRecentActivities(
+            acts.slice(0, 6).map(a => ({
+              id: a.id,
+              description: a.description,
+              time: formatRelativeTime(toDate(a.timestamp)),
+            }))
+          );
+        } catch (error) {
+          console.error('Failed to load API org stats:', error);
+        }
+      } else {
+        const assignments = new AssignmentLookup().all();
+        const activeCount = assignments.filter(t => t.status !== 'completed').length;
+        const att = new AttendanceLookup().all();
+        const attHours = att
+          .map(a => a.hours_worked)
+          .filter((h): h is number => h !== null && typeof h === 'number');
+        const avgHours = attHours.length
+          ? Math.round((attHours.reduce((s, h) => s + h, 0) / attHours.length) * 10) / 10
+          : 6.5;
+        const surveyScores = SurveyResponseList.map(s => s.avg_score).filter(
+          (s): s is number => s !== null && typeof s === 'number'
+        );
+        const avgScore = surveyScores.length
+          ? Math.round((surveyScores.reduce((s, x) => s + x, 0) / surveyScores.length) * 100) / 100
+          : 4.2;
+
+        setOrgStats({
+          activeTasks: activeCount,
+          avgAttendanceHours: avgHours,
+          recentSurveyAvg: avgScore,
+        });
+
+        const acts = new ActivityLookup().all();
+        setRecentActivities(
+          acts.slice(0, 6).map(a => ({
+            id: a.id,
+            description: a.description,
+            time: formatRelativeTime(new Date(a.timestamp)),
+          }))
+        );
+      }
+    }
+
     loadSurveyData();
     loadWellnessHistory();
+    loadOrgData();
     evaluateGettingStarted();
     setIsLoadingStorage(false);
   }, [evaluateGettingStarted]);
@@ -301,7 +374,7 @@ export default function DashboardPage() {
                       <CheckSquare className="text-muted-foreground h-4 w-4" />
                     </CardHeader>
                     <CardContent>
-                      <div className="text-2xl font-bold">12</div>
+                      <div className="text-2xl font-bold">{orgStats ? orgStats.activeTasks : 12}</div>
                       <p className="text-muted-foreground flex items-center gap-1 text-xs">
                         <TrendingUp className="h-3 w-3 text-green-600" />
                         +2 from yesterday
@@ -316,7 +389,7 @@ export default function DashboardPage() {
                     <Clock className="text-muted-foreground h-4 w-4" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">6.5</div>
+                    <div className="text-2xl font-bold">{orgStats ? orgStats.avgAttendanceHours : 6.5}</div>
                     <p className="text-muted-foreground flex items-center gap-1 text-xs">
                       <TrendingUp className="h-3 w-3 text-green-600" />
                       +0.5 from yesterday
@@ -330,7 +403,11 @@ export default function DashboardPage() {
                     <Activity className="text-muted-foreground h-4 w-4" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-blue-600">85%</div>
+                    <div className="text-2xl font-bold text-blue-600">
+                      {orgStats && orgStats.recentSurveyAvg != null
+                        ? `${Math.round((orgStats.recentSurveyAvg / 5) * 100)}%`
+                        : '85%'}
+                    </div>
                     <p className="text-muted-foreground flex items-center gap-1 text-xs">
                       <TrendingUp className="h-3 w-3 text-green-600" />
                       +5% this week
@@ -410,61 +487,45 @@ export default function DashboardPage() {
                   </CardHeader>
                   <CardContent className="pb-4">
                     <div className="space-y-4">
-                      <div className="flex items-center space-x-4">
-                        <div className="h-2 w-2 rounded-full bg-green-500"></div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">
-                            Completed &quot;Project Review&quot;
-                          </p>
-                          <p className="text-muted-foreground text-xs">2 hours ago</p>
+                      {recentActivities.length > 0 ? (
+                        recentActivities.map((act, index) => {
+                          const colors = [
+                            'bg-green-500',
+                            'bg-blue-500',
+                            'bg-yellow-500',
+                            'bg-purple-500',
+                            'bg-indigo-500',
+                            'bg-pink-500',
+                          ];
+                          const color = colors[index % colors.length];
+                          return (
+                            <div key={act.id || index} className="flex items-center space-x-4">
+                              <div className={`h-2 w-2 rounded-full ${color}`}></div>
+                              <div className="flex-1">
+                                <p className="text-sm font-medium">{act.description}</p>
+                                <p className="text-muted-foreground text-xs">{act.time}</p>
+                              </div>
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <div className="flex items-center space-x-4">
+                          <div className="h-2 w-2 rounded-full bg-blue-500"></div>
+                          <div className="flex-1">
+                            <p className="text-sm font-medium">Took wellness survey</p>
+                            <p className="text-muted-foreground text-xs">
+                              {typeof surveyData === 'object' &&
+                              surveyData !== null &&
+                              'completedAt' in surveyData &&
+                              surveyData.completedAt
+                                ? new Date(
+                                    (surveyData as { completedAt: string }).completedAt
+                                  ).toLocaleDateString()
+                                : '1 day ago'}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex items-center space-x-4">
-                        <div className="h-2 w-2 rounded-full bg-blue-500"></div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">Took wellness survey</p>
-                          <p className="text-muted-foreground text-xs">
-                            {typeof surveyData === 'object' &&
-                            surveyData !== null &&
-                            'completedAt' in surveyData &&
-                            surveyData.completedAt
-                              ? new Date(
-                                  (surveyData as { completedAt: string }).completedAt
-                                ).toLocaleDateString()
-                              : '1 day ago'}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-4">
-                        <div className="h-2 w-2 rounded-full bg-yellow-500"></div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">
-                            Started &quot;Team Meeting Prep&quot;
-                          </p>
-                          <p className="text-muted-foreground text-xs">Yesterday</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-4">
-                        <div className="h-2 w-2 rounded-full bg-purple-500"></div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">Updated project status</p>
-                          <p className="text-muted-foreground text-xs">2 days ago</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-4">
-                        <div className="h-2 w-2 rounded-full bg-indigo-500"></div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">Attended team standup</p>
-                          <p className="text-muted-foreground text-xs">3 days ago</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-4">
-                        <div className="h-2 w-2 rounded-full bg-pink-500"></div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">Submitted quarterly report</p>
-                          <p className="text-muted-foreground text-xs">1 week ago</p>
-                        </div>
-                      </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>

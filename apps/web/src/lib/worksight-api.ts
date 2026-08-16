@@ -167,6 +167,19 @@ export type ApiTaskStats = {
   workLifeBalanceScore: number;
 };
 
+export type ApiOrgStats = {
+  totalEmployees: number;
+  activeTasks: number;
+  tasksByStatus: {
+    todo: number;
+    in_progress: number;
+    completed: number;
+  };
+  avgAttendanceHours: number;
+  recentSurveyAvg: number | null;
+  activitiesLast7d: number;
+};
+
 /** JSON dates arrive as strings from Nest. */
 export type ApiEmployee = Omit<EmployeeProfile, 'date_joined' | 'created_at' | 'updated_at'> & {
   date_joined: string | Date;
@@ -229,6 +242,7 @@ export const worksightApi = {
   getHealth: (timeoutMs = 5000) => apiGet<ApiHealth>('/health', timeoutSignal(timeoutMs)),
   getUsers: () => apiGet<ApiEmployee[]>('/users'),
   getUserStats: () => apiGet<ApiEmployeeStats>('/users/stats'),
+getOrgStats: () => apiGet<ApiOrgStats>('/users/stats/org'),
   createUser: (body: Partial<ApiEmployee>) => apiSend<ApiEmployee>('POST', '/users', body),
   patchUser: (id: string, body: Partial<ApiEmployee>) =>
     apiSend<ApiEmployee>('PATCH', `/users/${encodeURIComponent(id)}`, body),
