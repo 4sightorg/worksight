@@ -81,17 +81,20 @@ async function apiGet<T>(path: string, signal?: AbortSignal): Promise<T> {
 }
 
 async function apiSend<T>(
-  method: 'POST' | 'PATCH',
+  method: 'POST' | 'PATCH' | 'DELETE',
   path: string,
-  body: unknown,
+  body?: unknown,
   signal?: AbortSignal
 ): Promise<T> {
   const url = `${getApiBaseUrl()}${path.startsWith('/') ? path : `/${path}`}`;
   const response = await fetch(url, {
     method,
-    headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+    headers: {
+      Accept: 'application/json',
+      ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}),
+    },
     cache: 'no-store',
-    body: JSON.stringify(body),
+    ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
     signal,
   });
   if (!response.ok) {
@@ -228,6 +231,7 @@ export const worksightApi = {
   createTask: (body: CreateTaskInput) => apiSend<ApiAssignment>('POST', '/tasks', body),
   patchTask: (id: string, body: PatchTaskInput) =>
     apiSend<ApiAssignment>('PATCH', `/tasks/${encodeURIComponent(id)}`, body),
+  deleteTask: (id: string) => apiSend<void>('DELETE', `/tasks/${encodeURIComponent(id)}`),
   getSurveys: () => apiGet<ApiSurvey[]>('/surveys'),
   getSurveyQuestions: (surveyId: string) =>
     apiGet<ApiSurveyQuestion[]>(`/surveys/${encodeURIComponent(surveyId)}/questions`),

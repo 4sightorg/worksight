@@ -18,21 +18,19 @@ import { parseCreateAssignment, parseUpdateAssignment } from './task-write.dto';
 
 @Injectable()
 export class TasksService {
-  private readonly fixtureAssignments: Assignment[] = [...Assignments];
+  // In fixture mode, task modifications live in memory for the offline demo.
+  private readonly inMemoryAssignments: Assignment[] = [...Assignments];
   private readonly activities = new ActivityLookup(Activities);
 
   constructor(private readonly repo: WorksightRepository) {}
 
-  private get assignmentLookup(): AssignmentLookup {
-    return new AssignmentLookup(this.fixtureAssignments);
-  }
-
   async findAll(employeeId?: string, pagination?: PaginationQuery): Promise<Assignment[]> {
-    const list = this.repo.enabled
-      ? await this.repo.listAssignments(employeeId)
-      : employeeId
-        ? this.assignmentLookup.getAssignmentsByEmployee(employeeId).all()
-        : this.assignmentLookup.all();
+    if (this.repo.enabled) {
+      return paginate(await this.repo.listAssignments(employeeId), pagination);
+    }
+    const list = employeeId
+      ? this.inMemoryAssignments.filter(a => a.employee_id === employeeId)
+      : [...this.inMemoryAssignments];
     return paginate(list, pagination);
   }
 
@@ -40,7 +38,7 @@ export class TasksService {
     if (this.repo.enabled) {
       return this.repo.getAssignment(id);
     }
-    return this.assignmentLookup.filter({ id }).first();
+    return this.inMemoryAssignments.find(a => a.id === id) ?? null;
   }
 
   async getStatsForEmployee(
@@ -53,7 +51,7 @@ export class TasksService {
       ]);
       return new AssignmentLookup(assignments).getStats(employeeId, activities);
     }
-    return this.assignmentLookup.getStats(employeeId);
+    return new AssignmentLookup(this.inMemoryAssignments).getStats(employeeId);
   }
 
   async findAllActivities(employeeId?: string, pagination?: PaginationQuery): Promise<Activity[]> {
@@ -68,10 +66,11 @@ export class TasksService {
   /** `POST /tasks` — persist a new assignment. */
   async create(body: unknown): Promise<Assignment> {
     const input = parseCreateAssignment(body);
+    const id = input.id ?? randomUUID();
 
     if (this.repo.enabled) {
       const row: NewAssignmentInput = {
-        id: input.id ?? randomUUID(),
+        id,
         employee_id: input.employee_id,
         source_id: input.source_id ?? null,
         external_id: input.external_id ?? null,
@@ -87,8 +86,8 @@ export class TasksService {
     }
 
     const now = new Date();
-    const newAssignment: Assignment = {
-      id: input.id ?? randomUUID(),
+    const created: Assignment = {
+      id,
       employee_id: input.employee_id,
       source_id: input.source_id ?? null,
       external_id: input.external_id ?? null,
@@ -102,8 +101,8 @@ export class TasksService {
       created_at: now,
       updated_at: now,
     };
-    this.fixtureAssignments.unshift(newAssignment);
-    return newAssignment;
+    this.inMemoryAssignments.unshift(created);
+    return created;
   }
 
   /** `PATCH /tasks/:id` — returns `null` when the id does not exist. */
@@ -126,17 +125,30 @@ export class TasksService {
       return this.repo.updateAssignment(id, patch);
     }
 
-    const index = this.fixtureAssignments.findIndex(a => a.id === id);
-    if (index === -1) {
-      return null;
-    }
-    const existing = this.fixtureAssignments[index];
+    const index = this.inMemoryAssignments.findIndex(a => a.id === id);
+    if (index === -1) return null;
+
+    const existing = this.inMemoryAssignments[index];
     const updated: Assignment = {
       ...existing,
-      ...patch,
+      ...(patch.status !== undefined && { status: patch.status }),
+      ...(patch.priority !== undefined && { priority: patch.priority }),
+      ...(patch.title !== undefined && { title: patch.title }),
+      ...(patch.points !== undefined && { points: patch.points }),
       updated_at: new Date(),
     };
-    this.fixtureAssignments[index] = updated;
+    this.inMemoryAssignments[index] = updated;
     return updated;
+  }
+
+  /** `DELETE /tasks/:id` — returns false when the assignment is not found. */
+  async delete(id: string): Promise<boolean> {
+    if (this.repo.enabled) {
+      return this.repo.deleteAssignment(id);
+    }
+    const index = this.inMemoryAssignments.findIndex(a => a.id === id);
+    if (index === -1) return false;
+    this.inMemoryAssignments.splice(index, 1);
+    return true;
   }
 }

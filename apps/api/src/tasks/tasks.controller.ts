@@ -1,7 +1,9 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
   NotFoundException,
   Param,
   ParseUUIDPipe,
@@ -12,6 +14,7 @@ import {
 import {
   ApiBody,
   ApiCreatedResponse,
+  ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -63,7 +66,8 @@ export class TasksController {
   @Post()
   @ApiOperation({
     summary: 'Create an assignment',
-    description: 'Persists a new assignment (works in Postgres and fixture modes). Timestamps are server-owned.',
+    description:
+      'Creates a new task. Persisted in Postgres or in-memory fixture mode. Timestamps are server-owned.',
   })
   @ApiBody({ type: AssignmentDto })
   @ApiCreatedResponse({ type: AssignmentDto })
@@ -88,7 +92,7 @@ export class TasksController {
   @ApiOperation({
     summary: 'Partial update an assignment',
     description:
-      'Patch `status`, `priority`, `title`, and/or `points`. Works in Postgres and fixture modes.',
+      'Patch `status`, `priority`, `title`, and/or `points`. Persisted in Postgres or in-memory fixture mode.',
   })
   @ApiParam({ name: 'id', format: 'uuid' })
   @ApiOkResponse({ type: AssignmentDto })
@@ -102,6 +106,19 @@ export class TasksController {
       throw new NotFoundException(`Task ${id} not found`);
     }
     return updated;
+  }
+
+  @Delete(':id')
+  @HttpCode(204)
+  @ApiOperation({ summary: 'Delete an assignment' })
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @ApiNoContentResponse({ description: 'Assignment deleted successfully' })
+  @ApiNotFoundResponse({ description: 'Assignment not found' })
+  async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+    const deleted = await this.tasksService.delete(id);
+    if (!deleted) {
+      throw new NotFoundException(`Task ${id} not found`);
+    }
   }
 }
 

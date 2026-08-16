@@ -250,6 +250,15 @@ export class WorksightRepository {
     return rows[0] ? toAssignment(rows[0]) : null;
   }
 
+  /** Delete an assignment by id. Returns true if deleted, false if not found. */
+  async deleteAssignment(id: string): Promise<boolean> {
+    const { rowCount } = await this.db.query(
+      `DELETE FROM assignments WHERE id = $1`,
+      [id]
+    );
+    return (rowCount ?? 0) > 0;
+  }
+
   async listActivities(employeeId?: string): Promise<Activity[]> {
     const { rows } = employeeId
       ? await this.db.query<ActivityRow>(

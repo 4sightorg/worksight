@@ -1,4 +1,6 @@
-import { BadRequestException } from '@nestjs/common';
+import {
+  BadRequestException,
+} from '@nestjs/common';
 import { Activities, Assignments, type Assignment } from '@worksight/common';
 import type { WorksightRepository } from '../db/worksight.repository';
 import { TasksService } from './tasks.service';
@@ -41,17 +43,24 @@ describe('TasksService', () => {
     await expect(service.findAllActivities(employeeId)).resolves.toEqual(expected);
   });
 
-  it('supports writes in fixture mode in memory', async () => {
+  it('supports in-memory writes in fixture mode', async () => {
+    const empId = Assignments[0].employee_id;
     const created = await service.create({
-      employee_id: '11111111-1111-4111-8111-111111111111',
-      type: 'bug',
+      employee_id: empId,
+      type: 'task',
+      title: 'In-Memory Task',
+      status: 'todo',
+      priority: 'high',
     });
-    expect(created.employee_id).toBe('11111111-1111-4111-8111-111111111111');
-    expect(created.type).toBe('bug');
+    expect(created.title).toBe('In-Memory Task');
+    expect(await service.findById(created.id)).toEqual(created);
 
     const updated = await service.update(created.id, { status: 'completed' });
-    expect(updated).not.toBeNull();
     expect(updated?.status).toBe('completed');
+
+    const deleted = await service.delete(created.id);
+    expect(deleted).toBe(true);
+    expect(await service.findById(created.id)).toBeNull();
   });
 });
 
@@ -173,5 +182,16 @@ describe('TasksService writes (postgres backend)', () => {
   it('returns null when the id does not exist so the controller can 404', async () => {
     updateAssignment.mockResolvedValue(null);
     await expect(service.update('missing', { status: 'todo' })).resolves.toBeNull();
+  });
+
+  it('delegates delete to repository', async () => {
+    const deleteAssignment = jest.fn().mockResolvedValue(true);
+    const postgresService = new TasksService({
+      enabled: true,
+      deleteAssignment,
+    } as unknown as WorksightRepository);
+
+    await expect(postgresService.delete(stored.id)).resolves.toBe(true);
+    expect(deleteAssignment).toHaveBeenCalledWith(stored.id);
   });
 });

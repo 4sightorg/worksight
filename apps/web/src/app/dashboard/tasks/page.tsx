@@ -52,12 +52,19 @@ import {
   LayoutGrid,
   List,
   Plus,
+  Trash2,
 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { fetchDashboardTasksFromApi, persistTaskStatus } from '@/lib/mvp-api-bridge';
+import {
+  fetchDashboardTasksFromApi,
+  persistTaskCreation,
+  persistTaskDeletion,
+  persistTaskStatus,
+  persistTaskUpdate,
+} from '@/lib/mvp-api-bridge';
 import { assignmentLookup } from '@/lib/mvp-data';
-import { isApiDataMode } from '@/lib/worksight-api';
+import { isApiDataMode, toDate } from '@/lib/worksight-api';
 import type { Assignment } from '@worksight/common/types';
 
 interface Task {
@@ -244,10 +251,31 @@ export default function TasksPage() {
     );
   };
 
-  const createNewTask = (newTask: Omit<Task, 'id'>) => {
+  const createNewTask = async (newTask: Omit<Task, 'id'>) => {
+    if (isApiDataMode()) {
+      try {
+        const created = await persistTaskCreation(newTask);
+        if (created) {
+          const task: Task = {
+            id: created.id,
+            title: created.title ?? newTask.title,
+            description: newTask.description,
+            status: mapDashboardStatus(created.status),
+            priority: mapDashboardPriority(created.priority),
+            dueDate: toDate(created.updated_at).toISOString().slice(0, 10),
+            storyPoints: created.points ?? newTask.storyPoints,
+          };
+          setTasks(prev => [task, ...prev]);
+          setShowNewTaskDialog(false);
+          return;
+        }
+      } catch (err) {
+        console.warn('Failed to persist task creation to API', err);
+      }
+    }
     const task: Task = {
       ...newTask,
-      id: Date.now().toString(), // Simple ID generation
+      id: Date.now().toString(),
     };
     setTasks(prev => [...prev, task]);
     try {
@@ -261,6 +289,20 @@ export default function TasksPage() {
 
   const updateTask = (taskId: string, updates: Partial<Task>) => {
     setTasks(prev => prev.map(task => (task.id === taskId ? { ...task, ...updates } : task)));
+    if (isApiDataMode()) {
+      void persistTaskUpdate(taskId, updates).catch(err =>
+        console.warn('Failed to persist task update to API', err)
+      );
+    }
+  };
+
+  const deleteTask = (taskId: string) => {
+    setTasks(prev => prev.filter(task => task.id !== taskId));
+    if (isApiDataMode()) {
+      void persistTaskDeletion(taskId).catch(err =>
+        console.warn('Failed to persist task deletion to API', err)
+      );
+    }
   };
 
   return (
@@ -461,12 +503,17 @@ export default function TasksPage() {
                   }}
                 >
                   {viewMode === 'kanban' ? (
-                    <KanbanView tasks={tasks} onToggleStatus={toggleTaskStatus} />
+                    <KanbanView
+                      tasks={tasks}
+                      onToggleStatus={toggleTaskStatus}
+                      onDeleteTask={deleteTask}
+                    />
                   ) : (
                     <TableView
                       tasks={tasks}
                       onToggleStatus={toggleTaskStatus}
                       onUpdateTask={updateTask}
+                      onDeleteTask={deleteTask}
                       editingTaskId={editingTaskId}
                       setEditingTaskId={setEditingTaskId}
                       isDragging={!!activeTask}
@@ -497,9 +544,11 @@ export default function TasksPage() {
 function KanbanView({
   tasks,
   onToggleStatus,
+  onDeleteTask,
 }: {
   tasks: Task[];
   onToggleStatus: (taskId: string) => void;
+  onDeleteTask: (taskId: string) => void;
 }) {
   const tasksByStatus = {
     pending: tasks.filter(task => task.status === 'pending'),
@@ -523,6 +572,7 @@ function KanbanView({
               icon={StatusIcon}
               tasks={statusTasks}
               onToggleStatus={onToggleStatus}
+              onDeleteTask={onDeleteTask}
             />
           );
         })}
@@ -540,12 +590,14 @@ function KanbanColumn({
   icon: Icon,
   tasks,
   onToggleStatus,
+  onDeleteTask,
 }: {
   status: string;
   title: string;
   icon: ComponentType<{ className?: string }>;
   tasks: Task[];
   onToggleStatus: (taskId: string) => void;
+  onDeleteTask: (taskId: string) => void;
 }) {
   const { setNodeRef } = useSortable({
     id: status,
@@ -563,7 +615,12 @@ function KanbanColumn({
       >
         <SortableContext items={tasks.map(task => task.id)} strategy={verticalListSortingStrategy}>
           {tasks.map(task => (
-            <SortableTaskCard key={task.id} task={task} onToggleStatus={onToggleStatus} />
+            <SortableTaskCard
+              key={task.id}
+              task={task}
+              onToggleStatus={onToggleStatus}
+              onDeleteTask={onDeleteTask}
+            />
           ))}
         </SortableContext>
       </div>
@@ -576,6 +633,7 @@ function TableView({
   tasks,
   onToggleStatus,
   onUpdateTask,
+  onDeleteTask,
   editingTaskId,
   setEditingTaskId,
   isDragging,
@@ -583,6 +641,7 @@ function TableView({
   tasks: Task[];
   onToggleStatus: (taskId: string) => void;
   onUpdateTask: (taskId: string, updates: Partial<Task>) => void;
+  onDeleteTask: (taskId: string) => void;
   editingTaskId: string | null;
   setEditingTaskId: (id: string | null) => void;
   isDragging: boolean;
@@ -604,6 +663,7 @@ function TableView({
                 <TableHead>Priority</TableHead>
                 <TableHead>Due Date</TableHead>
                 <TableHead>Story Points</TableHead>
+                <TableHead className="w-12 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -613,6 +673,7 @@ function TableView({
                   task={task}
                   onToggleStatus={onToggleStatus}
                   onUpdateTask={onUpdateTask}
+                  onDeleteTask={onDeleteTask}
                   isEditing={editingTaskId === task.id}
                   setEditing={editing => setEditingTaskId(editing ? task.id : null)}
                   disabled={isDragging}
@@ -630,9 +691,11 @@ function TableView({
 function SortableTaskCard({
   task,
   onToggleStatus,
+  onDeleteTask,
 }: {
   task: Task;
   onToggleStatus: (taskId: string) => void;
+  onDeleteTask: (taskId: string) => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: task.id,
@@ -646,7 +709,7 @@ function SortableTaskCard({
 
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <TaskCard task={task} onToggleStatus={onToggleStatus} />
+      <TaskCard task={task} onToggleStatus={onToggleStatus} onDeleteTask={onDeleteTask} />
     </div>
   );
 }
@@ -656,6 +719,7 @@ function SortableTableRow({
   task,
   onToggleStatus,
   onUpdateTask,
+  onDeleteTask,
   isEditing,
   setEditing,
   disabled,
@@ -663,6 +727,7 @@ function SortableTableRow({
   task: Task;
   onToggleStatus: (taskId: string) => void;
   onUpdateTask: (taskId: string, updates: Partial<Task>) => void;
+  onDeleteTask: (taskId: string) => void;
   isEditing: boolean;
   setEditing: (editing: boolean) => void;
   disabled: boolean;
@@ -827,6 +892,18 @@ function SortableTableRow({
           <Badge>{task.storyPoints} pts</Badge>
         )}
       </TableCell>
+      <TableCell className="text-right">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 text-muted-foreground hover:text-destructive"
+          onClick={() => onDeleteTask(task.id)}
+          disabled={disabled || isEditing}
+          aria-label={`Delete task ${task.title}`}
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      </TableCell>
     </TableRow>
   );
 }
@@ -835,10 +912,12 @@ function SortableTableRow({
 function TaskCard({
   task,
   onToggleStatus,
+  onDeleteTask,
   isDragging = false,
 }: {
   task: Task;
   onToggleStatus?: (taskId: string) => void;
+  onDeleteTask?: (taskId: string) => void;
   isDragging?: boolean;
 }) {
   const statusInfo = statusConfig[task.status];
@@ -849,7 +928,7 @@ function TaskCard({
       className={`cursor-pointer transition-shadow hover:shadow-md ${isDragging ? 'rotate-3 shadow-lg' : ''}`}
     >
       <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
+        <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-2">
             {onToggleStatus && (
               <Checkbox
@@ -863,6 +942,20 @@ function TaskCard({
               <p className="text-muted-foreground mt-1 text-xs">{task.description}</p>
             </div>
           </div>
+          {onDeleteTask && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6 text-muted-foreground hover:text-destructive shrink-0"
+              onClick={e => {
+                e.stopPropagation();
+                onDeleteTask(task.id);
+              }}
+              aria-label={`Delete task ${task.title}`}
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </Button>
+          )}
         </div>
       </CardHeader>
       <CardContent className="pt-0">
