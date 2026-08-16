@@ -23,6 +23,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import type { Activity, Assignment } from '@worksight/common';
+import { parsePaginationParams } from '../common/pagination.dto';
+import { ParseOptionalUUIDPipe } from '../common/parse-optional-uuid.pipe';
 import { ActivityDto, AssignmentDto, TaskStatsDto } from '../openapi/schemas';
 import { TasksService } from './tasks.service';
 
@@ -39,9 +41,15 @@ export class TasksController {
     format: 'uuid',
     description: 'When set, only assignments for this employee',
   })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Limit count' })
+  @ApiQuery({ name: 'offset', required: false, type: Number, description: 'Offset count' })
   @ApiOkResponse({ type: AssignmentDto, isArray: true })
-  getAll(@Query('employee_id') employeeId?: string): Promise<Assignment[]> {
-    return this.tasksService.findAll(employeeId);
+  getAll(
+    @Query('employee_id', ParseOptionalUUIDPipe) employeeId?: string,
+    @Query('limit') limit?: string,
+    @Query('offset') offset?: string
+  ): Promise<Assignment[]> {
+    return this.tasksService.findAll(employeeId, parsePaginationParams(limit, offset));
   }
 
   @Get('stats/:employeeId')
@@ -127,8 +135,14 @@ export class ActivitiesController {
     format: 'uuid',
     description: 'When set, only activities for this employee',
   })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Limit count' })
+  @ApiQuery({ name: 'offset', required: false, type: Number, description: 'Offset count' })
   @ApiOkResponse({ type: ActivityDto, isArray: true })
-  getAll(@Query('employee_id') employeeId?: string): Promise<Activity[]> {
-    return this.tasksService.findAllActivities(employeeId);
+  getAll(
+    @Query('employee_id', ParseOptionalUUIDPipe) employeeId?: string,
+    @Query('limit') limit?: string,
+    @Query('offset') offset?: string
+  ): Promise<Activity[]> {
+    return this.tasksService.findAllActivities(employeeId, parsePaginationParams(limit, offset));
   }
 }

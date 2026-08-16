@@ -9,6 +9,8 @@ import type {
   AssignmentPriority,
   AssignmentStatus,
   AssignmentType,
+  AttendanceRecord,
+  AttendanceStats,
   EmployeeProfile,
   Survey,
   SurveyQuestion,
@@ -191,6 +193,18 @@ export type PatchTaskInput = {
   points?: number | null;
 };
 
+export type ApiAttendanceRecord = Omit<
+  AttendanceRecord,
+  'date' | 'check_in' | 'check_out' | 'created_at'
+> & {
+  date: string | Date;
+  check_in: string | Date | null;
+  check_out: string | Date | null;
+  created_at: string | Date;
+};
+
+export type ApiAttendanceStats = AttendanceStats;
+
 export const worksightApi = {
   getHealth: (timeoutMs = 5000) => apiGet<ApiHealth>('/health', timeoutSignal(timeoutMs)),
   getUsers: () => apiGet<ApiEmployee[]>('/users'),
@@ -206,6 +220,14 @@ export const worksightApi = {
     apiGet<ApiActivity[]>(
       employeeId ? `/activities?employee_id=${encodeURIComponent(employeeId)}` : '/activities'
     ),
+  getAttendance: (employeeId?: string) =>
+    apiGet<ApiAttendanceRecord[]>(
+      employeeId
+        ? `/attendance?employee_id=${encodeURIComponent(employeeId)}`
+        : '/attendance'
+    ),
+  getAttendanceStats: (employeeId: string) =>
+    apiGet<ApiAttendanceStats>(`/attendance/stats/${encodeURIComponent(employeeId)}`),
   createTask: (body: CreateTaskInput) => apiSend<ApiAssignment>('POST', '/tasks', body),
   patchTask: (id: string, body: PatchTaskInput) =>
     apiSend<ApiAssignment>('PATCH', `/tasks/${encodeURIComponent(id)}`, body),

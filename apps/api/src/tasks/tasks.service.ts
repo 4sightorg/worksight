@@ -1,9 +1,14 @@
+import { BadRequestException, Injectable } from '@nestjs/common';
 import {
-  BadRequestException,
-  Injectable,
-} from '@nestjs/common';
-import { Activity, ActivityLookup, Assignment, AssignmentLookup, Assignments } from '@worksight/common';
+  Activities,
+  Activity,
+  ActivityLookup,
+  Assignment,
+  AssignmentLookup,
+  Assignments,
+} from '@worksight/common';
 import { randomUUID } from 'node:crypto';
+import { paginate, PaginationQuery } from '../common/pagination.dto';
 import {
   AssignmentPatch,
   NewAssignmentInput,
@@ -15,18 +20,18 @@ import { parseCreateAssignment, parseUpdateAssignment } from './task-write.dto';
 export class TasksService {
   // In fixture mode, task modifications live in memory for the offline demo.
   private readonly inMemoryAssignments: Assignment[] = [...Assignments];
-  private readonly activities = new ActivityLookup();
+  private readonly activities = new ActivityLookup(Activities);
 
   constructor(private readonly repo: WorksightRepository) {}
 
-  async findAll(employeeId?: string): Promise<Assignment[]> {
+  async findAll(employeeId?: string, pagination?: PaginationQuery): Promise<Assignment[]> {
     if (this.repo.enabled) {
-      return this.repo.listAssignments(employeeId);
+      return paginate(await this.repo.listAssignments(employeeId), pagination);
     }
-    if (employeeId) {
-      return this.inMemoryAssignments.filter(a => a.employee_id === employeeId);
-    }
-    return [...this.inMemoryAssignments];
+    const list = employeeId
+      ? this.inMemoryAssignments.filter(a => a.employee_id === employeeId)
+      : [...this.inMemoryAssignments];
+    return paginate(list, pagination);
   }
 
   async findById(id: string): Promise<Assignment | null> {
@@ -36,7 +41,9 @@ export class TasksService {
     return this.inMemoryAssignments.find(a => a.id === id) ?? null;
   }
 
-  async getStatsForEmployee(employeeId: string): Promise<ReturnType<AssignmentLookup['getStats']>> {
+  async getStatsForEmployee(
+    employeeId: string
+  ): Promise<ReturnType<AssignmentLookup['getStats']>> {
     if (this.repo.enabled) {
       const [assignments, activities] = await Promise.all([
         this.repo.listAssignments(employeeId),
@@ -47,14 +54,13 @@ export class TasksService {
     return new AssignmentLookup(this.inMemoryAssignments).getStats(employeeId);
   }
 
-  async findAllActivities(employeeId?: string): Promise<Activity[]> {
-    if (this.repo.enabled) {
-      return this.repo.listActivities(employeeId);
-    }
-    if (employeeId) {
-      return this.activities.getActivitiesByEmployee(employeeId).all();
-    }
-    return this.activities.all();
+  async findAllActivities(employeeId?: string, pagination?: PaginationQuery): Promise<Activity[]> {
+    const list = this.repo.enabled
+      ? await this.repo.listActivities(employeeId)
+      : employeeId
+        ? this.activities.getActivitiesByEmployee(employeeId).all()
+        : this.activities.all();
+    return paginate(list, pagination);
   }
 
   /** `POST /tasks` — persist a new assignment. */

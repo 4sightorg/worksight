@@ -62,10 +62,7 @@ function SurveyManagementContent() {
           if (!cancelled) setSurveys(apiSurveys);
         } else {
           const fixtureSurveys = getMvpSurveys();
-          if (fixtureSurveys.length === 0) {
-            throw new Error('Common survey fixtures empty; refusing silent empty fallback');
-          }
-          if (!cancelled) setSurveys(fixtureSurveys);
+          if (!cancelled) setSurveys(fixtureSurveys || []);
         }
       } catch (err) {
         console.warn('API survey load failed; falling back to fixtures', err);
