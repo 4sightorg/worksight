@@ -7,13 +7,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import {
-    ArrowLeft,
-    Book,
-    ChevronRight,
-    HelpCircle,
-    MessageCircle,
-    Search,
-    Video,
+  ArrowLeft,
+  Book,
+  ChevronRight,
+  HelpCircle,
+  MessageCircle,
+  Search,
+  Video,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -74,6 +74,12 @@ export default function HelpPage() {
     },
   ];
 
+  const filteredFaqItems = faqItems.filter(
+    (item) =>
+      item.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.answer.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <ProtectedRoute>
       <ClientOnly>
@@ -113,31 +119,38 @@ export default function HelpPage() {
 
               {/* Quick Actions */}
               <div className="grid gap-4 md:grid-cols-2">
-                <Card className="hover:bg-accent/50 cursor-pointer transition-colors">
-                  <CardContent className="pt-6">
-                    <div className="flex items-center gap-3">
-                      <MessageCircle className="h-8 w-8 text-blue-500" />
-                      <div>
-                        <h3 className="font-semibold">Contact Support</h3>
-                        <p className="text-muted-foreground text-sm">Get help from our team</p>
+                <a href="mailto:support@worksight.app?subject=Support%20Request" className="block">
+                  <Card className="hover:bg-accent/50 cursor-pointer transition-colors">
+                    <CardContent className="pt-6">
+                      <div className="flex items-center gap-3">
+                        <MessageCircle className="h-8 w-8 text-blue-500" />
+                        <div>
+                          <h3 className="font-semibold">Contact Support</h3>
+                          <p className="text-muted-foreground text-sm">Get help from our team</p>
+                        </div>
+                        <ChevronRight className="ml-auto h-4 w-4" />
                       </div>
-                      <ChevronRight className="ml-auto h-4 w-4" />
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                </a>
 
-                <Card className="hover:bg-accent/50 cursor-pointer transition-colors">
-                  <CardContent className="pt-6">
-                    <div className="flex items-center gap-3">
-                      <Video className="h-8 w-8 text-green-500" />
-                      <div>
-                        <h3 className="font-semibold">Video Tutorials</h3>
-                        <p className="text-muted-foreground text-sm">Watch step-by-step guides</p>
+                <a
+                  href="mailto:support@worksight.app?subject=Video%20Tutorials%20Request"
+                  className="block"
+                >
+                  <Card className="hover:bg-accent/50 cursor-pointer transition-colors">
+                    <CardContent className="pt-6">
+                      <div className="flex items-center gap-3">
+                        <Video className="h-8 w-8 text-green-500" />
+                        <div>
+                          <h3 className="font-semibold">Video Tutorials</h3>
+                          <p className="text-muted-foreground text-sm">Watch step-by-step guides</p>
+                        </div>
+                        <ChevronRight className="ml-auto h-4 w-4" />
                       </div>
-                      <ChevronRight className="ml-auto h-4 w-4" />
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                </a>
               </div>
 
               {/* Help Categories */}
@@ -180,16 +193,26 @@ export default function HelpPage() {
               <div>
                 <h2 className="mb-4 text-xl font-semibold">Frequently Asked Questions</h2>
                 <div className="space-y-4">
-                  {faqItems.map((faq, index) => (
-                    <Card key={index}>
-                      <CardHeader>
-                        <CardTitle className="text-base">{faq.question}</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-muted-foreground text-sm">{faq.answer}</p>
+                  {filteredFaqItems.length > 0 ? (
+                    filteredFaqItems.map((faq, index) => (
+                      <Card key={index}>
+                        <CardHeader>
+                          <CardTitle className="text-base">{faq.question}</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-muted-foreground text-sm">{faq.answer}</p>
+                        </CardContent>
+                      </Card>
+                    ))
+                  ) : (
+                    <Card>
+                      <CardContent className="pt-6 text-center">
+                        <p className="text-muted-foreground text-sm">
+                          No matching questions found for &quot;{searchQuery}&quot;.
+                        </p>
                       </CardContent>
                     </Card>
-                  ))}
+                  )}
                 </div>
               </div>
 
@@ -219,7 +242,11 @@ export default function HelpPage() {
                     </div>
                   </div>
                   <div className="mt-4">
-                    <Button>Start Live Chat</Button>
+                    <Button asChild>
+                      <a href="mailto:support@worksight.app?subject=Live%20Chat%20Request">
+                        Start Live Chat
+                      </a>
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
