@@ -9,7 +9,11 @@ shared packages — notably `@worksight/common` (types, fixtures, lookup utils).
 
 **MVP note:** Nest + web run on `@worksight/common` fixtures by default, or on
 Postgres/Neon when `DATABASE_URL` is set. Supabase remains optional for web
-auth; offline mode is enough for the demo path.
+auth; offline mode (`NEXT_PUBLIC_IS_OFFLINE=true`) is the default demo path;
+online mode requires real Supabase keys. New since persistence MVP: attendance
+page, admin console (`/admin/users`, `/admin/surveys`), org-stats endpoint
+(`/users/stats/org`), task CRUD (POST/PATCH/DELETE with fixture-mode writes),
+pagination on `/users` and `/tasks`, and opt-in auth (offline default).
 
 ## Project structure
 
@@ -114,7 +118,8 @@ pnpm --filter @worksight/docs build
 | Web         | Next.js 15, React 19, TypeScript, Tailwind, shadcn  |
 | API         | NestJS (`apps/api`)                                 |
 | Shared data | `@worksight/common` types + fixtures + lookup utils |
-| Auth (web)  | Optional Supabase Auth; offline mode supported      |
+| Auth (web)  | Optional Supabase Auth; `NEXT_PUBLIC_IS_OFFLINE=true` defaults to offline
+  demo mode; online requires real Supabase keys; opt-in |
 | Docs        | VitePress (`apps/docs`)                             |
 | Monorepo    | pnpm workspaces + Turbo                             |
 | CI          | GitHub Actions                                      |
@@ -130,6 +135,10 @@ pnpm --filter @worksight/docs build
   [docs/mvp/DEMO.md](./docs/mvp/DEMO.md).
 - Web with `NEXT_PUBLIC_USE_API=true` hits Nest for demo/admin/tasks/surveys;
   kanban status changes `PATCH /tasks/:id`; survey results `POST /surveys/:id/responses`.
+- **New since persistence MVP**: attendance page, admin console (`/admin/users`,
+  `/admin/surveys`), org-stats endpoint (`/users/stats/org`), task CRUD
+  (POST/PATCH/DELETE with fixture-mode writes), pagination on `/users` and
+  `/tasks`, and opt-in auth (offline default via `NEXT_PUBLIC_IS_OFFLINE=true`).
 
 ## Deployment
 

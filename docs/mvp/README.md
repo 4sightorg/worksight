@@ -15,7 +15,8 @@
 - [x] Survey results map UI question ids → Nest `question_id` and POST responses
 - [x] `pnpm demo` / `DEMO_WITH_POSTGRES=1 pnpm demo` documented
 - [ ] Live connectors (explicit non-goal)
-- [ ] Production auth hardening (explicit non-goal)
+- [x] Production auth hardening (opt-in: `NEXT_PUBLIC_IS_OFFLINE=true` for demo;
+  online mode requires real Supabase keys — see auth posture decision)
 
 ## Happy path
 
