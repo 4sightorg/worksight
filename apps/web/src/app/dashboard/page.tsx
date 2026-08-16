@@ -12,15 +12,62 @@ import {
 } from '@/components/ui/chart';
 import { CollapsibleSection } from '@/components/ui/collapsible-section';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Activity, Check, CheckSquare, Clock, ListChecks, Target, TrendingUp, User, X } from 'lucide-react';
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import { Area, AreaChart, XAxis, YAxis } from 'recharts';
 
+function DashboardSkeleton() {
+  return (
+    <SidebarProvider>
+      <SidebarInset>
+        <div className="flex flex-1 flex-col space-y-6 p-6">
+          <div className="flex items-center justify-between">
+            <div className="space-y-2">
+              <Skeleton className="h-8 w-64" />
+              <Skeleton className="h-4 w-48" />
+            </div>
+          </div>
+          <Card className="p-6">
+            <div className="space-y-3">
+              <Skeleton className="h-6 w-36" />
+              <Skeleton className="h-4 w-72" />
+              <div className="grid gap-3 pt-2 md:grid-cols-3">
+                <Skeleton className="h-20 w-full" />
+                <Skeleton className="h-20 w-full" />
+                <Skeleton className="h-20 w-full" />
+              </div>
+            </div>
+          </Card>
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            <Card className="p-4">
+              <Skeleton className="mb-2 h-4 w-24" />
+              <Skeleton className="mb-1 h-8 w-16" />
+              <Skeleton className="h-3 w-32" />
+            </Card>
+            <Card className="p-4">
+              <Skeleton className="mb-2 h-4 w-24" />
+              <Skeleton className="mb-1 h-8 w-16" />
+              <Skeleton className="h-3 w-32" />
+            </Card>
+            <Card className="p-4">
+              <Skeleton className="mb-2 h-4 w-24" />
+              <Skeleton className="mb-1 h-8 w-16" />
+              <Skeleton className="h-3 w-32" />
+            </Card>
+          </div>
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
+  );
+}
+
 export default function DashboardPage() {
   const { user } = useAuth();
   const [surveyData, setSurveyData] = useState<unknown>(null);
   const [wellnessHistory, setWellnessHistory] = useState<unknown[]>([]);
+  const [isLoadingStorage, setIsLoadingStorage] = useState(true);
   // Getting Started state
   const [showGettingStarted, setShowGettingStarted] = useState(false);
   const [profileComplete, setProfileComplete] = useState(false);
@@ -98,11 +145,20 @@ export default function DashboardPage() {
     loadSurveyData();
     loadWellnessHistory();
     evaluateGettingStarted();
+    setIsLoadingStorage(false);
   }, [evaluateGettingStarted]);
+
+  if (isLoadingStorage) {
+    return (
+      <ProtectedRoute>
+        <DashboardSkeleton />
+      </ProtectedRoute>
+    );
+  }
 
   return (
     <ProtectedRoute>
-      <ClientOnly>
+      <ClientOnly fallback={<DashboardSkeleton />}>
         <SidebarProvider>
           <SidebarInset>
             <div className="flex flex-1 flex-col space-y-6 p-6">
