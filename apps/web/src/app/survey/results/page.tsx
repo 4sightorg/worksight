@@ -379,9 +379,16 @@ function SurveyResultsContent() {
     try {
       const scores = JSON.parse(decodeURIComponent(scoresParam));
 
+      let parsedResponses: SurveyResponse[] = [];
       if (responsesParam) {
-        setResponses(JSON.parse(decodeURIComponent(responsesParam)));
+        parsedResponses = JSON.parse(decodeURIComponent(responsesParam));
+      } else {
+        const stored = useSurveyResultsStore.getState().currentResponses;
+        if (stored && stored.length > 0) {
+          parsedResponses = stored;
+        }
       }
+      setResponses(parsedResponses);
 
       // Process results for each dimension
       const workloadResult = getWorkloadLevel(scores.workload);
@@ -452,13 +459,12 @@ function SurveyResultsContent() {
       setResult(finalResult);
 
       // Save to store for dashboard access
-      const finalResponses = responsesParam ? JSON.parse(decodeURIComponent(responsesParam)) : [];
-      saveResults(finalResult, finalResponses);
+      saveResults(finalResult, parsedResponses);
       setCurrentResults(finalResult);
-      setCurrentResponses(finalResponses);
+      setCurrentResponses(parsedResponses);
       void submitWellnessSurveyToApi({
         employeeId: user?.id,
-        responses: finalResponses,
+        responses: parsedResponses,
       }).catch(err => {
         console.warn('API survey submit failed; local results kept', err);
         setApiSubmitError('Could not sync results with live API. Your results are saved locally.');

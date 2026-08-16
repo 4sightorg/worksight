@@ -80,6 +80,11 @@ export class BaseLookup<T extends ZodObject<any>> {
     return this.entries[0] ?? null;
   }
 
+  /** Appends an entry to the lookup */
+  add(entry: z.infer<T>): void {
+    this.entries.push(entry);
+  }
+
   /**
    * Compute statistics dynamically based on a stats configuration
    */
